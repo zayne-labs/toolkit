@@ -1,0 +1,91 @@
+{
+	"name": "[*]",
+	"version": "0.0.0",
+	"type": "module",
+	"description": "[*]",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/[*].git"
+	},
+	"main": "./dist/esm/min/index.js",
+	"module": "./dist/esm/min/index.js",
+	"types": "./dist/esm/min/index.d.ts",
+	"homepage": "https://github.com/[*]#readme",
+	"bugs": {
+		"url": "https://github.com/[*]/issues"
+	},
+	"license": "MIT",
+	"author": "[*]",
+	"scripts": {
+		"test:check-types": "tsc --pretty --incremental -p tsconfig.json",
+		"test:format": "prettier --cache --write .",
+		"test:lint": "eslint src/**/*.ts --cache --max-warnings 0 --report-unused-disable-directives",
+		"test:size": "size-limit",
+		"test:publint": "publint --strict .",
+		"test:attw": "attw --pack . --exclude-entrypoints utils",
+		"test:release": "pkg-pr-new publish",
+		"build": "tsup",
+		"build:dev": "tsup --watch",
+		"build:test": "concurrently --prefix-colors \"yellow.bold,#7da4f8.bold,magenta\" --names PUBLINT,TSUP,ATTW 'pnpm:test:publint' 'pnpm:build:dev' 'pnpm:test:attw'",
+		"version-package": "changeset version",
+		"release": "changeset publish",
+		"inspect:eslint-config": "pnpx @eslint/config-inspector@latest"
+	},
+	"devDependencies": {
+		"@arethetypeswrong/cli": "^0.15.4",
+		"@changesets/cli": "^2.27.7",
+		"@eslint/js": "^9.9.0",
+		"@size-limit/esbuild-why": "^11.1.4",
+		"@size-limit/preset-small-lib": "^11.1.4",
+		"@stylistic/eslint-plugin": "^2.6.4",
+		"@zayne-labs/tsconfig": "^0.1.1",
+		"concurrently": "^8.2.2",
+		"eslint": "^9.9.0",
+		"eslint-plugin-import-x": "^3.1.0",
+		"eslint-plugin-jsdoc": "^50.2.2",
+		"eslint-plugin-perfectionist": "^3.2.0",
+		"eslint-plugin-sonarjs": "^1.0.4",
+		"eslint-plugin-unicorn": "^55.0.0",
+		"eslint-typegen": "^0.3.1",
+		"globals": "^15.9.0",
+		"husky": "^9.1.4",
+		"lint-staged": "^15.2.9",
+		"pkg-pr-new": "^0.0.20",
+		"prettier": "^3.3.3",
+		"publint": "^0.2.10",
+		"size-limit": "^11.1.4",
+		"terser": "^5.31.6",
+		"tsup": "^8.2.4",
+		"typescript": "5.5.4",
+		"typescript-eslint": "^8.1.0"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://registry.npmjs.org/",
+		"provenance": true
+	},
+	"exports": {
+		".": {
+			"import": "./dist/esm/min/index.js",
+			"require": "./dist/cjs/index.cjs"
+		},
+		"./[*]": {
+			"import": "./dist/esm/min/[*]/index.js",
+			"require": "./dist/cjs/[*]/index.cjs"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"size-limit": [
+		{
+			"path": "./src/[*]",
+			"limit": "[*] kb"
+		}
+	],
+	"sideEffects": false,
+	"keywords": [],
+	"engines": {
+		"node": ">=[*].x"
+	}
+}

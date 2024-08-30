@@ -1,0 +1,16 @@
+{
+	/* Extend Base tsconfig settings from:
+	 *LINK: https://github.com/zayne-labs/tsconfig
+	 */
+	"extends": "@zayne-labs/tsconfig/bundler/dom/library",
+
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["src/*"]
+		}
+	},
+
+	"exclude": ["dist", "node_modules"],
+	"include": ["src/**/*.ts", "src/**/*.tsx"]
+}
