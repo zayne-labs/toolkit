@@ -43,8 +43,9 @@ jobs:
          - name: Create Release Pull Request or Publish to npm
            uses: changesets/action@v1
            with:
-              commit: "ci: update package version"
-              title: "ci: update package version"
+              commit: "[ci]: update package version"
+              title: "[ci]: update package version"
+              description: "Changeset automated publish and release flow"
               publish: pnpm release
 
            env:
