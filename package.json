@@ -1,32 +1,33 @@
 {
-	"name": "[*]",
+	"name": "@zayne-labs/toolkit",
 	"version": "0.0.0",
 	"type": "module",
-	"description": "[*]",
+	"description": "A collection of utility functions, types and composables used by my other projects. Nothing too fancy but can be useful.",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/[*].git"
+		"url": "https://github.com/zayne-labs/toolkit.git"
 	},
-	"main": "./dist/esm/min/index.js",
-	"module": "./dist/esm/min/index.js",
-	"types": "./dist/esm/min/index.d.ts",
-	"homepage": "https://github.com/[*]#readme",
+	"main": "./dist/min/core/index.js",
+	"module": "./dist/min/core/index.js",
+	"types": "./dist/min/core/index.d.ts",
+	"homepage": "https://github.com/zayne-labs/toolkit#readme",
 	"bugs": {
-		"url": "https://github.com/[*]/issues"
+		"url": "https://github.com/zayne-labs/toolkit/issues"
 	},
 	"license": "MIT",
-	"author": "[*]",
+	"author": "Ryan Zayne",
 	"scripts": {
+		"prepare": "husky",
 		"test:check-types": "tsc --pretty --incremental -p tsconfig.json",
 		"test:format": "prettier --cache --write .",
 		"test:lint": "eslint src/**/*.ts --cache --max-warnings 0 --report-unused-disable-directives",
 		"test:size": "size-limit",
 		"test:publint": "publint --strict .",
-		"test:attw": "attw --pack . --exclude-entrypoints utils",
+		"test:attw": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
 		"test:release": "pkg-pr-new publish",
 		"build": "tsup",
 		"build:dev": "tsup --watch",
-		"build:test": "concurrently --prefix-colors \"yellow.bold,#7da4f8.bold,magenta\" --names PUBLINT,TSUP,ATTW 'pnpm:test:publint' 'pnpm:build:dev' 'pnpm:test:attw'",
+		"build:test": "concurrently --prefix-colors \"yellow.bold,#7da4f8.bold,magenta\" --names PUBLINT,TSUP,ATTW 'pnpm:test:publint' 'pnpm:build:dev'",
 		"version-package": "changeset version",
 		"release": "changeset publish",
 		"inspect:eslint-config": "pnpx @eslint/config-inspector@latest"
@@ -34,30 +35,45 @@
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.15.4",
 		"@changesets/cli": "^2.27.7",
-		"@eslint/js": "^9.9.0",
+		"@eslint/js": "^9.9.1",
 		"@size-limit/esbuild-why": "^11.1.4",
 		"@size-limit/preset-small-lib": "^11.1.4",
-		"@stylistic/eslint-plugin": "^2.6.4",
+		"@stylistic/eslint-plugin": "^2.7.2",
 		"@zayne-labs/tsconfig": "^0.1.1",
 		"concurrently": "^8.2.2",
-		"eslint": "^9.9.0",
-		"eslint-plugin-import-x": "^3.1.0",
+		"eslint": "^9.9.1",
+		"eslint-plugin-import-x": "^4.1.1",
 		"eslint-plugin-jsdoc": "^50.2.2",
-		"eslint-plugin-perfectionist": "^3.2.0",
-		"eslint-plugin-sonarjs": "^1.0.4",
+		"eslint-plugin-perfectionist": "^3.3.0",
 		"eslint-plugin-unicorn": "^55.0.0",
 		"eslint-typegen": "^0.3.1",
 		"globals": "^15.9.0",
-		"husky": "^9.1.4",
-		"lint-staged": "^15.2.9",
-		"pkg-pr-new": "^0.0.20",
+		"husky": "^9.1.5",
+		"lint-staged": "^15.2.10",
+		"pkg-pr-new": "^0.0.23",
 		"prettier": "^3.3.3",
 		"publint": "^0.2.10",
 		"size-limit": "^11.1.4",
 		"terser": "^5.31.6",
 		"tsup": "^8.2.4",
 		"typescript": "5.5.4",
-		"typescript-eslint": "^8.1.0"
+		"typescript-eslint": "^8.3.0"
+	},
+	"peerDependencies": {
+		"@types/react": ">=18.0.0",
+		"react": ">=18.0.0",
+		"sonner": ">=1.5.0"
+	},
+	"peerDependenciesMeta": {
+		"@types/react": {
+			"optional": true
+		},
+		"react": {
+			"optional": true
+		},
+		"sonner": {
+			"optional": true
+		}
 	},
 	"publishConfig": {
 		"access": "public",
@@ -65,27 +81,31 @@
 		"provenance": true
 	},
 	"exports": {
-		".": {
-			"import": "./dist/esm/min/index.js",
-			"require": "./dist/cjs/index.cjs"
-		},
-		"./[*]": {
-			"import": "./dist/esm/min/[*]/index.js",
-			"require": "./dist/cjs/[*]/index.cjs"
-		}
+		".": "./dist/min/core/index.js",
+		"./react": "./dist/min/react/index.js",
+		"./type-helpers": "./dist/min/type-helpers/index.js"
 	},
 	"files": [
 		"dist"
 	],
 	"size-limit": [
 		{
-			"path": "./src/[*]",
-			"limit": "[*] kb"
+			"path": "./src/core/index.ts",
+			"limit": "3 kb"
+		},
+		{
+			"path": "./src/react/index.ts",
+			"limit": "4.5 kb"
+		},
+		{
+			"path": "./src/type-helpers/index.ts",
+			"limit": "500 b"
 		}
 	],
 	"sideEffects": false,
 	"keywords": [],
+	"packageManager": "pnpm@9.9.0",
 	"engines": {
-		"node": ">=[*].x"
+		"node": ">=18.x"
 	}
 }

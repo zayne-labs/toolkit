@@ -6,7 +6,6 @@ import eslintStylistic from "@stylistic/eslint-plugin";
 import eslintImportX from "eslint-plugin-import-x";
 import eslintJsdoc from "eslint-plugin-jsdoc";
 import eslintPerfectionist from "eslint-plugin-perfectionist";
-import eslintSonarJs from "eslint-plugin-sonarjs";
 import eslintUnicorn from "eslint-plugin-unicorn";
 import typegen from "eslint-typegen";
 import globals from "globals";
@@ -311,21 +310,14 @@ const eslintConfigArray = augumentedTypegen([
 					type: "alphabetical",
 				},
 			],
-			"perfectionist/sort-intersection-types": [
-				"warn",
-				{
-					order: "asc",
-					type: "natural",
-				},
-			],
-			"perfectionist/sort-jsx-props": [
-				"warn",
-				{
-					// ignorePattern: ["src"],
-					order: "asc",
-					type: "alphabetical",
-				},
-			],
+			// "perfectionist/sort-jsx-props": [
+			// 	"warn",
+			// 	{
+			// 		// ignorePattern: ["src"],
+			// 		order: "asc",
+			// 		type: "alphabetical",
+			// 	},
+			// ],
 			"perfectionist/sort-maps": [
 				"warn",
 				{
@@ -354,13 +346,13 @@ const eslintConfigArray = augumentedTypegen([
 					type: "alphabetical",
 				},
 			],
-			"perfectionist/sort-union-types": [
-				"warn",
-				{
-					order: "asc",
-					type: "alphabetical",
-				},
-			],
+			// "perfectionist/sort-union-types": [
+			// 	"warn",
+			// 	{
+			// 		order: "asc",
+			// 		type: "alphabetical",
+			// 	},
+			// ],
 			"perfectionist/sort-variable-declarations": [
 				"warn",
 				{
@@ -447,15 +439,15 @@ const eslintConfigArray = augumentedTypegen([
 		},
 	},
 
-	// == Sonarjs Rules (Optional)
-	{ ...eslintSonarJs.configs.recommended, name: "sonarjs/recommended" },
-	{
-		name: "zayne/sonarjs",
-		rules: {
-			"sonarjs/no-duplicate-string": "off",
-			"sonarjs/prefer-immediate-return": "off",
-		},
-	},
+	// // == Sonarjs Rules (Optional)
+	// { ...eslintSonarJs.configs.recommended, name: "sonarjs/recommended" },
+	// {
+	// 	name: "zayne/sonarjs",
+	// 	rules: {
+	// 		"sonarjs/no-duplicate-string": "off",
+	// 		"sonarjs/prefer-immediate-return": "off",
+	// 	},
+	// },
 ]);
 
 export default eslintConfigArray;

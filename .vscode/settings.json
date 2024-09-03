@@ -13,5 +13,6 @@
 	"editor.codeActionsOnSave": {
 		"source.addMissingImports": "never",
 		"source.organizeImports.biome": "explicit"
-	}
+	},
+	"cSpell.words": ["Abramov"]
 }

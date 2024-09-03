@@ -6,44 +6,28 @@ export default defineConfig((options) => {
 	const sharedOptions = {
 		clean: true, // clean up dist folder,
 		dts: true, // generate d.ts
-		sourcemap: !isDevMode,
-		tsconfig: "tsconfig.json",
-	} satisfies Options;
-
-	const sharedESMOptions = {
+		entry: ["src/core/index.ts", "src/react/index.ts", "src/type-helpers/index.ts"],
 		format: ["esm"],
 		platform: "browser",
+		sourcemap: !isDevMode,
 		splitting: true,
 		target: "esnext",
 		treeshake: true,
+		tsconfig: "tsconfig.json",
 	} satisfies Options;
 
 	return [
 		{
 			...sharedOptions,
-			...sharedESMOptions,
-			entry: ["src/index.ts"],
 			name: "ESM",
-			outDir: "./dist/esm",
+			outDir: "./dist",
 		},
 
 		{
 			...sharedOptions,
-			...sharedESMOptions,
-			entry: ["src/index.ts"],
-			name: "ESM-MIN",
-			outDir: "./dist/esm/min",
 			minify: "terser",
-		},
-
-		// Remove if you don't need to support cjs
-		{
-			...sharedOptions,
-			entry: ["src/index.ts"],
-			format: ["cjs"],
-			name: "CJS",
-			outDir: "./dist/cjs",
-			platform: "neutral",
+			name: "ESM-MIN",
+			outDir: "./dist/min",
 		},
 	];
 });
