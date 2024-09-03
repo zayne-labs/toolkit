@@ -45,7 +45,6 @@ jobs:
            with:
               commit: "[ci]: update package version"
               title: "[ci]: update package version"
-              description: "Changeset automated publish and release flow"
               publish: pnpm release
 
            env:
