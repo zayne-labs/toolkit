@@ -3,8 +3,8 @@
 
 type ParseJSON = {
 	<TResult>(value: string): TResult;
-	<TResult>(value: string | undefined | null): TResult | null;
-	<TResult>(value: string | undefined | null, defaultValue: TResult): TResult;
+	<TResult>(value: string | null | undefined): TResult | null;
+	<TResult>(value: string | null | undefined, defaultValue: TResult): TResult;
 };
 
 // Implementation

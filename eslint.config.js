@@ -268,28 +268,14 @@ const eslintConfigArray = augumentedTypegen([
 		name: "zayne/perfectionist/alphabetical",
 		plugins: { perfectionist: eslintPerfectionist },
 		rules: {
-			// "perfectionist/sort-astro-attributes": [
-			// 	"warn",
-			// 	{
-			// 		order: "asc",
-			// 		type: "alphabetical",
-			// 	},
-			// ],
-			// 	"perfectionist/sort-svelte-attributes": [
-			// 	"warn",
-			// 	{
-			// 		order: "asc",
-			// 		type: "alphabetical",
-			// 	},
-			// ],
-			// "perfectionist/sort-vue-attributes": [
-			// 	"warn",
-			// 	{
-			// 		order: "asc",
-			// 		type: "alphabetical",
-			// 	},
-			// ],
 			"perfectionist/sort-array-includes": [
+				"warn",
+				{
+					order: "asc",
+					type: "alphabetical",
+				},
+			],
+			"perfectionist/sort-astro-attributes": [
 				"warn",
 				{
 					order: "asc",
@@ -310,14 +296,21 @@ const eslintConfigArray = augumentedTypegen([
 					type: "alphabetical",
 				},
 			],
-			// "perfectionist/sort-jsx-props": [
+			// "perfectionist/sort-intersection-types": [
 			// 	"warn",
 			// 	{
-			// 		// ignorePattern: ["src"],
 			// 		order: "asc",
 			// 		type: "alphabetical",
 			// 	},
 			// ],
+			"perfectionist/sort-jsx-props": [
+				"warn",
+				{
+					// ignorePattern: ["src"],
+					order: "asc",
+					type: "alphabetical",
+				},
+			],
 			"perfectionist/sort-maps": [
 				"warn",
 				{
@@ -339,6 +332,13 @@ const eslintConfigArray = augumentedTypegen([
 					type: "alphabetical",
 				},
 			],
+			"perfectionist/sort-svelte-attributes": [
+				"warn",
+				{
+					order: "asc",
+					type: "alphabetical",
+				},
+			],
 			"perfectionist/sort-switch-case": [
 				"warn",
 				{
@@ -346,14 +346,35 @@ const eslintConfigArray = augumentedTypegen([
 					type: "alphabetical",
 				},
 			],
-			// "perfectionist/sort-union-types": [
-			// 	"warn",
-			// 	{
-			// 		order: "asc",
-			// 		type: "alphabetical",
-			// 	},
-			// ],
+			"perfectionist/sort-union-types": [
+				"warn",
+				{
+					groups: [
+						"conditional",
+						"literal",
+						"import",
+						"intersection",
+						"keyword",
+						"tuple",
+						"named",
+						"object",
+						"function",
+						"operator",
+						"union",
+						"nullish",
+					],
+					order: "asc",
+					type: "alphabetical",
+				},
+			],
 			"perfectionist/sort-variable-declarations": [
+				"warn",
+				{
+					order: "asc",
+					type: "alphabetical",
+				},
+			],
+			"perfectionist/sort-vue-attributes": [
 				"warn",
 				{
 					order: "asc",

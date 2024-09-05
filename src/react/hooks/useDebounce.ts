@@ -1,7 +1,7 @@
 import { debounce } from "@/core/debounce";
 import type { CallbackFn } from "@/type-helpers";
 import { useState } from "react";
-import { useOnUnmountEffect } from "./effects/useUnmountEffect";
+import { useOnUnmountEffect } from "./effects/useOnUnMountEffect";
 import { useCallbackRef } from "./useCallbackRef";
 import { useConstant } from "./useConstant";
 

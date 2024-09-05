@@ -10,7 +10,7 @@ export type StorageOptions<TState> = {
 	parser?: (value: unknown) => TState;
 	shouldSyncAcrossTabs?: boolean;
 	storageArea?: "localStorage" | "sessionStorage";
-	stringifier?: (object: null | TState) => string;
+	stringifier?: (object: TState | null) => string;
 };
 
 type UpdateStateFn<TState, TResult = Partial<TState> | null> = {
