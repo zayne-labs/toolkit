@@ -97,15 +97,15 @@
 	],
 	"size-limit": [
 		{
-			"path": "./dist/min/core/index.js",
+			"path": "./src/core/index.ts",
 			"limit": "3 kb"
 		},
 		{
-			"path": "./dist/min/react/index.js",
+			"path": "./src/react/index.ts",
 			"limit": "5 kb"
 		},
 		{
-			"path": "./dist/min/type-helpers/index.js",
+			"path": "./src/type-helpers/index.ts",
 			"limit": "500 b"
 		}
 	],
