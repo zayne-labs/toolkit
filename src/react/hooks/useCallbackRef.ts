@@ -7,7 +7,7 @@ import { useCallback, useLayoutEffect, useRef } from "react";
  * @returns a stable function that always points to the latest version of the callback function
  */
 
-const useCallbackRef = <TCallback extends AnyFunction>(callbackFn: TCallback | undefined) => {
+const useCallbackRef = <TCallback = AnyFunction>(callbackFn: TCallback | undefined) => {
 	const callbackRef = useRef(callbackFn);
 
 	useLayoutEffect(() => {
@@ -15,8 +15,9 @@ const useCallbackRef = <TCallback extends AnyFunction>(callbackFn: TCallback | u
 		callbackRef.current = callbackFn;
 	}, [callbackFn]);
 
+	/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 	const savedCallback = useCallback(
-		(...params: Parameters<TCallback>) => callbackRef.current?.(...params) as unknown,
+		(...params: unknown[]) => (callbackRef.current as AnyFunction)?.(...params) as unknown,
 		[]
 	);
 

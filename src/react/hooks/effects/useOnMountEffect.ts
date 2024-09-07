@@ -1,9 +1,7 @@
-import { useEffectOnce } from "./useEffectOnce";
+import { useLifeCycle } from "./useLifeCycle";
 
 const useMountEffect = (callBackFn: () => void) => {
-	useEffectOnce(() => {
-		callBackFn();
-	});
+	useLifeCycle({ onMount: callBackFn });
 };
 
 export { useMountEffect };

@@ -20,7 +20,11 @@ const createLocationStore = <TLocationSlice = LocationState>(options: LocationSt
 		state: isBrowser() ? (window.history.state as LocationState["state"]) : null,
 	};
 
+	const initialState = locationState;
+
 	const getState = () => locationState;
+
+	const getInitialState = () => initialState;
 
 	const { equalityFn = Object.is } = options;
 
@@ -92,6 +96,7 @@ const createLocationStore = <TLocationSlice = LocationState>(options: LocationSt
 	};
 
 	const locationStore = {
+		getInitialState,
 		getState,
 		push,
 		replace,

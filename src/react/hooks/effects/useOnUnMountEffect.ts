@@ -1,7 +1,5 @@
-import { useEffectOnce } from "./useEffectOnce";
+import { type Destructor, useLifeCycle } from "./useLifeCycle";
 
-type Destructor = ReturnType<React.EffectCallback>;
-
-const useOnUnmountEffect = (cleanUpFn: Destructor) => useEffectOnce(() => cleanUpFn);
+const useOnUnmountEffect = (cleanUpFn: Destructor) => useLifeCycle({ onUnmount: cleanUpFn });
 
 export { useOnUnmountEffect };

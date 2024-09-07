@@ -1,22 +1,23 @@
 import { useEffect } from "react";
 import { useCallbackRef } from "../useCallbackRef";
 
+export type Destructor = ReturnType<React.EffectCallback>;
+
 type LifeCycleOptions = {
-	onMount: () => void;
-	onUnmount?: () => void;
+	onMount?: () => void;
+	onUnmount?: Destructor;
 };
 
 const useLifeCycle = ({ onMount, onUnmount }: LifeCycleOptions) => {
-	const savedOnMount = useCallbackRef(onMount);
-	const savedOnUnmount = useCallbackRef(onUnmount);
+	const stableOnMount = useCallbackRef(onMount);
+	const stableOnUnmount = useCallbackRef(onUnmount);
 
 	useEffect(() => {
-		savedOnMount();
+		stableOnMount();
 
-		return () => {
-			savedOnUnmount();
-		};
-	}, [savedOnMount, savedOnUnmount]);
+		return stableOnUnmount;
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 };
 
 export { useLifeCycle };

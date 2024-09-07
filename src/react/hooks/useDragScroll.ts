@@ -101,7 +101,8 @@ const useDragScroll = <TElement extends HTMLElement>(options: DragScrollOptions 
 
 		const cleanup = on("mousedown", dragContainerRef.current, handleMouseDown);
 
-		return () => cleanup();
+		return cleanup;
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const dragScrollProps = {

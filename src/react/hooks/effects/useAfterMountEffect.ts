@@ -3,7 +3,7 @@ import { useCallbackRef } from "../useCallbackRef";
 
 const useAfterMountEffect: typeof useEffect = (callBackFn, deps) => {
 	const isFirstMount = useRef(true);
-	const savedCallback = useCallbackRef(callBackFn);
+	const stableCallback = useCallbackRef(callBackFn);
 
 	useEffect(() => {
 		if (isFirstMount.current) {
@@ -11,7 +11,8 @@ const useAfterMountEffect: typeof useEffect = (callBackFn, deps) => {
 			return;
 		}
 
-		savedCallback();
+		stableCallback();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, deps);
 };
 export { useAfterMountEffect };
