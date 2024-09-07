@@ -3,7 +3,7 @@ import type { SelectorFn } from "@/type-helpers";
 import { useDebugValue, useSyncExternalStore } from "react";
 
 const useStore = <TState, TSlice>(
-	store: NoInfer<StoreApi<TState, TSlice>>,
+	store: StoreApi<TState, TSlice>,
 	selector: SelectorFn<TState, TSlice>
 ) => {
 	const slice = useSyncExternalStore(

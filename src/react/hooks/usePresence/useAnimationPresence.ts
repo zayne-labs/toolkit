@@ -18,6 +18,7 @@ const useAnimationPresence: UseSpecificPresence = (defaultValue = true, options 
 
 	useEffect(() => {
 		!isMounted && stableOnExitComplete();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isMounted]);
 
 	const handleIsMountedWithoutRef = (value: boolean) => {

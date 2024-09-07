@@ -13,7 +13,7 @@ export type NonEmptyArray<TArrayItem> = [TArrayItem, ...TArrayItem[]];
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // == `Any` is required here so that one can pass custom function type without type errors
-export type AnyFunction = (...args: any[]) => any;
+export type AnyFunction = { _: (...args: any[]) => any }["_"];
 
 export type AnyAsyncFunction = (...args: any[]) => Promise<any>;
 
@@ -26,4 +26,5 @@ export type AnyString = string & { _ignore?: never };
 
 export type AnyNumber = number & { _ignore?: never };
 
+// eslint-disable-next-line perfectionist/sort-union-types
 export type LiteralUnion<TUnion extends TBase, TBase = string> = TUnion | (TBase & { _ignore?: never });

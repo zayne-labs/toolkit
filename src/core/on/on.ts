@@ -2,15 +2,15 @@ import { isArray, isString } from "@/type-helpers";
 import type {
 	AddEventParams,
 	ElementOrSelectorArray,
-	ElementOrSelectorSingle,
-	ElementOrSelectorSingleOrArray,
+	OFF,
 	ON,
+	PossibleNodes,
 	RegisterConfig,
 } from "./types";
 
-type UnknownFn = (...args: unknown[]) => void;
+type EventListenerFn = (event: Event) => void;
 
-const registerSingle = (element: ElementOrSelectorSingle<null>, config: RegisterConfig) => {
+const registerSingle = (element: PossibleNodes, config: RegisterConfig) => {
 	const { event, listener, options, type } = config;
 
 	const actionType = type === "add" ? "addEventListener" : "removeEventListener";
@@ -23,15 +23,15 @@ const registerSingle = (element: ElementOrSelectorSingle<null>, config: Register
 	if (isString(element)) {
 		const nodeList = document.querySelectorAll<HTMLElement>(element);
 
-		nodeList.forEach((node) => node[actionType](event, listener as UnknownFn, options));
+		nodeList.forEach((node) => node[actionType](event, listener as EventListenerFn, options));
 
 		return;
 	}
 
-	element[actionType](event, listener as UnknownFn, options);
+	element[actionType](event, listener as EventListenerFn, options);
 };
 
-const registerMultiple = (elementArray: ElementOrSelectorArray<null>, config: RegisterConfig) => {
+const registerMultiple = (elementArray: ElementOrSelectorArray, config: RegisterConfig) => {
 	if (elementArray.length === 0) {
 		console.error("ElementArray is empty!");
 		return;
@@ -42,7 +42,7 @@ const registerMultiple = (elementArray: ElementOrSelectorArray<null>, config: Re
 	}
 };
 
-const register = (element: ElementOrSelectorSingleOrArray<null>, config: RegisterConfig) => {
+const register = (element: ElementOrSelectorArray | PossibleNodes, config: RegisterConfig) => {
 	if (isArray(element)) {
 		registerMultiple(element, config);
 
@@ -52,19 +52,17 @@ const register = (element: ElementOrSelectorSingleOrArray<null>, config: Registe
 	registerSingle(element, config);
 };
 
-const on: ON = (...params: AddEventParams) => {
+export const on: ON = (...params: AddEventParams) => {
 	const [event, element, listener, options] = params;
 
-	const boundListener = () => (listener as UnknownFn).apply(element, [event, cleanup]);
-
 	const attach = () => {
-		register(element, { event, listener: boundListener, options, type: "add" });
+		register(element, { event, listener, options, type: "add" });
 
 		return cleanup;
 	};
 
 	const cleanup = () => {
-		register(element, { event, listener: boundListener, options, type: "remove" });
+		register(element, { event, listener, options, type: "remove" });
 
 		return attach;
 	};
@@ -72,4 +70,8 @@ const on: ON = (...params: AddEventParams) => {
 	return attach();
 };
 
-export { on };
+export const off: OFF = (...params: AddEventParams) => {
+	const [event, element, listener, options] = params;
+
+	register(element, { event, listener, options, type: "remove" });
+};

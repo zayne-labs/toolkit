@@ -1,20 +1,13 @@
-import type { CallbackFn } from "@/type-helpers";
+import type { AnyFunction } from "@/type-helpers";
 import { useCallback, useLayoutEffect, useRef } from "react";
-
-function useCallbackRef<TParams, TResult>(
-	callbackFn: CallbackFn<TParams, TResult>
-): (...params: TParams[]) => TResult;
-
-function useCallbackRef<TParams, TResult>(
-	callbackFn: CallbackFn<TParams, TResult> | undefined
-): (...params: TParams[]) => TResult | undefined;
 
 /**
  * Returns a stable function that always points to the latest version of the callback function.
  * @param callbackFn - The function to reference
  * @returns a stable function that always points to the latest version of the callback function
  */
-function useCallbackRef<TParams, TResult>(callbackFn: CallbackFn<TParams, TResult> | undefined) {
+
+const useCallbackRef = <TCallback = AnyFunction>(callbackFn: TCallback | undefined) => {
 	const callbackRef = useRef(callbackFn);
 
 	useLayoutEffect(() => {
@@ -22,9 +15,13 @@ function useCallbackRef<TParams, TResult>(callbackFn: CallbackFn<TParams, TResul
 		callbackRef.current = callbackFn;
 	}, [callbackFn]);
 
-	const savedCallback = useCallback((...params: TParams[]) => callbackRef.current?.(...params), []);
+	/* eslint-disable @typescript-eslint/no-unnecessary-condition */
+	const savedCallback = useCallback(
+		(...params: unknown[]) => (callbackRef.current as AnyFunction)?.(...params) as unknown,
+		[]
+	);
 
-	return savedCallback;
-}
+	return savedCallback as TCallback;
+};
 
 export { useCallbackRef };

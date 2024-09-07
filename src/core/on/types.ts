@@ -1,65 +1,84 @@
 import type { NonEmptyArray } from "@/type-helpers";
 
-export type ElementOrSelectorSingle<TOptional = never> =
-	| Document
-	| HTMLElement
-	| MediaQueryList
-	| string
-	| TOptional
-	| Window;
+export type PossibleNodes = string | Document | HTMLElement | MediaQueryList | Window | null;
 
-export type ElementOrSelectorArray<TOptional = never> = NonEmptyArray<ElementOrSelectorSingle<TOptional>>;
+export type ElementOrSelector = string | HTMLElement | null;
 
-export type ElementOrSelectorSingleOrArray<TOptional = never> =
-	| ElementOrSelectorArray<TOptional>
-	| ElementOrSelectorSingle<TOptional>;
+export type ElementOrSelectorArray = NonEmptyArray<ElementOrSelector>;
 
-type Listener<TEvent extends keyof TNodeEventMap, TNode, TNodeEventMap> = (
-	this: TNode,
-	event: TNodeEventMap[TEvent],
-	cleanup: () => () => void
-) => void;
+type Listener<
+	TEvent extends keyof TNodeEventMap,
+	TNode,
+	TNodeEventMap,
+	TType extends "add" | "remove",
+> = TType extends "add"
+	? (this: TNode, event: TNodeEventMap[TEvent], cleanup: () => () => void) => void
+	: (this: TNode, event: TNodeEventMap[TEvent]) => void;
 
-export type AddHtmlEvents<TEvent extends keyof HTMLElementEventMap = keyof HTMLElementEventMap> = [
+export type AddHtmlEvents<
+	TEvent extends keyof HTMLElementEventMap = keyof HTMLElementEventMap,
+	TType extends "add" | "remove" = "add",
+> = [
 	event: TEvent,
-	element: ElementOrSelectorSingleOrArray<null>,
-	listener: Listener<TEvent, HTMLElement, HTMLElementEventMap>,
-	options?: AddEventListenerOptions | boolean,
+	element: ElementOrSelector | ElementOrSelectorArray,
+	listener: Listener<TEvent, HTMLElement, HTMLElementEventMap, TType>,
+	options?: boolean | AddEventListenerOptions,
 ];
 
-export type AddWindowEvents<TEvent extends keyof WindowEventMap = keyof WindowEventMap> = [
+export type AddWindowEvents<
+	TEvent extends keyof WindowEventMap = keyof WindowEventMap,
+	TType extends "add" | "remove" = "add",
+> = [
 	event: TEvent,
 	element: Window,
-	listener: Listener<TEvent, Window, WindowEventMap>,
-	options?: AddEventListenerOptions | boolean,
+	listener: Listener<TEvent, Window, WindowEventMap, TType>,
+	options?: boolean | AddEventListenerOptions,
 ];
 
-export type AddDocumentEvents<TEvent extends keyof DocumentEventMap = keyof DocumentEventMap> = [
+export type AddDocumentEvents<
+	TEvent extends keyof DocumentEventMap = keyof DocumentEventMap,
+	TType extends "add" | "remove" = "add",
+> = [
 	event: TEvent,
 	element: Document,
-	listener: Listener<TEvent, Document, DocumentEventMap>,
-	options?: AddEventListenerOptions | boolean,
+	listener: Listener<TEvent, Document, DocumentEventMap, TType>,
+	options?: boolean | AddEventListenerOptions,
 ];
 
-export type AddMediaEvents<TEvent extends keyof MediaQueryListEventMap = keyof MediaQueryListEventMap> = [
+export type AddMediaEvents<
+	TEvent extends keyof MediaQueryListEventMap = keyof MediaQueryListEventMap,
+	TType extends "add" | "remove" = "add",
+> = [
 	event: TEvent,
 	element: MediaQueryList,
-	listener: Listener<TEvent, MediaQueryList, MediaQueryListEventMap>,
-	options?: AddEventListenerOptions | boolean,
+	listener: Listener<TEvent, MediaQueryList, MediaQueryListEventMap, TType>,
+	options?: boolean | AddEventListenerOptions,
 ];
 
-export type AddEventParams = AddDocumentEvents | AddHtmlEvents | AddMediaEvents | AddWindowEvents;
+/* eslint-disable perfectionist/sort-object-types */
+
+// eslint-disable-next-line perfectionist/sort-union-types
+export type AddEventParams = AddHtmlEvents | AddMediaEvents | AddWindowEvents | AddDocumentEvents;
+
+export type RegisterConfig = {
+	event: string;
+	listener: AddDocumentEvents[2] | AddHtmlEvents[2] | AddMediaEvents[2] | AddWindowEvents[2];
+	// TODO: Work on finding as way to add this in future, probably by attaching the cleanup fb to the event object
+	cleanup?: () => () => void;
+	options?: boolean | AddEventListenerOptions;
+	type: "add" | "remove";
+};
 
 export type ON = {
-	<TEvent extends keyof DocumentEventMap>(...params: AddDocumentEvents<TEvent>): () => void;
 	<TEvent extends keyof HTMLElementEventMap>(...params: AddHtmlEvents<TEvent>): () => void;
+	<TEvent extends keyof DocumentEventMap>(...params: AddDocumentEvents<TEvent>): () => void;
 	<TEvent extends keyof MediaQueryListEventMap>(...params: AddMediaEvents<TEvent>): () => void;
 	<TEvent extends keyof WindowEventMap>(...params: AddWindowEvents<TEvent>): () => void;
 };
 
-export type RegisterConfig = {
-	event: string;
-	listener: AddHtmlEvents[2] | AddWindowEvents[2];
-	options?: AddEventListenerOptions | boolean;
-	type: "add" | "remove";
+export type OFF = {
+	<TEvent extends keyof HTMLElementEventMap>(...params: AddHtmlEvents<TEvent, "remove">): void;
+	<TEvent extends keyof DocumentEventMap>(...params: AddDocumentEvents<TEvent, "remove">): void;
+	<TEvent extends keyof MediaQueryListEventMap>(...params: AddMediaEvents<TEvent, "remove">): void;
+	<TEvent extends keyof WindowEventMap>(...params: AddWindowEvents<TEvent, "remove">): void;
 };

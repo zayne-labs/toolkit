@@ -1,7 +1,4 @@
-import {
-	type StorageOptions,
-	createExternalStorageStore,
-} from "@/core/createExternalStore/new-implementation";
+import { type StorageOptions, createExternalStorageStore } from "@/core/createExternalStore";
 import type { SelectorFn } from "@/type-helpers";
 import { useConstant } from "./useConstant";
 import { useStore } from "./useStore";

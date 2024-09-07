@@ -26,8 +26,8 @@ const debounce = <TParams>(
 	delay: number | undefined,
 	options: DebounceOptions = {}
 ) => {
-	let timeoutId: null | number;
-	let maxWaitTimeoutId: null | number;
+	let timeoutId: number | null;
+	let maxWaitTimeoutId: number | null;
 
 	const $clearMainTimeout = (): void => void (timeoutId && window.clearTimeout(timeoutId));
 

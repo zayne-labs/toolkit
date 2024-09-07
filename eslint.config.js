@@ -1,11 +1,13 @@
-/* eslint-disable jsdoc/check-tag-names */
 /// <reference path="./eslint-typegen.d.ts" />
 
+import eslintReact from "@eslint-react/eslint-plugin";
+import { fixupPluginRules } from "@eslint/compat";
 import eslintJs from "@eslint/js";
 import eslintStylistic from "@stylistic/eslint-plugin";
 import eslintImportX from "eslint-plugin-import-x";
 import eslintJsdoc from "eslint-plugin-jsdoc";
 import eslintPerfectionist from "eslint-plugin-perfectionist";
+import eslintReactHooks from "eslint-plugin-react-hooks";
 import eslintUnicorn from "eslint-plugin-unicorn";
 import typegen from "eslint-typegen";
 import globals from "globals";
@@ -28,12 +30,14 @@ const augumentedTypegen = (...args) => typegen(...args);
 const eslintConfigArray = augumentedTypegen([
 	// == Global Options
 	{
-		ignores: ["dist/**", "build/**", "eslint-typegen.d.ts", "config/**"],
+		ignores: ["dist/**", "build/**", "eslint-typegen.d.ts", "config/**", "eslint.config.js"],
 		name: "zayne/defaults/ignores",
 	},
 
 	{
 		languageOptions: {
+			ecmaVersion: "latest",
+
 			globals: {
 				...globals.browser,
 				...globals.node,
@@ -44,6 +48,8 @@ const eslintConfigArray = augumentedTypegen([
 				project: "config/tsconfig.eslint.json",
 				tsconfigRootDir: import.meta.dirname,
 			},
+
+			sourceType: "module",
 		},
 
 		name: "zayne/defaults/languageOptions",
@@ -268,28 +274,14 @@ const eslintConfigArray = augumentedTypegen([
 		name: "zayne/perfectionist/alphabetical",
 		plugins: { perfectionist: eslintPerfectionist },
 		rules: {
-			// "perfectionist/sort-astro-attributes": [
-			// 	"warn",
-			// 	{
-			// 		order: "asc",
-			// 		type: "alphabetical",
-			// 	},
-			// ],
-			// 	"perfectionist/sort-svelte-attributes": [
-			// 	"warn",
-			// 	{
-			// 		order: "asc",
-			// 		type: "alphabetical",
-			// 	},
-			// ],
-			// "perfectionist/sort-vue-attributes": [
-			// 	"warn",
-			// 	{
-			// 		order: "asc",
-			// 		type: "alphabetical",
-			// 	},
-			// ],
 			"perfectionist/sort-array-includes": [
+				"warn",
+				{
+					order: "asc",
+					type: "alphabetical",
+				},
+			],
+			"perfectionist/sort-astro-attributes": [
 				"warn",
 				{
 					order: "asc",
@@ -310,14 +302,21 @@ const eslintConfigArray = augumentedTypegen([
 					type: "alphabetical",
 				},
 			],
-			// "perfectionist/sort-jsx-props": [
+			// "perfectionist/sort-intersection-types": [
 			// 	"warn",
 			// 	{
-			// 		// ignorePattern: ["src"],
 			// 		order: "asc",
 			// 		type: "alphabetical",
 			// 	},
 			// ],
+			"perfectionist/sort-jsx-props": [
+				"warn",
+				{
+					// ignorePattern: ["src"],
+					order: "asc",
+					type: "alphabetical",
+				},
+			],
 			"perfectionist/sort-maps": [
 				"warn",
 				{
@@ -339,6 +338,13 @@ const eslintConfigArray = augumentedTypegen([
 					type: "alphabetical",
 				},
 			],
+			"perfectionist/sort-svelte-attributes": [
+				"warn",
+				{
+					order: "asc",
+					type: "alphabetical",
+				},
+			],
 			"perfectionist/sort-switch-case": [
 				"warn",
 				{
@@ -346,14 +352,35 @@ const eslintConfigArray = augumentedTypegen([
 					type: "alphabetical",
 				},
 			],
-			// "perfectionist/sort-union-types": [
-			// 	"warn",
-			// 	{
-			// 		order: "asc",
-			// 		type: "alphabetical",
-			// 	},
-			// ],
+			"perfectionist/sort-union-types": [
+				"warn",
+				{
+					groups: [
+						"conditional",
+						"literal",
+						"import",
+						"intersection",
+						"keyword",
+						"tuple",
+						"named",
+						"object",
+						"function",
+						"operator",
+						"union",
+						"nullish",
+					],
+					order: "asc",
+					type: "alphabetical",
+				},
+			],
 			"perfectionist/sort-variable-declarations": [
+				"warn",
+				{
+					order: "asc",
+					type: "alphabetical",
+				},
+			],
+			"perfectionist/sort-vue-attributes": [
 				"warn",
 				{
 					order: "asc",
@@ -363,17 +390,49 @@ const eslintConfigArray = augumentedTypegen([
 		},
 	},
 
-	// == Import rules (Important)
+	// == React Rules
 	{
-		languageOptions: {
-			parserOptions: eslintImportX.configs.react.parserOptions,
+		name: "zayne/@eslint-react",
+		plugins: {
+			...eslintReact.configs["recommended-type-checked"].plugins,
+			"react-hooks": fixupPluginRules(eslintReactHooks),
 		},
-		name: "zayne/import-x",
-		plugins: { "import-x": eslintImportX },
 
 		rules: {
-			...eslintImportX.configs.recommended.rules,
-			...eslintImportX.configs.typescript.rules,
+			...eslintReact.configs["recommended-type-checked"].rules,
+			"@eslint-react/avoid-shorthand-boolean": "error",
+			"@eslint-react/function-component-definition": "off",
+			"@eslint-react/hooks-extra/ensure-custom-hooks-using-other-hooks": "error",
+			"@eslint-react/hooks-extra/prefer-use-state-lazy-initialization": "error",
+			"@eslint-react/naming-convention/component-name": "warn",
+			"@eslint-react/naming-convention/use-state": "warn",
+			"@eslint-react/no-array-index-key": "error",
+			"@eslint-react/no-children-count": "off",
+			"@eslint-react/no-children-only": "off",
+			"@eslint-react/no-children-prop": "error",
+			"@eslint-react/no-children-to-array": "off",
+			"@eslint-react/no-clone-element": "off",
+			"@eslint-react/no-missing-component-display-name": "error",
+			"@eslint-react/prefer-destructuring-assignment": "error",
+			"@eslint-react/prefer-read-only-props": "off",
+			"@eslint-react/prefer-shorthand-fragment": "error",
+
+			// Hook rules
+			"react-hooks/exhaustive-deps": "warn",
+			"react-hooks/rules-of-hooks": "error",
+		},
+	},
+
+	// == Import rules (Important)
+	{
+		...eslintImportX.flatConfigs.recommended,
+		...eslintImportX.flatConfigs.typescript,
+		name: "import-x/recommended",
+	},
+	{
+		name: "zayne/import-x",
+
+		rules: {
 			"import-x/export": "error",
 			"import-x/extensions": [
 				"error",
@@ -396,10 +455,6 @@ const eslintConfigArray = augumentedTypegen([
 			"import-x/no-unresolved": "off",
 			"import-x/no-useless-path-segments": ["error", { commonjs: true }],
 			"import-x/prefer-default-export": "off",
-		},
-		settings: {
-			...eslintImportX.configs.typescript.settings,
-			...eslintImportX.configs.react.settings,
 		},
 	},
 
@@ -438,16 +493,6 @@ const eslintConfigArray = augumentedTypegen([
 			"unicorn/prevent-abbreviations": "off",
 		},
 	},
-
-	// // == Sonarjs Rules (Optional)
-	// { ...eslintSonarJs.configs.recommended, name: "sonarjs/recommended" },
-	// {
-	// 	name: "zayne/sonarjs",
-	// 	rules: {
-	// 		"sonarjs/no-duplicate-string": "off",
-	// 		"sonarjs/prefer-immediate-return": "off",
-	// 	},
-	// },
 ]);
 
 export default eslintConfigArray;

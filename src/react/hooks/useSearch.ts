@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAfterMountEffect } from "./effects/useAfterMountEffect";
 import { useDebouncedFn } from "./useDebounce";
 
-const isSerializable = (item: unknown): item is string | number | boolean =>
+const isSerializable = (item: unknown): item is boolean | number | string =>
 	typeof item === "string" || typeof item === "number" || typeof item === "boolean";
 
 const checkObjectPropsForQuery = (item: Record<string, unknown>, query: string): boolean => {
