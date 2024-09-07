@@ -7,9 +7,9 @@
 		"type": "git",
 		"url": "https://github.com/zayne-labs/toolkit.git"
 	},
-	"main": "./dist/min/core/index.js",
-	"module": "./dist/min/core/index.js",
-	"types": "./dist/min/core/index.d.ts",
+	"main": "./dist/esm-min/core/index.js",
+	"module": "./dist/esm-min/core/index.js",
+	"types": "./dist/esm-min/core/index.d.ts",
 	"homepage": "https://github.com/zayne-labs/toolkit#readme",
 	"bugs": {
 		"url": "https://github.com/zayne-labs/toolkit/issues"
@@ -27,7 +27,7 @@
 		"test:release": "pkg-pr-new publish",
 		"build": "tsup",
 		"build:dev": "cross-env NODE_ENV=development tsup",
-		"build:test": "concurrently --prefix-colors \"yellow.bold,#7da4f8.bold,magenta\" --names PUBLINT,TSUP,ATTW 'pnpm:test:publint' 'pnpm:build:dev'",
+		"build:test": "concurrently --prefix-colors \"yellow.bold,#7da4f8.bold,magenta\" --names PUBLINT,TSUP 'pnpm:test:publint' 'pnpm:build:dev'",
 		"version-package": "changeset version",
 		"release": "changeset publish",
 		"inspect:eslint-config": "pnpx @eslint/config-inspector@latest"
@@ -88,9 +88,9 @@
 		"provenance": true
 	},
 	"exports": {
-		".": "./dist/min/core/index.js",
-		"./react": "./dist/min/react/index.js",
-		"./type-helpers": "./dist/min/type-helpers/index.js"
+		".": "./dist/esm-min/core/index.js",
+		"./react": "./dist/esm-min/react/index.js",
+		"./type-helpers": "./dist/esm-min/type-helpers/index.js"
 	},
 	"files": [
 		"dist"
@@ -110,7 +110,11 @@
 		}
 	],
 	"sideEffects": false,
-	"keywords": [],
+	"keywords": [
+		"utilities",
+		"types",
+		"hooks"
+	],
 	"packageManager": "pnpm@9.9.0",
 	"engines": {
 		"node": ">=18.x"

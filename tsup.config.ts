@@ -19,13 +19,13 @@ export default defineConfig([
 	{
 		...sharedOptions,
 		name: "ESM",
-		outDir: "./dist/raw",
+		outDir: "./dist/esm",
 	},
 
 	{
 		...sharedOptions,
 		minify: "terser",
 		name: "ESM-MIN",
-		outDir: "./dist/min",
+		outDir: "./dist/esm-min",
 	},
 ]);
