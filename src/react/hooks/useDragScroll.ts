@@ -1,6 +1,5 @@
-import { checkIsDeviceMobileOrTablet, on } from "@/core";
+import { checkIsDeviceMobileOrTablet, off, on } from "@/core";
 import { type DragScrollOptions, classResolver } from "@/core/createDragScroll";
-import { off } from "@/core/on/on";
 import { useEffect, useRef } from "react";
 import { useCallbackRef } from "./useCallbackRef";
 
