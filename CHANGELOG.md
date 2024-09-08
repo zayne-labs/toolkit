@@ -4,6 +4,12 @@
 
 ### Patch Changes
 
+-  93b3038: add class resolver to hook
+
+## 0.1.2
+
+### Patch Changes
+
 -  ad7f779: move classResolver to hook
 
 ## 0.1.1
