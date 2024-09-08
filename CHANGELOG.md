@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.1.2
+
+### Patch Changes
+
+-  ad7f779: move classResolver to hook
+
 ## 0.1.1
 
 ### Patch Changes
