@@ -1,5 +1,4 @@
 import { checkIsDeviceMobileOrTablet, off, on } from "@/core";
-import { type DragScrollOptions, classResolver } from "@/core/createDragScroll";
 import { useEffect, useRef } from "react";
 import { useCallbackRef } from "./useCallbackRef";
 
@@ -31,6 +30,15 @@ const handleScrollSnap = (dragContainer: HTMLElement) => {
 const resetCursor = <TElement extends HTMLElement>(element: TElement) => {
 	element.style.cursor = "";
 	element.style.userSelect = "";
+};
+
+const classResolver = (...params: Array<false | string>) => params.filter(Boolean).join(" ");
+
+type DragScrollOptions = {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	cn?: (...params: any[]) => string;
+	dragOrientation?: "both" | "horizontal" | "vertical";
+	usage?: "allScreens" | "desktopOnly" | "mobileAndTabletOnly";
 };
 
 const useDragScroll = <TElement extends HTMLElement>(options: DragScrollOptions = {}) => {
