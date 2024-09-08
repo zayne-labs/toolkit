@@ -1,6 +1,6 @@
 {
 	"name": "@zayne-labs/toolkit",
-	"version": "0.1.2",
+	"version": "0.1.1",
 	"type": "module",
 	"description": "A collection of utility functions, types and composables used by my other projects. Nothing too fancy but can be useful.",
 	"repository": {
