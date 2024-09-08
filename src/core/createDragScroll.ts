@@ -32,7 +32,8 @@ const resetCursor = <TElement extends HTMLElement>(element: TElement) => {
 };
 
 export type DragScrollOptions = {
-	cn?: (...params: unknown[]) => string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	cn?: (...params: any[]) => string;
 	dragOrientation?: "both" | "horizontal" | "vertical";
 	usage?: "allScreens" | "desktopOnly" | "mobileAndTabletOnly";
 };
