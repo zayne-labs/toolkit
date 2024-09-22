@@ -1,5 +1,12 @@
 # @zayne-labs/toolkit
 
+## 0.1.4
+
+### Patch Changes
+
+-  57cee2a: update a few types
+-  151873e: fixes to wrong export
+
 ## 0.1.3
 
 ### Patch Changes
