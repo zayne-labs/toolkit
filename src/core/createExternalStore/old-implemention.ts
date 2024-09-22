@@ -5,7 +5,6 @@ import { parseJSON } from "../parseJSON";
 import type { SetState, StorageOptions } from "./types";
 import { generateWindowIdentity, setAndDispatchStorageEvent } from "./utils";
 
-
 const createExternalStorageStore = <TState, TSlice = TState>(
 	key: string,
 	defaultValue: TState,
