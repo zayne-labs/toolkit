@@ -1,1 +1,2 @@
-export { on, off } from "./on";
+export { on } from "./on";
+export { off } from "./off";

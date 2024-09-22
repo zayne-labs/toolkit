@@ -1,6 +1,9 @@
 // == The intersection with "{}" or "unknown" or "NonNullable<unknown>" is necessary to make it work as expected based on quirks in the TS compiler
 export type Prettify<TObject> = { [Key in keyof TObject]: TObject[Key] } & NonNullable<unknown>;
 
+// == Using this Immediately Indexed Mapped type helper to help show computed type of anything passed to it instead of just the type name
+export type Unravel<TValue> = { _: TValue }["_"];
+
 export type PrettyOmit<TObject, K extends keyof TObject> = Prettify<Omit<TObject, K>>;
 
 export type CallbackFn<in TParams, out TResult = void> = (...params: TParams[]) => TResult;

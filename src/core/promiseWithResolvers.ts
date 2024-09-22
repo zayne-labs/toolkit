@@ -1,6 +1,12 @@
-const PromiseWithResolvers = <TPromise>() => {
+const PromiseWithResolvers = <TPromise>(options: { signal?: AbortSignal } = {}) => {
+	const { signal } = options;
+
 	if (Object.hasOwn(Promise, "withResolvers")) {
-		return Promise.withResolvers();
+		const withResolvers = Promise.withResolvers<TPromise>();
+
+		signal?.addEventListener("abort", () => withResolvers.reject(signal.reason));
+
+		return withResolvers;
 	}
 
 	let reject!: (reason?: unknown) => void;
@@ -10,6 +16,8 @@ const PromiseWithResolvers = <TPromise>() => {
 		resolve = res;
 		reject = rej;
 	});
+
+	signal?.addEventListener("abort", () => reject(signal.reason));
 
 	return { promise, reject, resolve };
 };

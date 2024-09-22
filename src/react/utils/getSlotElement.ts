@@ -1,5 +1,6 @@
 import { isArray } from "@/type-helpers";
 import { isValidElement } from "react";
+import { toArray } from "./toArray";
 
 type Noop = () => void;
 type WithSlot = { slot?: string };
@@ -42,7 +43,7 @@ export const getSlotElement = <TProps>(
 		throwOnMultipleSlotMatch = false,
 	} = options;
 
-	const childrenArray = isArray<React.ReactNode>(children) ? children : [children];
+	const childrenArray = toArray<React.ReactNode>(children);
 
 	const Slot = childrenArray.filter((child) => isSlotElement(child, SlotWrapper));
 
