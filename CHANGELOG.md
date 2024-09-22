@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.1.5
+
+### Patch Changes
+
+-  03c07e5: fixed missing export for useAnimateElementRef
+
 ## 0.1.4
 
 ### Patch Changes
