@@ -1,5 +1,5 @@
 import { isFunction } from "@/type-helpers/guard";
-import type { Prettify } from "@/type-helpers/types/global";
+import type { PrettyPick } from "@/type-helpers/types";
 import type { Listener, StoreApi, SubscribeOptions } from "./types";
 
 export type StateInitializer<TState, TSlice = TState> = (
@@ -8,7 +8,7 @@ export type StateInitializer<TState, TSlice = TState> = (
 	api: StoreApi<TState, TSlice>
 ) => TState;
 
-type StoreOptions<TState> = Prettify<Pick<SubscribeOptions<TState>, "equalityFn">>;
+type StoreOptions<TState> = PrettyPick<SubscribeOptions<TState>, "equalityFn">;
 
 const createStore = <TState, TSlice = TState>(
 	initializer: StateInitializer<TState, TSlice>,

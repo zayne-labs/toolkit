@@ -1,18 +1,17 @@
+import type { Unravel } from "@/type-helpers";
+
 // == Using Immediately Indexed Mapped Type instead the direct type so that the full signature would be unveiled to the consumer on hover as opposed to the just the vague type name
-type UpdateStateFn<TState, TResult = Partial<TState>> = {
-	_: (prevState: TState) => TResult;
-}["_"];
+export type StateSetter<TState, TResult = TState> = Unravel<(prevState: TState) => TResult>;
 
-type SetState<TState> = {
-	_: {
-		(newState: Partial<TState> | UpdateStateFn<TState>, shouldReplace?: false): void;
-		(newState: TState | UpdateStateFn<TState, TState>, shouldReplace: true): void;
-	};
-}["_"];
+type SetState<TState> = Unravel<{
+	(newState: Partial<TState> | StateSetter<TState, Partial<TState>>, shouldReplace?: false): void;
+	// eslint-disable-next-line perfectionist/sort-union-types
+	(newState: TState | StateSetter<TState>, shouldReplace: true): void;
+}>;
 
-export type Listener<TState> = { _: (state: TState, prevState: TState) => void }["_"];
+export type Listener<TState> = Unravel<(state: TState, prevState: TState) => void>;
 
-type SelectorFn<in TStore, out TResult> = { _: (state: TStore) => TResult }["_"];
+type SelectorFn<in TStore, out TResult> = Unravel<(state: TStore) => TResult>;
 
 export type SubscribeOptions<TState> = {
 	equalityFn?: (nextState: Partial<TState>, previousState: TState) => boolean;

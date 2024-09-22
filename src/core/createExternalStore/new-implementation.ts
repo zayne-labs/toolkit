@@ -2,27 +2,8 @@ import { isFunction } from "@/type-helpers";
 import { createStore } from "../createStore";
 import { on } from "../on";
 import { parseJSON } from "../parseJSON";
+import type { SetState, StorageOptions } from "./types";
 import { generateWindowIdentity, setAndDispatchStorageEvent } from "./utils";
-
-export type StorageOptions<TState> = {
-	equalityFn?: (nextState: Partial<TState>, previousState: Partial<TState>) => boolean;
-	logger?: (error: unknown) => void;
-	parser?: (value: unknown) => TState;
-	shouldSyncAcrossTabs?: boolean;
-	storageArea?: "localStorage" | "sessionStorage";
-	stringifier?: (object: TState | null) => string;
-};
-
-type UpdateStateFn<TState, TResult = Partial<TState> | null> = {
-	_: (prevState: TState) => TResult;
-}["_"];
-
-type SetState<TState> = {
-	_: {
-		(newState: Partial<TState> | UpdateStateFn<TState>, shouldReplace?: false): void;
-		(newState: TState | UpdateStateFn<TState, TState | null>, shouldReplace: true): void;
-	};
-}["_"];
 
 const createExternalStorageStore = <TState, TSlice = TState>(
 	key: string,

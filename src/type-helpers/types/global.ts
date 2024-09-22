@@ -4,13 +4,23 @@ export type Prettify<TObject> = { [Key in keyof TObject]: TObject[Key] } & NonNu
 // == Using this Immediately Indexed Mapped type helper to help show computed type of anything passed to it instead of just the type name
 export type Unravel<TValue> = { _: TValue }["_"];
 
-export type PrettyOmit<TObject, K extends keyof TObject> = Prettify<Omit<TObject, K>>;
+export type PrettyOmit<TObject, Key extends keyof TObject> = Prettify<Omit<TObject, Key>>;
+
+export type PrettyPick<TObject, Key extends keyof TObject> = Prettify<Pick<TObject, Key>>;
 
 export type CallbackFn<in TParams, out TResult = void> = (...params: TParams[]) => TResult;
 
 export type SelectorFn<in TStore, out TResult> = (state: TStore) => TResult;
 
-export type Writeable<TObject> = { -readonly [Key in keyof TObject]: TObject[Key] };
+export type Writeable<TObject, TType extends "deep" | "shallow" = "shallow"> = {
+	-readonly [key in keyof TObject]: TType extends "shallow"
+		? TObject[key]
+		: TType extends "deep"
+			? TObject[key] extends object
+				? Writeable<TObject[key], TType>
+				: TObject[key]
+			: never;
+};
 
 export type NonEmptyArray<TArrayItem> = [TArrayItem, ...TArrayItem[]];
 
