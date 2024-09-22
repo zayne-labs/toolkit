@@ -1,6 +1,7 @@
 export { createCustomContext } from "./createCustomContext";
 export * from "./effects";
 export { useAnimationInterval } from "./useAnimationInterval";
+export { useAnimateElementRefs } from "./useAnimateElementRefs";
 export { useCallbackRef } from "./useCallbackRef";
 export { useConstant } from "./useConstant";
 export { useCopyToClipboard } from "./useCopyToClipboard";
