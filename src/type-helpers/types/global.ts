@@ -24,11 +24,13 @@ export type Writeable<TObject, TType extends "deep" | "shallow" = "shallow"> = {
 
 export type NonEmptyArray<TArrayItem> = [TArrayItem, ...TArrayItem[]];
 
+export type AnyObject = Record<string, unknown>;
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // == `Any` is required here so that one can pass custom function type without type errors
-export type AnyFunction = { _: (...args: any[]) => any }["_"];
+export type AnyFunction = UnmaskType<(...args: any[]) => any>;
 
-export type AnyAsyncFunction = (...args: any[]) => Promise<any>;
+export type AnyAsyncFunction = UnmaskType<(...args: any[]) => Promise<any>>;
 
 /**
  *  == These types allows for adding arbitrary literal types, while still provided autocomplete for defaults.

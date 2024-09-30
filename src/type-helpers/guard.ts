@@ -1,4 +1,4 @@
-import type { AnyAsyncFunction, AnyFunction } from "./types/global";
+import type { AnyAsyncFunction, AnyFunction, AnyObject } from "./types/global";
 
 export const isString = (value: unknown) => typeof value === "string";
 
@@ -6,8 +6,8 @@ export const isArray = <TArray>(value: unknown): value is TArray[] => Array.isAr
 
 export const isFormData = (value: unknown) => value instanceof FormData;
 
-export const isObject = <TObject extends Record<string, unknown>>(value: unknown): value is TObject => {
-	return typeof value === "object" && value !== null && !Array.isArray(value);
+export const isObject = <TObject extends AnyObject>(value: unknown): value is TObject => {
+	return typeof value === "object" && value !== null && !isArray(value);
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
