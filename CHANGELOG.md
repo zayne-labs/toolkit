@@ -1,5 +1,13 @@
 # @zayne-labs/toolkit
 
+## 0.2.0
+
+### Minor Changes
+
+-  fed62e5: feat: Add zustand context creation utility
+
+   BREAKING CHANGE: The `useAnimateElementRefs` hook is now exported from the `react/hooks/index.ts` file.
+
 ## 0.1.5
 
 ### Patch Changes
