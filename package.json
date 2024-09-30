@@ -69,7 +69,8 @@
 	"peerDependencies": {
 		"@types/react": ">=18.0.0",
 		"react": ">=18.0.0",
-		"sonner": ">=1.5.0"
+		"sonner": ">=1.5.0",
+		"zustand": ">=5.0.0-rc.2"
 	},
 	"peerDependenciesMeta": {
 		"@types/react": {
@@ -79,6 +80,9 @@
 			"optional": true
 		},
 		"sonner": {
+			"optional": true
+		},
+		"zustand": {
 			"optional": true
 		}
 	},

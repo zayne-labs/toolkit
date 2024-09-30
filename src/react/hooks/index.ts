@@ -1,4 +1,5 @@
 export { createCustomContext } from "./createCustomContext";
+export { createZustandContext } from "./createZustandContext";
 export * from "./effects";
 export { useAnimationInterval } from "./useAnimationInterval";
 export { useAnimateElementRefs } from "./useAnimateElementRefs";

@@ -1,4 +1,4 @@
-import type { Unravel } from "@/type-helpers";
+import type { UnmaskType } from "@/type-helpers";
 import type { StateSetter } from "../createStore";
 
 export type StorageOptions<TState> = {
@@ -10,7 +10,7 @@ export type StorageOptions<TState> = {
 	stringifier?: (object: TState | null) => string;
 };
 
-export type SetState<TState> = Unravel<{
+export type SetState<TState> = UnmaskType<{
 	(newState: Partial<TState> | StateSetter<TState, Partial<TState> | null>, shouldReplace?: false): void;
 	// eslint-disable-next-line perfectionist/sort-union-types
 	(newState: TState | StateSetter<TState, TState | null>, shouldReplace: true): void;

@@ -2,7 +2,7 @@
 export type Prettify<TObject> = { [Key in keyof TObject]: TObject[Key] } & NonNullable<unknown>;
 
 // == Using this Immediately Indexed Mapped type helper to help show computed type of anything passed to it instead of just the type name
-export type Unravel<TValue> = { _: TValue }["_"];
+export type UnmaskType<TType> = { _: TType }["_"];
 
 export type PrettyOmit<TObject, Key extends keyof TObject> = Prettify<Omit<TObject, Key>>;
 
