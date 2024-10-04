@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.4.1
+
+### Patch Changes
+
+-  8e09b01: fixes to usePresence
+
 ## 0.4.0
 
 ### Minor Changes
