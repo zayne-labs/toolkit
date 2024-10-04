@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.3.0
+
+### Minor Changes
+
+-  7ae45ee: added a few zustand wrappers, also fixed a few bugs
+
 ## 0.2.0
 
 ### Minor Changes
