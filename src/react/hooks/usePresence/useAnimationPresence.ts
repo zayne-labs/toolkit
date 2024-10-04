@@ -4,8 +4,9 @@ import { useCallbackRef } from "../useCallbackRef";
 import { useDebouncedState } from "../useDebounce";
 import type { UseSpecificPresence } from "./types";
 
-const useAnimationPresence: UseSpecificPresence = (defaultValue = true, options = {}) => {
-	const { duration, onExitComplete } = options;
+const useAnimationPresence: UseSpecificPresence = (options = {}) => {
+	const { defaultValue = true, duration, onExitComplete } = options;
+
 	const [isShown, setIsShown] = useState(defaultValue);
 
 	const [isMounted, setDebouncedIsMounted, setRegularIsMounted] = useDebouncedState(

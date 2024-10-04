@@ -9,12 +9,12 @@ import { useTransitionPresence } from "./useTransitionPresence";
  * @returns A object containing the boolean that should be used to conditionally render the element (isPresent), another boolean used to toggle the animation classes, and a function to toggle the state.
  */
 
-const usePresence: UsePresence = (defaultValue = true, options = {}) => {
-	const { duration, onExitComplete, type = "transition" } = options;
+const usePresence: UsePresence = (options = {}) => {
+	const { type = "transition", ...restOfOptions } = options;
 
 	const useSpecificPresence = type === "transition" ? useTransitionPresence : useAnimationPresence;
 
-	return useSpecificPresence(defaultValue, { duration, onExitComplete });
+	return useSpecificPresence(restOfOptions);
 };
 
 export { usePresence };

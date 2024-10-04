@@ -1,30 +1,17 @@
 import type { Prettify } from "@/type-helpers";
 import type { useToggle } from "../useToggle";
 
-type GetTypeProp<THasType extends boolean> = {
-	_: THasType extends true
-		? {
-				/**
-				 * @description The type of animation, whether animation or transition
-				 * @default "transition"
-				 */
-				type?: "animation" | "transition";
-			}
-		: unknown;
-}["_"];
-
-type UsePresenceOptions<TDuration extends number | undefined, THasType extends boolean> = Prettify<
-	GetTypeProp<THasType> & {
-		/**
-		 * @description The duration of the animation or transition
-		 */
-		duration?: TDuration;
-		/**
-		 * @description A callback function that will be called when the animation or transition ends
-		 */
-		onExitComplete?: () => void;
-	}
->;
+type UsePresenceOptions<TDuration extends number | undefined> = {
+	defaultValue?: boolean;
+	/**
+	 * @description The duration of the animation or transition
+	 */
+	duration?: TDuration;
+	/**
+	 * @description A callback function that will be called when the animation or transition ends
+	 */
+	onExitComplete?: () => void;
+};
 
 type UsePresenceResult<TElement, TDuration> = Prettify<
 	(TDuration extends undefined ? { elementRef: React.RefObject<TElement> } : unknown) & {
@@ -38,11 +25,17 @@ export type UseSpecificPresence = <
 	TElement extends HTMLElement,
 	TDuration extends number | undefined = undefined,
 >(
-	defaultValue?: boolean,
-	options?: UsePresenceOptions<TDuration, false>
+	options?: UsePresenceOptions<TDuration>
 ) => UsePresenceResult<TElement, TDuration>;
 
+type TypeOption = {
+	/**
+	 * @description The type of animation, whether animation or transition
+	 * @default "transition"
+	 */
+	type?: "animation" | "transition";
+};
+
 export type UsePresence = <TElement extends HTMLElement, TDuration extends number | undefined = undefined>(
-	defaultValue?: boolean,
-	options?: UsePresenceOptions<TDuration, true>
+	options?: Prettify<TypeOption & UsePresenceOptions<TDuration>>
 ) => UsePresenceResult<TElement, TDuration>;
