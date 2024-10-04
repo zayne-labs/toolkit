@@ -10,9 +10,9 @@ import { useTransitionPresence } from "./useTransitionPresence";
  */
 
 const usePresence: UsePresence = (defaultValue = true, options = {}) => {
-	const { duration, onExitComplete, type = "animation" } = options;
+	const { duration, onExitComplete, type = "transition" } = options;
 
-	const useSpecificPresence = type === "animation" ? useAnimationPresence : useTransitionPresence;
+	const useSpecificPresence = type === "transition" ? useTransitionPresence : useAnimationPresence;
 
 	return useSpecificPresence(defaultValue, { duration, onExitComplete });
 };

@@ -5,7 +5,8 @@ type GetTypeProp<THasType extends boolean> = {
 	_: THasType extends true
 		? {
 				/**
-				 * The type of animation, whether animation or transition
+				 * @description The type of animation, whether animation or transition
+				 * @default "transition"
 				 */
 				type?: "animation" | "transition";
 			}
@@ -15,11 +16,11 @@ type GetTypeProp<THasType extends boolean> = {
 type UsePresenceOptions<TDuration extends number | undefined, THasType extends boolean> = Prettify<
 	GetTypeProp<THasType> & {
 		/**
-		 *  The duration of the animation or transition
+		 * @description The duration of the animation or transition
 		 */
 		duration?: TDuration;
 		/**
-		 * A callback function that will be called when the animation or transition ends
+		 * @description A callback function that will be called when the animation or transition ends
 		 */
 		onExitComplete?: () => void;
 	}
