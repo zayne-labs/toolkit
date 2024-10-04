@@ -28,11 +28,7 @@ const createZustandContext = <
 			"createStore" in restOfProps ? restOfProps.createStore() : restOfProps.value
 		);
 
-		return cloneElement(
-			Provider as never,
-			{ value: useZustandStore },
-			children
-		) as unknown as React.Provider<TUseBoundStore>;
+		return cloneElement(Provider as never, { value: useZustandStore }, children) as React.ReactNode;
 	}
 
 	const useBoundStore = <TResult>(selector: SelectorFn<TState, TResult>) => useCustomContext()(selector);
