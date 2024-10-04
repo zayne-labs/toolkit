@@ -42,7 +42,7 @@ export type AddMediaEvents<TEvent extends keyof MediaQueryListEventMap = keyof M
 // eslint-disable-next-line perfectionist/sort-union-types
 export type AddEventParams = AddHtmlEvents | AddMediaEvents | AddWindowEvents | AddDocumentEvents;
 
-/* eslint-disable @typescript-eslint/consistent-type-definitions */
+/* eslint-disable ts-eslint/consistent-type-definitions */
 export interface RegisterConfig {
 	// TODO: Work on finding as way to add this in future, probably by attaching the cleanup fb to the event object
 	event: string;

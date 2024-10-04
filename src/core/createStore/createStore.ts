@@ -2,19 +2,19 @@ import { isFunction } from "@/type-helpers/guard";
 import type { PrettyPick } from "@/type-helpers/types";
 import type { Listener, StoreApi, SubscribeOptions } from "./types";
 
-export type StateInitializer<TState, TSlice = TState> = (
-	get: StoreApi<TState, TSlice>["getState"],
-	set: StoreApi<TState, TSlice>["setState"],
-	api: StoreApi<TState, TSlice>
-) => TState;
+export type StateInitializer<TState, TResult = TState> = (
+	get: StoreApi<TState>["getState"],
+	set: StoreApi<TState>["setState"],
+	api: StoreApi<TState>
+) => TResult;
 
 type StoreOptions<TState> = PrettyPick<SubscribeOptions<TState>, "equalityFn">;
 
-const createStore = <TState, TSlice = TState>(
-	initializer: StateInitializer<TState, TSlice>,
+const createStore = <TState>(
+	initializer: StateInitializer<TState>,
 	options: StoreOptions<TState> = {}
 ) => {
-	let state: TState;
+	let state: ReturnType<typeof initializer>;
 
 	const listeners = new Set<Listener<TState>>();
 
@@ -22,7 +22,7 @@ const createStore = <TState, TSlice = TState>(
 
 	const getInitialState = () => initialState;
 
-	type $StoreApi = StoreApi<TState, TSlice>;
+	type $StoreApi = StoreApi<TState>;
 
 	const { equalityFn = Object.is } = options;
 
@@ -49,16 +49,16 @@ const createStore = <TState, TSlice = TState>(
 			subscribeOptions;
 
 		if (fireListenerImmediately) {
-			const slice = selector(getState()) as unknown as TState;
+			const slice = selector(getState());
 
 			onStoreChange(slice, slice);
 		}
 
 		const handleOnStoreChange: Parameters<$StoreApi["subscribe"]>[0] = ($state, prevState) => {
-			const previousSlice = selector(prevState) as unknown as TState;
-			const slice = selector($state) as unknown as TState;
+			const previousSlice = selector(prevState);
+			const slice = selector($state);
 
-			if (sliceEqualityFn(slice, previousSlice)) return;
+			if (sliceEqualityFn(slice as never, previousSlice as never)) return;
 
 			onStoreChange(slice, previousSlice);
 		};

@@ -1,8 +1,7 @@
 import type { SelectorFn } from "@/type-helpers";
 import { cloneElement } from "react";
 import type { StoreApi, UseBoundStore } from "zustand";
-import { type CustomContextOptions, createCustomContext } from "./createCustomContext";
-import { useConstant } from "./useConstant";
+import { type CustomContextOptions, createCustomContext, useConstant } from "../hooks";
 
 const createZustandContext = <
 	TState extends Record<string, unknown>,
@@ -22,7 +21,6 @@ const createZustandContext = <
 				value: TUseBoundStore;
 		  };
 
-	// eslint-disable-next-line jsdoc/require-jsdoc
 	function ZustandProvider(props: ZustandProviderProps) {
 		const { children, ...restOfProps } = props;
 

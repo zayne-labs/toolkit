@@ -35,7 +35,7 @@ const resetCursor = <TElement extends HTMLElement>(element: TElement) => {
 const classResolver = (...params: Array<false | string>) => params.filter(Boolean).join(" ");
 
 type DragScrollOptions = {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// eslint-disable-next-line ts-eslint/no-explicit-any
 	cn?: (...params: any[]) => string;
 	dragOrientation?: "both" | "horizontal" | "vertical";
 	usage?: "allScreens" | "desktopOnly" | "mobileAndTabletOnly";
@@ -117,7 +117,7 @@ const useDragScroll = <TElement extends HTMLElement>(options: DragScrollOptions 
 	};
 
 	const dragContainerClasses = cn(
-		"scrollbar-none flex w-full cursor-grab snap-x snap-mandatory overflow-y-clip overflow-x-scroll",
+		"flex w-full cursor-grab snap-x snap-mandatory overflow-y-clip overflow-x-scroll [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
 		dragOrientation === "horizontal" && "w-full flex-row",
 		dragOrientation === "vertical" && "flex-col",
 		usage === "mobileAndTabletOnly" && "md:cursor-default md:flex-col",

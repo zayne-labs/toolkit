@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-global-this */
 export const generateWindowIdentity = () => {
 	window.name = crypto.randomUUID();
 	localStorage.setItem("currentTab", window.name);
@@ -14,11 +15,11 @@ export const generateWindowIdentity = () => {
 	return currentTabId;
 };
 
-type DispatchOptions = {
+type DispatchOptions = StorageEventInit & {
 	eventFn: () => void;
 	key: string;
 	storageArea: Storage;
-} & StorageEventInit;
+};
 
 export const setAndDispatchStorageEvent = (dispatchOptions: DispatchOptions) => {
 	const { eventFn, url = window.location.href, ...restOfOptions } = dispatchOptions;

@@ -5,7 +5,7 @@ import { parseJSON } from "../parseJSON";
 import type { SetState, StorageOptions } from "./types";
 import { generateWindowIdentity, setAndDispatchStorageEvent } from "./utils";
 
-const createExternalStorageStore = <TState, TSlice = TState>(
+const createExternalStorageStore = <TState>(
 	key: string,
 	defaultValue: TState,
 	options: StorageOptions<TState> = {}
@@ -77,7 +77,7 @@ const createExternalStorageStore = <TState, TSlice = TState>(
 		});
 	};
 
-	type Subscribe = StoreApi<TState, TSlice>["subscribe"];
+	type Subscribe = StoreApi<TState>["subscribe"];
 
 	const subscribe: Subscribe = (onStoreChange) => {
 		const handleStorageStoreChange = (event: StorageEvent) => {
@@ -89,6 +89,7 @@ const createExternalStorageStore = <TState, TSlice = TState>(
 			onStoreChange(parser(event.oldValue as string), parser(event.newValue as string));
 		};
 
+		// eslint-disable-next-line unicorn/prefer-global-this
 		const removeStorageEvent = on("storage", window, handleStorageStoreChange);
 
 		return removeStorageEvent;
@@ -99,16 +100,16 @@ const createExternalStorageStore = <TState, TSlice = TState>(
 			subscribeOptions;
 
 		if (fireListenerImmediately) {
-			const slice = selector(getState()) as unknown as TState;
+			const slice = selector(getState());
 
 			onStoreChange(slice, slice);
 		}
 
 		const handleStoreChange: Parameters<Subscribe>[0] = (state, prevState) => {
-			const previousSlice = selector(prevState) as unknown as TState;
-			const slice = selector(state) as unknown as TState;
+			const previousSlice = selector(prevState);
+			const slice = selector(state);
 
-			if (sliceEqualityFn(slice, previousSlice)) return;
+			if (sliceEqualityFn(slice as never, previousSlice as never)) return;
 
 			onStoreChange(slice, previousSlice);
 		};

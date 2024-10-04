@@ -6,10 +6,10 @@ export const throttleBySetTimeout = <TParams>(callbackFn: CallbackFn<TParams>, d
 	const throttledCallback = (...params: TParams[]) => {
 		if (timeoutId !== null) return;
 
-		timeoutId = window.setTimeout(() => {
+		timeoutId = setTimeout(() => {
 			callbackFn(...params);
 			timeoutId = null;
-		}, delay);
+		}, delay) as never;
 	};
 
 	throttledCallback.cancelTimeout = () => {

@@ -21,7 +21,7 @@ jobs:
          - name: Setup pnpm
            uses: pnpm/action-setup@v4
            with:
-              version: 9.9.0
+              version: 9.12.0
 
          - name: Setup Node.js
            uses: actions/setup-node@v4
@@ -32,6 +32,6 @@ jobs:
          - name: Format files
            run: |
               pnpm install --dev --frozen-lockfile
-              pnpm test:format
+              pnpm lint:format
 
          - uses: autofix-ci/action@ff86a557419858bb967097bfc916833f5647fa8c

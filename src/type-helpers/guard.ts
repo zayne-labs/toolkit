@@ -1,4 +1,4 @@
-import type { AnyAsyncFunction, AnyFunction, AnyObject } from "./types/global";
+import type { AnyAsyncFunction, AnyFunction, AnyObject } from "./types";
 
 export const isString = (value: unknown) => typeof value === "string";
 
@@ -10,7 +10,7 @@ export const isObject = <TObject extends AnyObject>(value: unknown): value is TO
 	return typeof value === "object" && value !== null && !isArray(value);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+// eslint-disable-next-line ts-eslint/no-unsafe-function-type
 export const isPlainObject = (value: unknown, Class?: Function) => {
 	if (!isObject(value)) {
 		return false;

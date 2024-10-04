@@ -3,7 +3,7 @@ const fallBackCopy = (text: string) => {
 	tempTextArea.value = text;
 	document.body.append(tempTextArea);
 	tempTextArea.select();
-	// eslint-disable-next-line @typescript-eslint/no-deprecated
+	// eslint-disable-next-line ts-eslint/no-deprecated
 	document.execCommand("copy");
 	tempTextArea.remove();
 };
@@ -12,7 +12,7 @@ const copyToClipboard = async (text: string) => {
 	if (text === "") return;
 
 	try {
-		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+		// eslint-disable-next-line ts-eslint/no-unnecessary-condition
 		if (!navigator?.clipboard?.writeText) {
 			throw new Error("writeText not supported");
 		}

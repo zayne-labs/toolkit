@@ -13,7 +13,7 @@ type GetTypeProp<THasType extends boolean> = {
 }["_"];
 
 type UsePresenceOptions<TDuration extends number | undefined, THasType extends boolean> = Prettify<
-	{
+	GetTypeProp<THasType> & {
 		/**
 		 *  The duration of the animation or transition
 		 */
@@ -22,15 +22,15 @@ type UsePresenceOptions<TDuration extends number | undefined, THasType extends b
 		 * A callback function that will be called when the animation or transition ends
 		 */
 		onExitComplete?: () => void;
-	} & GetTypeProp<THasType>
+	}
 >;
 
 type UsePresenceResult<TElement, TDuration> = Prettify<
-	{
+	(TDuration extends undefined ? { elementRef: React.RefObject<TElement> } : unknown) & {
 		isPresent: boolean;
 		isVisible: boolean;
 		toggleVisibility: ReturnType<typeof useToggle>[1];
-	} & (TDuration extends undefined ? { elementRef: React.RefObject<TElement> } : unknown)
+	}
 >;
 
 export type UseSpecificPresence = <

@@ -1,6 +1,6 @@
 const checkIsDeviceMobileOrTablet = (): boolean => {
-	const deviceHasMouse = window.matchMedia("(pointer:fine)").matches;
-	const deviceHasNoMouse = window.matchMedia("(pointer:coarse)").matches;
+	const deviceHasMouse = globalThis.matchMedia("(pointer:fine)").matches;
+	const deviceHasNoMouse = globalThis.matchMedia("(pointer:coarse)").matches;
 
 	switch (true) {
 		case deviceHasMouse: {
@@ -11,7 +11,7 @@ const checkIsDeviceMobileOrTablet = (): boolean => {
 			return true;
 		}
 
-		case "ontouchstart" in window && "maxTouchPoints" in navigator: {
+		case "ontouchstart" in globalThis && "maxTouchPoints" in navigator: {
 			return navigator.maxTouchPoints > 0;
 		}
 

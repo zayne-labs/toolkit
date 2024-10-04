@@ -2,8 +2,8 @@ import { isArray, isObject } from "@/type-helpers";
 import { pickKeys } from "./pickKeys";
 
 type SyncStorageParams =
-	| [key: string, state: Record<string, unknown> | unknown[]]
 	| [key: string, state: Record<string, unknown>, keysToSelect: string[]]
+	| [key: string, state: Record<string, unknown> | unknown[]]
 	| [key: string, state: string];
 
 type SyncStateWithStorage = {

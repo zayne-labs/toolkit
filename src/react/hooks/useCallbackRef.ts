@@ -15,7 +15,7 @@ const useCallbackRef = <TCallback = AnyFunction>(callbackFn: TCallback | undefin
 		callbackRef.current = callbackFn;
 	}, [callbackFn]);
 
-	/* eslint-disable @typescript-eslint/no-unnecessary-condition */
+	/* eslint-disable ts-eslint/no-unnecessary-condition */
 	const savedCallback = useCallback(
 		(...params: unknown[]) => (callbackRef.current as AnyFunction)?.(...params) as unknown,
 		[]

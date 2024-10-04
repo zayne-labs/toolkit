@@ -28,7 +28,7 @@ const useDisclosure = (options: DisclosureOptions = {}) => {
 		handleScrollControl(booleanValue);
 	});
 
-	const onToggle = useCallbackRef(<TValue>(value: TValue) => {
+	const onToggle = useCallbackRef(<TValue>(value?: TValue) => {
 		if (typeof value === "boolean") {
 			value ? onOpen(value) : onClose(value);
 			return;

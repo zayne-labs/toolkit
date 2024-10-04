@@ -29,7 +29,7 @@ const debounce = <TParams>(
 	let timeoutId: number | null;
 	let maxWaitTimeoutId: number | null;
 
-	const $clearMainTimeout = (): void => void (timeoutId && window.clearTimeout(timeoutId));
+	const $clearMainTimeout = (): void => void (timeoutId && clearTimeout(timeoutId));
 
 	// Overloads
 	function debouncedFn(...params: TParams[]): void;
@@ -47,20 +47,20 @@ const debounce = <TParams>(
 
 		$clearMainTimeout();
 
-		timeoutId = window.setTimeout(() => {
+		timeoutId = setTimeout(() => {
 			isArray(resolvedParams)
 				? callbackFn(...(resolvedParams as TParams[]))
 				: callbackFn(resolvedParams);
 
 			timeoutId = null;
-		}, overrideOptions?.$delay ?? delay);
+		}, overrideOptions?.$delay ?? delay) as never;
 
 		if (!options.maxWait) return;
 
 		// == Only register a new maxWaitTimeout if it's timeoutId is set to null, which implies the previous one has been executed
 		if (maxWaitTimeoutId !== null) return;
 
-		maxWaitTimeoutId = window.setTimeout(() => {
+		maxWaitTimeoutId = setTimeout(() => {
 			// == Cancel the main timeout before invoking callbackFn
 			$clearMainTimeout();
 
@@ -69,12 +69,12 @@ const debounce = <TParams>(
 				: callbackFn(resolvedParams);
 
 			maxWaitTimeoutId = null;
-		}, options.maxWait);
+		}, options.maxWait) as never;
 	}
 
 	debouncedFn.cancel = $clearMainTimeout;
 	// prettier-ignore
-	debouncedFn.cancelMaxWait = (): void => void (maxWaitTimeoutId && window.clearTimeout(maxWaitTimeoutId));
+	debouncedFn.cancelMaxWait = (): void => void (maxWaitTimeoutId && clearTimeout(maxWaitTimeoutId));
 
 	return debouncedFn;
 };

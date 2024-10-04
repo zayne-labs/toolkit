@@ -12,7 +12,8 @@ export type LocationState = {
 
 type LocationStoreOptions = Prettify<Pick<SubscribeOptions<LocationState>, "equalityFn">>;
 
-const createLocationStore = <TLocationSlice = LocationState>(options: LocationStoreOptions = {}) => {
+/* eslint-disable unicorn/prefer-global-this */
+const createLocationStore = (options: LocationStoreOptions = {}) => {
 	let locationState: LocationState = {
 		hash: isBrowser() ? window.location.hash : "",
 		pathname: isBrowser() ? window.location.pathname : "",
@@ -55,7 +56,7 @@ const createLocationStore = <TLocationSlice = LocationState>(options: LocationSt
 		return previousLocationState;
 	};
 
-	type Subscribe = StoreApi<LocationState, TLocationSlice>["subscribe"];
+	type Subscribe = StoreApi<LocationState>["subscribe"];
 
 	const subscribe: Subscribe = (onLocationStoreChange) => {
 		const handleLocationStoreChange = () => {
@@ -78,16 +79,16 @@ const createLocationStore = <TLocationSlice = LocationState>(options: LocationSt
 		const { equalityFn: $equalityFn = equalityFn, fireListenerImmediately = false } = subscribeOptions;
 
 		if (fireListenerImmediately) {
-			const slice = selector(getState()) as unknown as LocationState;
+			const slice = selector(getState());
 
 			onStoreChange(slice, slice);
 		}
 
 		const handleStoreChange: Parameters<Subscribe>[0] = (state, prevState) => {
-			const previousSlice = selector(prevState) as unknown as LocationState;
-			const slice = selector(state) as unknown as LocationState;
+			const previousSlice = selector(prevState);
+			const slice = selector(state);
 
-			if ($equalityFn(slice, previousSlice)) return;
+			if ($equalityFn(slice as never, previousSlice as never)) return;
 
 			onStoreChange(slice, previousSlice);
 		};

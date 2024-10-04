@@ -3,7 +3,6 @@ export * from "./constants";
 export { copyToClipboard } from "./copyToClipboard";
 export * from "./createExternalStore";
 export * from "./createLocationStore";
-export * from "./createObject";
 export * from "./createStore";
 export { debounce } from "./debounce";
 export { noScrollOnOpen } from "./noScrollOnOpen";
