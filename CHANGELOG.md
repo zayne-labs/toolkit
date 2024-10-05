@@ -1,5 +1,14 @@
 # @zayne-labs/toolkit
 
+## 0.4.2
+
+### Patch Changes
+
+-  7b2eb0e: refactor: update createZustandContext to use createElement instead of cloneElement
+
+   -  Replaced the use of `cloneElement` with `createElement` in the `createZustandContext` function
+   -  This change simplifies the code and aligns with the recommended React API usage
+
 ## 0.4.1
 
 ### Patch Changes
