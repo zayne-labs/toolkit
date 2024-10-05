@@ -1,5 +1,5 @@
 import type { SelectorFn } from "@/type-helpers";
-import { cloneElement } from "react";
+import { createElement } from "react";
 import type { StoreApi, UseBoundStore } from "zustand";
 import { type CustomContextOptions, createCustomContext, useConstant } from "../hooks";
 
@@ -28,7 +28,7 @@ const createZustandContext = <
 			"createStore" in restOfProps ? restOfProps.createStore() : restOfProps.value
 		);
 
-		return cloneElement(Provider as never, { value: useZustandStore }, children) as React.ReactNode;
+		return createElement(Provider, { value: useZustandStore }, children);
 	}
 
 	const useBoundStore = <TResult>(selector: SelectorFn<TState, TResult>) => useCustomContext()(selector);
