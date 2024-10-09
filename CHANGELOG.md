@@ -1,5 +1,14 @@
 # @zayne-labs/toolkit
 
+## 0.4.6
+
+### Patch Changes
+
+-  9e42bec: refactor ♻️: omitkeys and pickkeys functions.
+
+   -  Refactor the omitKeys function to use a generic type to represent the keys to omit.
+   -  Refactor the pickKeys function to return the correct type.
+
 ## 0.4.5
 
 ### Patch Changes
