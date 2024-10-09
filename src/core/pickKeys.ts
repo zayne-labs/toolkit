@@ -4,12 +4,14 @@ export const pickKeys = <TObject extends AnyObject, const TPickArray extends Arr
 	initialObject: TObject,
 	keysToPick: TPickArray
 ) => {
-	const updatedObject: AnyObject = {};
+	const updatedObject = {} as AnyObject;
 
-	for (const key of keysToPick) {
-		if (!Object.hasOwn(initialObject, key)) continue;
+	const keysToPickSet = new Set(keysToPick);
 
-		updatedObject[key as string] = initialObject[key];
+	for (const [key, value] of Object.entries(initialObject)) {
+		if (keysToPickSet.has(key)) {
+			updatedObject[key] = value;
+		}
 	}
 
 	return updatedObject as Pick<TObject, TPickArray[number]>;
@@ -22,12 +24,10 @@ export const pickKeysWithReduce = <
 	initialObject: TObject,
 	keysToPick: TPickArray
 ) => {
-	const arrayFromObject = Object.entries(initialObject);
-
 	const keysToPickSet = new Set(keysToPick);
 
-	const updatedObject = arrayFromObject.reduce<AnyObject>((accumulator, [key, value]) => {
-		if (!keysToPickSet.has(key)) {
+	const updatedObject = Object.entries(initialObject).reduce<AnyObject>((accumulator, [key, value]) => {
+		if (keysToPickSet.has(key)) {
 			accumulator[key] = value;
 		}
 
@@ -46,7 +46,6 @@ export const pickKeysWithFilter = <
 ) => {
 	const keysToPickSet = new Set(keysToPick);
 
-	// prettier-ignore
 	const arrayFromFilteredObject = Object.entries(initialObject).filter(([key]) => keysToPickSet.has(key));
 
 	const updatedObject = Object.fromEntries(arrayFromFilteredObject);

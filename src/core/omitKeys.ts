@@ -4,12 +4,14 @@ export const omitKeys = <TObject extends AnyObject, const TOmitArray extends Arr
 	initialObject: TObject,
 	keysToOmit: TOmitArray
 ) => {
-	const updatedObject = { ...initialObject };
+	const updatedObject = {} as AnyObject;
 
-	for (const key of keysToOmit) {
-		if (!Object.hasOwn(initialObject, key)) continue;
+	const keysToOmitSet = new Set(keysToOmit);
 
-		Reflect.deleteProperty(updatedObject, key);
+	for (const [key, value] of Object.entries(initialObject)) {
+		if (!keysToOmitSet.has(key)) {
+			updatedObject[key] = value;
+		}
 	}
 
 	return updatedObject as Omit<TObject, TOmitArray[number]>;
@@ -22,12 +24,10 @@ export const omitKeysWithReduce = <
 	initialObject: TObject,
 	keysToOmit: TOmitArray
 ) => {
-	const arrayFromObject = Object.entries(initialObject);
+	const keysToOmitSet = new Set(keysToOmit);
 
-	const keysToPickSet = new Set(keysToOmit);
-
-	const updatedObject = arrayFromObject.reduce<AnyObject>((accumulator, [key, value]) => {
-		if (!keysToPickSet.has(key)) {
+	const updatedObject = Object.entries(initialObject).reduce<AnyObject>((accumulator, [key, value]) => {
+		if (!keysToOmitSet.has(key)) {
 			accumulator[key] = value;
 		}
 
@@ -44,10 +44,10 @@ export const omitKeysWithFilter = <
 	initialObject: TObject,
 	keysToOmit: TOmitArray
 ) => {
-	const keysToPickSet = new Set(keysToOmit);
+	const keysToOmitSet = new Set(keysToOmit);
 
 	const arrayFromFilteredObject = Object.entries(initialObject).filter(
-		([key]) => !keysToPickSet.has(key)
+		([key]) => !keysToOmitSet.has(key)
 	);
 
 	const updatedObject = Object.fromEntries(arrayFromFilteredObject);
