@@ -1,5 +1,7 @@
 import type { AnyObject } from "@/type-helpers";
 
+type PickKeys<TKeys extends keyof TObject, TObject extends AnyObject> = Pick<TObject, TKeys>;
+
 export const pickKeys = <TObject extends AnyObject, const TPickArray extends Array<keyof TObject>>(
 	initialObject: TObject,
 	keysToPick: TPickArray
@@ -14,7 +16,7 @@ export const pickKeys = <TObject extends AnyObject, const TPickArray extends Arr
 		}
 	}
 
-	return updatedObject as Pick<TObject, TPickArray[number]>;
+	return updatedObject as PickKeys<TPickArray[number], TObject>;
 };
 
 export const pickKeysWithReduce = <
@@ -34,7 +36,7 @@ export const pickKeysWithReduce = <
 		return accumulator;
 	}, {});
 
-	return updatedObject as Pick<TObject, TPickArray[number]>;
+	return updatedObject as PickKeys<TPickArray[number], TObject>;
 };
 
 export const pickKeysWithFilter = <
@@ -50,5 +52,5 @@ export const pickKeysWithFilter = <
 
 	const updatedObject = Object.fromEntries(arrayFromFilteredObject);
 
-	return updatedObject as Pick<TObject, TPickArray[number]>;
+	return updatedObject as PickKeys<TPickArray[number], TObject>;
 };

@@ -1,5 +1,7 @@
 import type { AnyObject } from "@/type-helpers";
 
+type OmitKeys<TKeys extends keyof TObject, TObject extends AnyObject> = Omit<TObject, TKeys>;
+
 export const omitKeys = <TObject extends AnyObject, const TOmitArray extends Array<keyof TObject>>(
 	initialObject: TObject,
 	keysToOmit: TOmitArray
@@ -14,7 +16,7 @@ export const omitKeys = <TObject extends AnyObject, const TOmitArray extends Arr
 		}
 	}
 
-	return updatedObject as Omit<TObject, TOmitArray[number]>;
+	return updatedObject as OmitKeys<TOmitArray[number], TObject>;
 };
 
 export const omitKeysWithReduce = <
@@ -34,7 +36,7 @@ export const omitKeysWithReduce = <
 		return accumulator;
 	}, {});
 
-	return updatedObject as Omit<TObject, TOmitArray[number]>;
+	return updatedObject as OmitKeys<TOmitArray[number], TObject>;
 };
 
 export const omitKeysWithFilter = <
@@ -52,5 +54,5 @@ export const omitKeysWithFilter = <
 
 	const updatedObject = Object.fromEntries(arrayFromFilteredObject);
 
-	return updatedObject as Omit<TObject, TOmitArray[number]>;
+	return updatedObject as OmitKeys<TOmitArray[number], TObject>;
 };
