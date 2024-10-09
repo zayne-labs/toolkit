@@ -1,29 +1,14 @@
-export const omitKeys = <
-	TObject extends Record<string, unknown>,
-	const TOmitArray extends Array<keyof TObject>,
->(
-	initialObject: TObject,
-	keysToOmit: TOmitArray
-) => {
-	const arrayFromFilteredObject = Object.entries(initialObject).filter(
-		([key]) => !keysToOmit.includes(key)
-	);
+import type { AnyObject } from "@/type-helpers";
 
-	const updatedObject = Object.fromEntries(arrayFromFilteredObject);
-
-	return updatedObject as Omit<TObject, TOmitArray[number]>;
-};
-
-export const omitKeysWithDelete = <
-	TObject extends Record<string, unknown>,
-	const TOmitArray extends Array<keyof TObject>,
->(
+export const omitKeys = <TObject extends AnyObject, const TOmitArray extends Array<keyof TObject>>(
 	initialObject: TObject,
 	keysToOmit: TOmitArray
 ) => {
 	const updatedObject = { ...initialObject };
 
 	for (const key of keysToOmit) {
+		if (!Object.hasOwn(initialObject, key)) continue;
+
 		Reflect.deleteProperty(updatedObject, key);
 	}
 
@@ -31,7 +16,7 @@ export const omitKeysWithDelete = <
 };
 
 export const omitKeysWithReduce = <
-	TObject extends Record<string, unknown>,
+	TObject extends AnyObject,
 	const TOmitArray extends Array<keyof TObject>,
 >(
 	initialObject: TObject,
@@ -39,8 +24,12 @@ export const omitKeysWithReduce = <
 ) => {
 	const arrayFromObject = Object.entries(initialObject);
 
-	const updatedObject = arrayFromObject.reduce<Record<string, unknown>>((accumulator, [key, value]) => {
-		!keysToOmit.includes(key) && (accumulator[key] = value);
+	const keysToPickSet = new Set(keysToOmit);
+
+	const updatedObject = arrayFromObject.reduce<AnyObject>((accumulator, [key, value]) => {
+		if (!keysToPickSet.has(key)) {
+			accumulator[key] = value;
+		}
 
 		return accumulator;
 	}, {});
@@ -48,18 +37,20 @@ export const omitKeysWithReduce = <
 	return updatedObject as Omit<TObject, TOmitArray[number]>;
 };
 
-export const omitKeysWithLoop = <
-	TObject extends Record<string, unknown>,
+export const omitKeysWithFilter = <
+	TObject extends AnyObject,
 	const TOmitArray extends Array<keyof TObject>,
 >(
 	initialObject: TObject,
 	keysToOmit: TOmitArray
 ) => {
-	const updatedObject: Record<string, unknown> = {};
+	const keysToPickSet = new Set(keysToOmit);
 
-	for (const [key, value] of Object.entries(initialObject)) {
-		!keysToOmit.includes(key) && (updatedObject[key] = value);
-	}
+	const arrayFromFilteredObject = Object.entries(initialObject).filter(
+		([key]) => !keysToPickSet.has(key)
+	);
+
+	const updatedObject = Object.fromEntries(arrayFromFilteredObject);
 
 	return updatedObject as Omit<TObject, TOmitArray[number]>;
 };
