@@ -14,6 +14,22 @@ export const omitKeys = <
 	return updatedObject as Omit<TObject, TOmitArray[number]>;
 };
 
+export const omitKeysWithDelete = <
+	TObject extends Record<string, unknown>,
+	const TOmitArray extends Array<keyof TObject>,
+>(
+	initialObject: TObject,
+	keysToOmit: TOmitArray
+) => {
+	const updatedObject = { ...initialObject };
+
+	for (const key of keysToOmit) {
+		Reflect.deleteProperty(updatedObject, key);
+	}
+
+	return updatedObject as Omit<TObject, TOmitArray[number]>;
+};
+
 export const omitKeysWithReduce = <
 	TObject extends Record<string, unknown>,
 	const TOmitArray extends Array<keyof TObject>,
