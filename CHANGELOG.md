@@ -1,5 +1,14 @@
 # @zayne-labs/toolkit
 
+## 0.4.5
+
+### Patch Changes
+
+-  434c33c: refactor ♻️: pickkeys function to use set and reduce.
+
+   -  Remove specified keys from an object.
+   -  Refactor pickKeys function to use Set and reduce.
+
 ## 0.4.4
 
 ### Patch Changes
