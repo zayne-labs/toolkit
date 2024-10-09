@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.4.4
+
+### Patch Changes
+
+-  9463021: refactor ♻️: omitkeys function to support deleting keys using reflect.deleteproperty
+
 ## 0.4.3
 
 ### Patch Changes
