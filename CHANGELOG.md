@@ -1,29 +1,5 @@
 # @zayne-labs/toolkit
 
-## 0.4.11
-
-### Patch Changes
-
--  1e4bd95: .
-
-## 0.4.10
-
-### Patch Changes
-
--  6eb91ca: testing once more
-
-## 0.4.9
-
-### Patch Changes
-
--  ce4ebc5: still testing
-
-## 0.4.8
-
-### Patch Changes
-
--  4ce39a7: still testing tags
-
 ## 0.4.6
 
 ### Patch Changes
