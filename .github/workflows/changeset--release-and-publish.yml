@@ -51,3 +51,8 @@ jobs:
            env:
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+         # This step will push tags to the repository after the packages are published and will create a new release on Github
+         - name: Push git tag after publish
+           if: steps.changesets.outputs.published == 'true'
+           run: git push --follow-tags

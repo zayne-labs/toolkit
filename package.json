@@ -46,7 +46,7 @@
 		"lint:publint": "publint --strict .",
 		"lint:size": "size-limit",
 		"prepare": "husky",
-		"release": "changeset publish",
+		"release": "pnpm publish -r",
 		"test:release": "pkg-pr-new publish",
 		"version-package": "changeset version"
 	},
