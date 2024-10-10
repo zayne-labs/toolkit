@@ -5,6 +5,7 @@ permissions:
 
 on:
    push:
+      branches: main
       tags:
          - "v*"
 
@@ -25,8 +26,8 @@ jobs:
          - name: Setup Node.js
            uses: actions/setup-node@v4
            with:
+              registry-url: https://registry.npmjs.org/
               node-version: ${{ matrix.node-version }}
-              cache: "pnpm"
 
          - run: pnpx changelogithub
            env:
