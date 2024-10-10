@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.4.11
+
+### Patch Changes
+
+-  1e4bd95: .
+
 ## 0.4.10
 
 ### Patch Changes
