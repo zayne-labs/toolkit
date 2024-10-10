@@ -2,6 +2,8 @@ name: Changeset - Release and Publish
 on:
    push:
       branches: main
+      tags:
+         - "v*"
 
 permissions:
    contents: write
