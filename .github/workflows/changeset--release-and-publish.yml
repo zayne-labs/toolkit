@@ -46,7 +46,11 @@ jobs:
               commit: "[ci]: update package version"
               title: "[ci]: update package version"
               publish: pnpm release
-
            env:
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+         - name: Generate proper release note
+           run: pnpx changelogithub
+           env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
