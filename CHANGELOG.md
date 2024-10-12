@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.5.0
+
+### Minor Changes
+
+-  544fd67: add inferEnums type helper
+
 ## 0.4.12
 
 ### Patch Changes
