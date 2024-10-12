@@ -22,6 +22,17 @@ export type Writeable<TObject, TType extends "deep" | "shallow" = "shallow"> = {
 			: never;
 };
 
+export type InferEnum<TObject, TVariant extends "keys" | "values" = "values"> = TObject extends
+	| Array<infer TUnion>
+	| ReadonlyArray<infer TUnion>
+	| Set<infer TUnion>
+	? TUnion
+	: TObject extends Record<infer TKeys, infer TValues>
+		? TVariant extends "keys"
+			? TKeys
+			: Prettify<Writeable<TValues, "deep">>
+		: never;
+
 export type NonEmptyArray<TArrayItem> = [TArrayItem, ...TArrayItem[]];
 
 export type AnyObject = UnmaskType<Record<string, unknown>>;
