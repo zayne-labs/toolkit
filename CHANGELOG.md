@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.5.1
+
+### Patch Changes
+
+-  27ed30f: exposed popstate trigger for useLocation
+
 ## 0.5.0
 
 ### Minor Changes
