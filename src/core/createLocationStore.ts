@@ -29,19 +29,22 @@ const createLocationStore = (options: LocationStoreOptions = {}) => {
 
 	const { equalityFn = Object.is } = options;
 
+	const triggerPopstateEvent = (state?: unknown) => {
+		// == This has to be done in order to actually trigger the popState event, which usually only fires in the user clicks on the forward/back button.
+		// LINK - https://stackoverflow.com/a/37492075/18813022
+		window.dispatchEvent(new PopStateEvent("popstate", { state }));
+	};
+
 	const push = (url: string | URL, state: unknown = null) => {
 		window.history.pushState(state, "", url);
 
-		// == This has to be done in order to actually trigger the popState event, which usually only fires in the user clicks on the forward/back button.
-		// LINK - https://stackoverflow.com/a/37492075/18813022
-
-		window.dispatchEvent(new PopStateEvent("popstate", { state }));
+		triggerPopstateEvent(state);
 	};
 
 	const replace = (url: string | URL, state: unknown = null) => {
 		window.history.replaceState(state, "", url);
 
-		window.dispatchEvent(new PopStateEvent("popstate", { state }));
+		triggerPopstateEvent(state);
 	};
 
 	const setLocationState = (nextLocationState: LocationState) => {
@@ -102,6 +105,8 @@ const createLocationStore = (options: LocationStoreOptions = {}) => {
 		push,
 		replace,
 		subscribe,
+
+		triggerPopstateEvent,
 	};
 
 	return locationStore;
