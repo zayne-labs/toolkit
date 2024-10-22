@@ -1,5 +1,14 @@
-const setAnimationInterval = (onAnimation: () => void, intervalDuration: number | null) => {
-	let startTimeStamp: number | null;
+export type AnimationIntervelOptions = {
+	immediate?: boolean;
+	once?: boolean;
+};
+
+const setAnimationInterval = (
+	onAnimation: () => void,
+	intervalDuration: number | null,
+	options?: AnimationIntervelOptions
+) => {
+	let startTimeStamp: number | null = null;
 	let animationFrameId: number;
 
 	const smoothAnimation = (timeStamp: DOMHighResTimeStamp) => {
@@ -20,8 +29,18 @@ const setAnimationInterval = (onAnimation: () => void, intervalDuration: number 
 	};
 
 	const start = () => {
+		if (options?.once && intervalDuration) {
+			setTimeout(onAnimation, intervalDuration);
+
+			return;
+		}
+
 		animationFrameId = requestAnimationFrame(smoothAnimation);
 	};
+
+	if (options?.immediate) {
+		start();
+	}
 
 	const stop = () => {
 		cancelAnimationFrame(animationFrameId);

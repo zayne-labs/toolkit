@@ -1,20 +1,24 @@
 import { setAnimationInterval } from "@/core";
+import type { AnimationIntervelOptions } from "@/core/setAnimationInterval";
+import type { Prettify } from "@/type-helpers";
 import { useEffect } from "react";
 import { useCallbackRef } from "./useCallbackRef";
 import { useConstant } from "./useConstant";
 
-type AnimationOptions = {
-	intervalDuration: number | null;
-	onAnimation: () => void;
-};
+type AnimationOptions = Prettify<
+	AnimationIntervelOptions & {
+		intervalDuration: number | null;
+		onAnimation: () => void;
+	}
+>;
 
 const useAnimationInterval = (options: AnimationOptions) => {
-	const { intervalDuration, onAnimation } = options;
+	const { intervalDuration, onAnimation, once } = options;
 
 	const latestCallback = useCallbackRef(onAnimation);
 
 	// prettier-ignore
-	const { start, stop } = useConstant(() => setAnimationInterval(latestCallback, intervalDuration));
+	const { start, stop } = useConstant(() => setAnimationInterval(latestCallback, intervalDuration, { once }));
 
 	useEffect(() => {
 		if (intervalDuration === null) return;
