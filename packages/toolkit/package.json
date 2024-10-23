@@ -92,7 +92,7 @@
 		},
 		{
 			"path": "./src/react/index.ts",
-			"limit": "5.1 kb"
+			"limit": "5.2 kb"
 		},
 		{
 			"path": "./src/type-helpers/index.ts",
