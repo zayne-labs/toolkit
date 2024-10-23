@@ -1,0 +1,102 @@
+{
+	"name": "@zayne-labs/toolkit",
+	"type": "module",
+	"version": "0.5.2",
+	"packageManager": "pnpm@9.12.0",
+	"description": "A collection of utility functions, types and composables used by my other projects. Nothing too fancy but can be useful.",
+	"author": "Ryan Zayne",
+	"license": "MIT",
+	"homepage": "https://github.com/zayne-labs/toolkit#readme",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/zayne-labs/toolkit.git"
+	},
+	"bugs": {
+		"url": "https://github.com/zayne-labs/toolkit/issues"
+	},
+	"keywords": [
+		"utilities",
+		"types",
+		"hooks"
+	],
+	"sideEffects": false,
+	"exports": {
+		".": "./dist/esm-min/core/index.js",
+		"./react": "./dist/esm-min/react/index.js",
+		"./type-helpers": "./dist/esm-min/type-helpers/index.js"
+	},
+	"main": "./dist/esm-min/core/index.js",
+	"module": "./dist/esm-min/core/index.js",
+	"types": "./dist/esm-min/core/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"engines": {
+		"node": ">=18.x"
+	},
+	"scripts": {
+		"build": "tsup",
+		"build:dev": "cross-env NODE_ENV=development tsup",
+		"build:test": "concurrently --prefix-colors \"yellow.bold,#7da4f8.bold,magenta\" --names PUBLINT,TSUP 'pnpm:lint:publint' 'pnpm:build:dev'",
+		"lint:attw": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
+		"lint:check-types": "tsc --pretty --incremental -p tsconfig.json",
+		"lint:publint": "publint --strict .",
+		"lint:size": "size-limit",
+		"test:release": "pkg-pr-new publish"
+	},
+	"peerDependencies": {
+		"@types/react": "^18.0.0",
+		"react": "^18.0.0",
+		"sonner": "^1.5.0",
+		"zustand": "^5.0.0-rc.2"
+	},
+	"peerDependenciesMeta": {
+		"@types/react": {
+			"optional": true
+		},
+		"react": {
+			"optional": true
+		},
+		"sonner": {
+			"optional": true
+		},
+		"zustand": {
+			"optional": true
+		}
+	},
+	"devDependencies": {
+		"@arethetypeswrong/cli": "^0.16.4",
+		"@changesets/cli": "^2.27.9",
+		"@size-limit/esbuild-why": "^11.1.6",
+		"@size-limit/preset-small-lib": "^11.1.6",
+		"@total-typescript/ts-reset": "^0.6.1",
+		"@types/node": "^22.7.4",
+		"@zayne-labs/tsconfig": "catalog:",
+		"concurrently": "^9.0.1",
+		"cross-env": "^7.0.3",
+		"publint": "^0.2.11",
+		"size-limit": "^11.1.6",
+		"terser": "^5.34.1",
+		"tsup": "^8.3.0",
+		"typescript": "catalog:"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://registry.npmjs.org/",
+		"provenance": true
+	},
+	"size-limit": [
+		{
+			"path": "./src/core/index.ts",
+			"limit": "3 kb"
+		},
+		{
+			"path": "./src/react/index.ts",
+			"limit": "5.1 kb"
+		},
+		{
+			"path": "./src/type-helpers/index.ts",
+			"limit": "500 b"
+		}
+	]
+}

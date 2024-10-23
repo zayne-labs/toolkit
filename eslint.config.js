@@ -1,17 +1,17 @@
-import zayne from "@zayne-labs/eslint-config";
+import { zayne } from "@zayne-labs/eslint-config";
 
 export default zayne({
-	type: "lib",
-	ignores: ["dist/**", "eslint.config.js"],
-	react: true,
-	tailwindcss: true,
+	ignores: ["packages/toolkit/dist/**"],
 	node: {
 		overrides: {
-			"node/no-unsupported-features/node-builtins": "off",
 			"node/no-unsupported-features/es-syntax": "off",
+			"node/no-unsupported-features/node-builtins": "off",
 		},
 	},
+	react: true,
+	tailwindcss: true,
+	type: "lib",
 	typescript: {
-		tsconfigPath: "tsconfig.eslint.json",
+		tsconfigPath: ["dev/tsconfig.json", "packages/toolkit/tsconfig.json"],
 	},
 });

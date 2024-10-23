@@ -8,6 +8,6 @@
 		}
 	},
 
-	"include": ["src/**/*.ts"],
-	"exclude": ["dist", "node_modules"]
+	"include": ["src/**/*.ts", "**/*.ts"],
+	"exclude": ["dist", "node_modules/**"]
 }
