@@ -1,5 +1,13 @@
 # @zayne-labs/toolkit
 
+## 0.6.1
+
+### Patch Changes
+
+-  9516314: feat(toolkit): update type inference for forwarded refs
+
+   -  Update `InferProps` type to use `React.ComponentPropsWithRef` instead of `React.ComponentPropsWithoutRef` to correctly infer props for components with forwarded refs
+
 ## 0.6.0
 
 ### Minor Changes
