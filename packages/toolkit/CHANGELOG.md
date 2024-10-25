@@ -1,5 +1,15 @@
 # @zayne-labs/toolkit
 
+## 0.6.0
+
+### Minor Changes
+
+-  0172250: feat(toolkit): add new utils and exports
+
+   -  Add `toArray` utility to `core` module
+   -  Add `react/zustand` and `react/utils` exports to `package.json`
+   -  Update `tsup.config.ts` to include new entry points
+
 ## 0.5.2
 
 ### Patch Changes
