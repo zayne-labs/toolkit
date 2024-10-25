@@ -5,7 +5,13 @@ const isDevMode = process.env.NODE_ENV === "development";
 const sharedOptions = {
 	clean: true, // clean up dist folder,
 	dts: true, // generate d.ts
-	entry: ["src/core/index.ts", "src/react/index.ts", "src/type-helpers/index.ts"],
+	entry: [
+		"src/core/index.ts",
+		"src/react/index.ts",
+		"src/react/zustand//index.ts",
+		"src/react/utils/index.ts",
+		"src/type-helpers/index.ts",
+	],
 	format: ["esm"],
 	platform: "browser",
 	sourcemap: !isDevMode,

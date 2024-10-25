@@ -1,6 +1,6 @@
 import { isArray } from "@/type-helpers";
 import { isValidElement } from "react";
-import { toArray } from "./toArray";
+import { toArray } from "@/core/toArray";
 
 type Noop = () => void;
 type WithSlot = { slot?: string };

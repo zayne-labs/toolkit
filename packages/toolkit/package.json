@@ -23,6 +23,8 @@
 	"exports": {
 		".": "./dist/esm-min/core/index.js",
 		"./react": "./dist/esm-min/react/index.js",
+		"./react/utils": "./dist/esm-min/react/utils/index.js",
+		"./react/zustand": "./dist/esm-min/react/zustand/index.js",
 		"./type-helpers": "./dist/esm-min/type-helpers/index.js"
 	},
 	"main": "./dist/esm-min/core/index.js",

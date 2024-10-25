@@ -13,5 +13,6 @@ export * from "./pickKeys";
 export { PromiseWithResolvers } from "./promiseWithResolvers";
 export { setAnimationInterval } from "./setAnimationInterval";
 export { syncStateWithStorage } from "./syncStateWithStorage";
+export { toArray } from "./toArray";
 export * from "./throttle";
 export * from "./wait";
