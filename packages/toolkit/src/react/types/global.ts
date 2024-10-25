@@ -5,7 +5,7 @@ export type ForwardedRefType<TComponent extends HTMLElement | React.ElementType>
 
 export type InferProps<TComponent extends HTMLElement | React.ElementType> =
 	TComponent extends React.ElementType
-		? React.ComponentPropsWithoutRef<TComponent>
+		? React.ComponentPropsWithRef<TComponent>
 		: React.HTMLAttributes<TComponent>;
 
 export type StateSetter<TSetter = unknown> = React.Dispatch<React.SetStateAction<TSetter>>;
