@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.6.2
+
+### Patch Changes
+
+-  909c6db: feat: allowed milliseconds option for waitUntil
+
 ## 0.6.1
 
 ### Patch Changes
