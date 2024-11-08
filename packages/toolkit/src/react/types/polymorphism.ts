@@ -7,7 +7,7 @@ type PropsWithOptionalAs<TElement extends React.ElementType, TProps> = "as" exte
 
 // == Get all other primitive element props by Omitting the result of MergedProps from React.ComponentPropsWithoutRef
 type InferOtherProps<TElement extends React.ElementType, TProps> = Omit<
-	React.ComponentPropsWithoutRef<TElement>,
+	React.ComponentPropsWithRef<TElement>,
 	// == Removing children and className as well to give components control over these props
 	"children" | "className" | keyof PropsWithOptionalAs<TElement, TProps>
 >;
@@ -17,13 +17,3 @@ export type PolymorphicProps<
 	TElement extends React.ElementType,
 	TProps extends Record<string, unknown> = AsProp<TElement>,
 > = InferOtherProps<TElement, TProps> & PropsWithOptionalAs<TElement, TProps>;
-
-type RefProp<TElement extends React.ElementType> = {
-	ref?: React.ComponentPropsWithRef<TElement>["ref"];
-};
-
-// == For components with the Ref Prop
-export type PolymorphicPropsWithRef<
-	TElement extends React.ElementType,
-	TProps extends Record<string, unknown> = AsProp<TElement>,
-> = PolymorphicProps<TElement, TProps> & RefProp<TElement>;
