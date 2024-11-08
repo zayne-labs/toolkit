@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.6.3
+
+### Patch Changes
+
+-  9242b24: refactor: remake handleFile util
+
 ## 0.6.2
 
 ### Patch Changes
