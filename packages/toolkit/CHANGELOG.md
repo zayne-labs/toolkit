@@ -1,5 +1,14 @@
 # @zayne-labs/toolkit
 
+## 0.6.4
+
+### Patch Changes
+
+-  cc6c4d6: refactor(toolkit): update polymorphism types
+
+   -  Update `InferOtherProps` to use `React.ComponentPropsWithRef` instead of `React.ComponentPropsWithoutRef` to include ref prop
+   -  Remove the separate `RefProp` and `PolymorphicPropsWithRef` types as the ref prop is now included in `PolymorphicProps`
+
 ## 0.6.3
 
 ### Patch Changes
