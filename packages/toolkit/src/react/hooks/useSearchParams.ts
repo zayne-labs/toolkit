@@ -1,4 +1,4 @@
-import { isArray, isFunction, isObject } from "@/type-helpers";
+import { type UnmaskType, isArray, isFunction, isObject } from "@/type-helpers";
 import { useLocation } from "./useLocation";
 
 type KeyValuePair = [string, string];
@@ -31,17 +31,16 @@ export const createSearchParams = (paramsInit: URLSearchParamsInit = ""): URLSea
 
 type UseSearchParamsOptions = {
 	action?: "push" | "replace";
-	defaultValue?: string;
 };
 
 const useSearchParams = <TSearchParams extends URLSearchParamsInit>(options?: UseSearchParamsOptions) => {
-	const { action = "push", defaultValue } = options ?? {};
+	const { action = "push" } = options ?? {};
 
-	const [search, setSearch] = useLocation((state) => state.search, { search: defaultValue });
+	const [search, setSearch] = useLocation((state) => state.search);
 
 	const searchParams = new URLSearchParams(search);
 
-	type QueryParams = { _: TSearchParams | ((prev: TSearchParams) => TSearchParams) }["_"];
+	type QueryParams = UnmaskType<TSearchParams | ((prev: TSearchParams) => TSearchParams)>;
 
 	const setSearchParams = (queryParams: QueryParams) => {
 		const nextSearchParams = isFunction(queryParams)

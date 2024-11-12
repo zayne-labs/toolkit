@@ -10,21 +10,18 @@ export type LocationState = {
 };
 
 type LocationStoreOptions = {
-	defaultState?: Partial<LocationState>;
 	equalityFn?: EqualityFn<LocationState>;
 };
 
 /* eslint-disable unicorn/prefer-global-this */
 const createLocationStore = (options: LocationStoreOptions = {}) => {
-	const { defaultState, equalityFn = Object.is } = options;
+	const { equalityFn = Object.is } = options;
 
 	let locationState: LocationState = {
-		hash: isBrowser() ? (defaultState?.hash ?? window.location.hash) : "",
-		pathname: isBrowser() ? (defaultState?.pathname ?? window.location.pathname) : "",
-		search: isBrowser() ? (defaultState?.search ?? window.location.search) : "",
-		state: isBrowser()
-			? (defaultState?.state ?? (window.history.state as LocationState["state"]))
-			: null,
+		hash: isBrowser() ? window.location.hash : "",
+		pathname: isBrowser() ? window.location.pathname : "",
+		search: isBrowser() ? window.location.search : "",
+		state: isBrowser() ? (window.history.state as LocationState["state"]) : null,
 	};
 
 	const initialState = locationState;
