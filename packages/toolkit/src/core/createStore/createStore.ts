@@ -1,6 +1,5 @@
 import { isFunction } from "@/type-helpers/guard";
-import type { PrettyPick } from "@/type-helpers/types";
-import type { Listener, StoreApi, SubscribeOptions } from "./types";
+import type { EqualityFn, Listener, StoreApi } from "./types";
 
 export type StateInitializer<TState, TResult = TState> = (
 	get: StoreApi<TState>["getState"],
@@ -8,7 +7,9 @@ export type StateInitializer<TState, TResult = TState> = (
 	api: StoreApi<TState>
 ) => TResult;
 
-type StoreOptions<TState> = PrettyPick<SubscribeOptions<TState>, "equalityFn">;
+type StoreOptions<TState> = {
+	equalityFn?: EqualityFn<TState>;
+};
 
 const createStore = <TState>(
 	initializer: StateInitializer<TState>,

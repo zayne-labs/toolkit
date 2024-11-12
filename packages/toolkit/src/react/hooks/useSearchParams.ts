@@ -29,10 +29,15 @@ export const createSearchParams = (paramsInit: URLSearchParamsInit = ""): URLSea
 	return new URLSearchParams(arrayOfKeyValuePairs);
 };
 
-const useSearchParams = <TSearchParams extends URLSearchParamsInit>(
-	action: "push" | "replace" = "push"
-) => {
-	const [search, setSearch] = useLocation((state) => state.search);
+type UseSearchParamsOptions = {
+	action?: "push" | "replace";
+	defaultValue?: string;
+};
+
+const useSearchParams = <TSearchParams extends URLSearchParamsInit>(options?: UseSearchParamsOptions) => {
+	const { action = "push", defaultValue } = options ?? {};
+
+	const [search, setSearch] = useLocation((state) => state.search, { search: defaultValue });
 
 	const searchParams = new URLSearchParams(search);
 

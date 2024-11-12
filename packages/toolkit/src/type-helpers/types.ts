@@ -10,7 +10,7 @@ export type PrettyPick<TObject, Key extends keyof TObject> = Prettify<Pick<TObje
 
 export type CallbackFn<in TParams, out TResult = void> = (...params: TParams[]) => TResult;
 
-export type SelectorFn<in TStore, out TResult> = (state: TStore) => TResult;
+export type SelectorFn<TStore, TResult> = (state: TStore) => TResult;
 
 export type Writeable<TObject, TType extends "deep" | "shallow" = "shallow"> = {
 	-readonly [key in keyof TObject]: TType extends "shallow"

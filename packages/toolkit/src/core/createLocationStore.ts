@@ -1,6 +1,5 @@
-import type { Prettify } from "@/type-helpers";
 import { isBrowser } from "./constants";
-import type { StoreApi, SubscribeOptions } from "./createStore";
+import type { EqualityFn, StoreApi } from "./createStore";
 import { on } from "./on";
 
 export type LocationState = {
@@ -10,15 +9,22 @@ export type LocationState = {
 	state: NonNullable<unknown> | null;
 };
 
-type LocationStoreOptions = Prettify<Pick<SubscribeOptions<LocationState>, "equalityFn">>;
+type LocationStoreOptions = {
+	defaultState?: Partial<LocationState>;
+	equalityFn?: EqualityFn<LocationState>;
+};
 
 /* eslint-disable unicorn/prefer-global-this */
 const createLocationStore = (options: LocationStoreOptions = {}) => {
+	const { defaultState, equalityFn = Object.is } = options;
+
 	let locationState: LocationState = {
-		hash: isBrowser() ? window.location.hash : "",
-		pathname: isBrowser() ? window.location.pathname : "",
-		search: isBrowser() ? window.location.search : "",
-		state: isBrowser() ? (window.history.state as LocationState["state"]) : null,
+		hash: isBrowser() ? (defaultState?.hash ?? window.location.hash) : "",
+		pathname: isBrowser() ? (defaultState?.pathname ?? window.location.pathname) : "",
+		search: isBrowser() ? (defaultState?.search ?? window.location.search) : "",
+		state: isBrowser()
+			? (defaultState?.state ?? (window.history.state as LocationState["state"]))
+			: null,
 	};
 
 	const initialState = locationState;
@@ -26,8 +32,6 @@ const createLocationStore = (options: LocationStoreOptions = {}) => {
 	const getState = () => locationState;
 
 	const getInitialState = () => initialState;
-
-	const { equalityFn = Object.is } = options;
 
 	const triggerPopstateEvent = (state?: unknown) => {
 		// == This has to be done in order to actually trigger the popState event, which usually only fires in the user clicks on the forward/back button.

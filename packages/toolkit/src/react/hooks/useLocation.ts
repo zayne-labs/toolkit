@@ -15,9 +15,10 @@ type UseLocationResult<TSlice> = [
 ];
 
 const useLocation = <TSlice = LocationState>(
-	selector: SelectorFn<LocationState, TSlice> = (store) => store as TSlice
+	selector: SelectorFn<LocationState, TSlice>,
+	defaultLocationState: Partial<LocationState> = {}
 ) => {
-	const locationStore = useConstant(() => createLocationStore());
+	const locationStore = useConstant(() => createLocationStore({ defaultState: defaultLocationState }));
 
 	const stateSlice = useStore(locationStore as never, selector);
 

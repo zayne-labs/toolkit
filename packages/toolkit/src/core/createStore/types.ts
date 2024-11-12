@@ -12,8 +12,12 @@ export type Listener<TState> = UnmaskType<(state: TState, prevState: TState) => 
 
 type SelectorFn<TStore, TResult> = UnmaskType<(state: TStore) => TResult>;
 
+export type EqualityFn<TState> = UnmaskType<
+	(nextState: Partial<TState>, previousState: TState) => boolean
+>;
+
 export type SubscribeOptions<TState> = {
-	equalityFn?: (nextState: Partial<TState>, previousState: TState) => boolean;
+	equalityFn?: EqualityFn<TState>;
 	fireListenerImmediately?: boolean;
 };
 
