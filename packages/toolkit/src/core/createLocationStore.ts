@@ -105,7 +105,6 @@ const createLocationStore = (options: LocationStoreOptions = {}) => {
 		push,
 		replace,
 		subscribe,
-
 		triggerPopstateEvent,
 	};
 

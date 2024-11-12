@@ -48,6 +48,8 @@ const useSearchParams = <TSearchParams extends URLSearchParamsInit>(
 		setSearch[action](`?${params.toString()}`);
 	};
 
+	setSearchParams.triggerPopstate = setSearch.triggerPopstate;
+
 	return [searchParams, setSearchParams] as const;
 };
 
