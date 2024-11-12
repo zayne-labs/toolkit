@@ -1,5 +1,17 @@
 # @zayne-labs/toolkit
 
+## 0.6.5
+
+### Patch Changes
+
+-  247e617: feat(toolkit): add popstate event trigger to location hooks
+
+   -  Add `triggerPopstate` function to `useLocation` and `useSearchParams` hooks
+   -  Update `createLocationStore` to expose `triggerPopstateEvent` function
+   -  This allows triggering a popstate event manually
+
+-  907d3a4: add option for default value
+
 ## 0.6.4
 
 ### Patch Changes
