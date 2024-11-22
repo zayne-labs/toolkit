@@ -1,5 +1,13 @@
 # @zayne-labs/toolkit
 
+## 0.6.8
+
+### Patch Changes
+
+-  b61e915: fix(type-helpers): update isObject and isPlainObject functions
+   refactor(core): use isPlainObject instead of isObject in syncStateWithStorage
+   refactor(react): use isPlainObject instead of isObject in useSearch
+
 ## 0.6.7
 
 ### Patch Changes
