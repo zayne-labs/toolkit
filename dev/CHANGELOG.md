@@ -1,5 +1,12 @@
 # dev
 
+## 0.0.9
+
+### Patch Changes
+
+-  Updated dependencies [8d237d3]
+   -  @zayne-labs/toolkit@0.6.7
+
 ## 0.0.8
 
 ### Patch Changes
