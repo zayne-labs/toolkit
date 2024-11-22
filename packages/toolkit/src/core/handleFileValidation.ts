@@ -82,10 +82,12 @@ const handleFileValidation = (options: FileValidationOptions) => {
 		validFilesArray.push(file);
 	}
 
-	onSuccess?.({
-		acceptedFiles: validFilesArray,
-		message: `Uploaded ${validFilesArray.length} file${validFilesArray.length > 1 ? "s" : ""}!`,
-	});
+	if (validFilesArray.length > 0) {
+		onSuccess?.({
+			acceptedFiles: validFilesArray,
+			message: `Uploaded ${validFilesArray.length} file${validFilesArray.length > 1 ? "s" : ""}!`,
+		});
+	}
 
 	return validFilesArray;
 };
