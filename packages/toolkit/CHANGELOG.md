@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.6.6
+
+### Patch Changes
+
+-  9b6bf55: feat(toolkit): enhance file validation with error context and success callback
+
 ## 0.6.5
 
 ### Patch Changes
