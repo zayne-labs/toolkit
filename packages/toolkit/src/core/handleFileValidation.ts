@@ -1,4 +1,4 @@
-type ValidationRules = {
+type ValidationSettings = {
 	allowedFileTypes?: string[];
 	disallowDuplicates?: boolean;
 	fileLimit?: number;
@@ -6,22 +6,32 @@ type ValidationRules = {
 };
 
 type ErrorContext = {
+	cause: {
+		file: File;
+		setting: keyof ValidationSettings;
+	};
+	message: string;
+};
+
+type SuccessContext = {
+	acceptedFiles: File[];
 	message: string;
 };
 
 type FileValidationOptions = {
 	existingFileArray?: File[];
 	newFileList: FileList;
-	onError?: (errorContext: ErrorContext) => void;
-	validationRules?: ValidationRules;
+	onError?: (context: ErrorContext) => void;
+	onSuccess?: (context: SuccessContext) => void;
+	validationSettings?: ValidationSettings;
 };
 
 const toMegaByte = (size: number) => size * 1024 * 1024;
 
 const handleFileValidation = (options: FileValidationOptions) => {
-	const { existingFileArray = [], newFileList, onError, validationRules } = options;
+	const { existingFileArray = [], newFileList, onError, onSuccess, validationSettings = {} } = options;
 
-	const { allowedFileTypes, disallowDuplicates, fileLimit, maxFileSize } = validationRules ?? {};
+	const { allowedFileTypes, disallowDuplicates, fileLimit, maxFileSize } = validationSettings;
 
 	const validFilesArray: File[] = [];
 
@@ -38,7 +48,7 @@ const handleFileValidation = (options: FileValidationOptions) => {
 		if (fileLimit && isFileLimitReached(fileLimit)) {
 			const message = `Maximum file limit of ${fileLimit} files has been reached`;
 
-			onError?.({ message });
+			onError?.({ cause: { file, setting: "fileLimit" }, message });
 
 			break;
 		}
@@ -48,7 +58,7 @@ const handleFileValidation = (options: FileValidationOptions) => {
 
 			const message = `File type must be of: ${acceptedFilesString}`;
 
-			onError?.({ message });
+			onError?.({ cause: { file, setting: "allowedFileTypes" }, message });
 
 			continue;
 		}
@@ -56,7 +66,7 @@ const handleFileValidation = (options: FileValidationOptions) => {
 		if (maxFileSize && file.size > toMegaByte(maxFileSize)) {
 			const message = `Cannot upload a file larger than ${maxFileSize}mb`;
 
-			onError?.({ message });
+			onError?.({ cause: { file, setting: "maxFileSize" }, message });
 
 			continue;
 		}
@@ -64,13 +74,18 @@ const handleFileValidation = (options: FileValidationOptions) => {
 		if (disallowDuplicates && !isFileUnique(file)) {
 			const message = `File: "${file.name}" has already been selected`;
 
-			onError?.({ message });
+			onError?.({ cause: { file, setting: "disallowDuplicates" }, message });
 
 			continue;
 		}
 
 		validFilesArray.push(file);
 	}
+
+	onSuccess?.({
+		acceptedFiles: validFilesArray,
+		message: `Uploaded ${validFilesArray.length} file${validFilesArray.length > 1 ? "s" : ""}!`,
+	});
 
 	return validFilesArray;
 };
