@@ -1,4 +1,4 @@
-import { isArray, isObject } from "@/type-helpers";
+import { isArray, isPlainObject } from "@/type-helpers";
 import { pickKeys } from "./pickKeys";
 
 type SyncStorageParams =
@@ -22,14 +22,14 @@ const syncStateWithStorage: SyncStateWithStorage = (...params: SyncStorageParams
 	const [storageKey, state, keysToOmit] = params;
 
 	switch (true) {
-		case isObject(state) && keysToOmit !== undefined: {
+		case isPlainObject(state) && keysToOmit !== undefined: {
 			const stateSlice = pickKeys(state, keysToOmit);
 
 			localStorage.setItem(storageKey, JSON.stringify(stateSlice));
 			break;
 		}
 
-		case isObject(state) || isArray(state): {
+		case isPlainObject(state) || isArray(state): {
 			localStorage.setItem(storageKey, JSON.stringify(state));
 			break;
 		}

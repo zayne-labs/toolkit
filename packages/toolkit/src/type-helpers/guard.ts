@@ -6,12 +6,15 @@ export const isArray = <TArray>(value: unknown): value is TArray[] => Array.isAr
 
 export const isFormData = (value: unknown) => value instanceof FormData;
 
-export const isObject = <TObject extends AnyObject>(value: unknown): value is TObject => {
-	return typeof value === "object" && value !== null && !isArray(value);
+export const isObject = (value: unknown) => {
+	return typeof value === "object" && value !== null;
 };
 
-// eslint-disable-next-line ts-eslint/no-unsafe-function-type
-export const isPlainObject = (value: unknown, Class?: Function) => {
+export const isPlainObject = <TObject extends AnyObject>(
+	value: unknown,
+	// eslint-disable-next-line ts-eslint/no-unsafe-function-type
+	Class?: Function
+): value is TObject => {
 	if (!isObject(value)) {
 		return false;
 	}
@@ -38,3 +41,5 @@ export const isAsyncFunction = <TAsyncFunction extends AnyAsyncFunction>(
 ): value is TAsyncFunction => {
 	return isFunction(value) && value.constructor.name === "AsyncFunction";
 };
+
+export const isFile = (value: unknown) => value instanceof File;

@@ -1,4 +1,4 @@
-import { isObject } from "@/type-helpers";
+import { isPlainObject } from "@/type-helpers";
 import { useState } from "react";
 import { useAfterMountEffect } from "./effects/useAfterMountEffect";
 import { useDebouncedFn } from "./useDebounce";
@@ -28,7 +28,7 @@ const useSearch = <TData>(initialData: TData[], delay?: number) => {
 				return item.toString().toLowerCase().includes(query);
 			}
 
-			if (isObject(item)) {
+			if (isPlainObject(item)) {
 				return checkObjectPropsForQuery(item, query);
 			}
 
