@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.6.7
+
+### Patch Changes
+
+-  8d237d3: fix(toolkit): only call onSuccess callback when there are valid files
+
 ## 0.6.6
 
 ### Patch Changes
