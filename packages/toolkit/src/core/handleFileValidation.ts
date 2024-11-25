@@ -5,7 +5,7 @@ type ValidationSettings = {
 	maxFileSize?: number;
 };
 
-type ErrorContext = {
+type FileValidationErrorContext = {
 	cause: {
 		file: File;
 		setting: keyof ValidationSettings;
@@ -13,16 +13,16 @@ type ErrorContext = {
 	message: string;
 };
 
-type SuccessContext = {
+type FileValidationSuccessContext = {
 	acceptedFiles: File[];
 	message: string;
 };
 
-type FileValidationOptions = {
+export type FileValidationOptions = {
 	existingFileArray?: File[];
 	newFileList: FileList;
-	onError?: (context: ErrorContext) => void;
-	onSuccess?: (context: SuccessContext) => void;
+	onError?: (context: FileValidationErrorContext) => void;
+	onSuccess?: (context: FileValidationSuccessContext) => void;
 	validationSettings?: ValidationSettings;
 };
 

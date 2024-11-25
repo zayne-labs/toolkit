@@ -32,14 +32,14 @@ const debounce = <TParams>(
 	const $clearMainTimeout = (): void => void (timeoutId && clearTimeout(timeoutId));
 
 	// Overloads
+	/**
+	 * @description - The debounced function
+	 * @param params - The parameters to pass to the callbackFn
+	 */
 	function debouncedFn(...params: TParams[]): void;
 	function debouncedFn(params: TParams | TParams[], overrideOptions: { $delay: number }): void;
 
 	// Implementation
-	/**
-	 * The debounced function
-	 * @param params - The parameters to pass to the callbackFn
-	 */
 	function debouncedFn(...params: DebouncedFnParams<TParams>) {
 		const overrideOptions = isObject(params[1]) && "$delay" in params[1] ? params[1] : null;
 

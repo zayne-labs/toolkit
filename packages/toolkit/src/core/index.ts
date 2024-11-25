@@ -14,6 +14,7 @@ export { PromiseWithResolvers } from "./promiseWithResolvers";
 export { setAnimationInterval } from "./setAnimationInterval";
 export { syncStateWithStorage } from "./syncStateWithStorage";
 export { toArray } from "./toArray";
-export { handleFileValidation } from "./handleFileValidation";
+export * from "./handleFileValidation";
+export * from "./handleImagePreview";
 export * from "./throttle";
 export * from "./wait";

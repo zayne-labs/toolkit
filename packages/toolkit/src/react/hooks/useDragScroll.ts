@@ -1,5 +1,6 @@
 import { checkIsDeviceMobileOrTablet, off, on } from "@/core";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import { useEffectOnce } from "./effects";
 import { useCallbackRef } from "./useCallbackRef";
 
 /* eslint-disable no-param-reassign */
@@ -101,7 +102,8 @@ const useDragScroll = <TElement extends HTMLElement>(options: DragScrollOptions 
 		on("mouseleave", dragContainerRef.current, handleMouseUpOrLeave);
 	});
 
-	useEffect(() => {
+	// TODO - Change to callback ref node in future
+	useEffectOnce(() => {
 		if (!dragContainerRef.current) return;
 
 		handleScrollSnap(dragContainerRef.current);
@@ -109,8 +111,7 @@ const useDragScroll = <TElement extends HTMLElement>(options: DragScrollOptions 
 		const cleanup = on("mousedown", dragContainerRef.current, handleMouseDown);
 
 		return cleanup;
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	});
 
 	const dragScrollProps = {
 		ref: dragContainerRef,
