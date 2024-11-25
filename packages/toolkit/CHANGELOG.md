@@ -1,5 +1,15 @@
 # @zayne-labs/toolkit
 
+## 0.7.0
+
+### Minor Changes
+
+-  9f56ef9: feat(core): add handleImagePreview function
+   feat(core): add FileValidationOptions and related types
+   feat(core): export handleFileValidation and handleImagePreview
+   feat(toolkit): add tailwind config
+   chore(deps): update dependencies
+
 ## 0.6.8
 
 ### Patch Changes
