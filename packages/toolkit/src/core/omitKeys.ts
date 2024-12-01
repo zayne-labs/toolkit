@@ -56,3 +56,23 @@ export const omitKeysWithFilter = <
 
 	return updatedObject as OmitKeys<TOmitArray[number], TObject>;
 };
+
+export const omitKeysWithDelete = <
+	TObject extends AnyObject,
+	const TOmitArray extends Array<keyof TObject>,
+>(
+	initialObject: TObject,
+	keysToOmit: TOmitArray
+) => {
+	const keysToOmitSet = new Set(keysToOmit);
+
+	const updatedObject = { ...initialObject };
+
+	for (const key of Object.keys(updatedObject)) {
+		if (keysToOmitSet.has(key)) {
+			Reflect.deleteProperty(updatedObject, key);
+		}
+	}
+
+	return updatedObject as OmitKeys<TOmitArray[number], TObject>;
+};
