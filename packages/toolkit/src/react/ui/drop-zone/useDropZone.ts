@@ -1,11 +1,11 @@
 "use client";
 
-import { cnMerge } from "@/core/cn";
 import { type FileValidationOptions, handleFileValidation } from "@/core";
-import { useCallbackRef, useToggle } from "@/react/hooks";
+import { cnMerge } from "@/core/cn";
+import { useCallbackRef, useToggle } from "@/react";
+import type { InferProps } from "@/react/util-types";
 import { isFunction, isObject } from "@/type-helpers";
 import { type ChangeEvent, type DragEvent, useRef, useState } from "react";
-import type { InferProps } from "@/react/types";
 
 type RenderProps = {
 	acceptedFiles: File[];
@@ -13,9 +13,9 @@ type RenderProps = {
 	isDragging: boolean;
 };
 
-type InputProps = Omit<InferProps<"input">, "children" | "onDrop"> & {
+type InputProps = Omit<InferProps<"input">, "children"> & {
 	children?: React.ReactNode | ((props: RenderProps) => React.ReactNode);
-	classNames?: { activeDragState?: string; base?: string; input?: string };
+	classNames?: { activeDrag?: string; base?: string; input?: string };
 };
 
 export type DropZoneProps = {
@@ -25,7 +25,7 @@ export type DropZoneProps = {
 
 	existingFiles?: File[];
 
-	onUpload: (details: {
+	onUpload?: (details: {
 		acceptedFiles: File[];
 		event: ChangeEvent<HTMLInputElement> | DragEvent<HTMLDivElement>;
 	}) => void;
@@ -110,7 +110,7 @@ const useDropZone = (props: UseDropZoneProps) => {
 
 			setAcceptedFiles(validFilesArray);
 
-			onUpload({ acceptedFiles: validFilesArray, event });
+			onUpload?.({ acceptedFiles: validFilesArray, event });
 		}
 	);
 
@@ -137,7 +137,7 @@ const useDropZone = (props: UseDropZoneProps) => {
 		className: cnMerge(
 			"relative isolate flex w-full flex-col",
 			classNames?.base,
-			isDragging && ["opacity-60", classNames?.activeDragState]
+			isDragging && ["opacity-60", classNames?.activeDrag]
 		),
 		"data-drag-active": isDragging,
 		onDragLeave: handleDragLeave,
@@ -145,7 +145,7 @@ const useDropZone = (props: UseDropZoneProps) => {
 		onDrop: handleFileUpload,
 	});
 
-	const getInputProps = (): InputProps => ({
+	const getInputProps = (): Omit<InputProps, "children"> => ({
 		accept: allowedFileTypes ? allowedFileTypes.join(", ") : accept,
 		className: cnMerge(
 			"absolute inset-0 z-[100] cursor-pointer opacity-0",

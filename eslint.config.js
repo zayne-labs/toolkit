@@ -5,7 +5,7 @@ export default zayne({
 	react: true,
 	tailwindcss: {
 		settings: {
-			config: "packages/toolkit/tailwind.config.js",
+			config: "packages/toolkit/tailwind.config.ts",
 		},
 	},
 	type: "lib",

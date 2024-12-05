@@ -23,7 +23,11 @@
 	"exports": {
 		".": "./dist/esm-min/core/index.js",
 		"./react": "./dist/esm-min/react/index.js",
-		"./react/ui": "./dist/esm-min/react/ui/index.js",
+		"./react/util-types": "./dist/esm-min/react/util-types/index.js",
+		"./react/ui": "./dist/esm-ui/index.js",
+		"./react/ui/form": "./dist/esm-ui/form/index.js",
+		"./react/ui/carousel": "./dist/esm-ui/carousel/index.js",
+		"./react/ui/drop-zone": "./dist/esm-ui/drop-zone/index.js",
 		"./react/utils": "./dist/esm-min/react/utils/index.js",
 		"./react/zustand": "./dist/esm-min/react/zustand/index.js",
 		"./type-helpers": "./dist/esm-min/type-helpers/index.js"
@@ -39,6 +43,7 @@
 	},
 	"scripts": {
 		"build": "tsup",
+		"build:css": "pnpm tailwindcss -i ./src/react/tailwind.css -o ./dist/tailwind.css",
 		"build:dev": "cross-env NODE_ENV=development tsup",
 		"build:test": "concurrently --prefix-colors \"yellow.bold,#7da4f8.bold,magenta\" --names PUBLINT,TSUP 'pnpm:lint:publint' 'pnpm:build:dev'",
 		"lint:attw": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
@@ -83,6 +88,7 @@
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.16.4",
 		"@changesets/cli": "^2.27.9",
+		"@iconify/react": "^5.0.2",
 		"@size-limit/esbuild-why": "^11.1.6",
 		"@size-limit/preset-small-lib": "^11.1.6",
 		"@total-typescript/ts-reset": "^0.6.1",
@@ -90,9 +96,13 @@
 		"@zayne-labs/tsconfig": "catalog:",
 		"concurrently": "^9.0.1",
 		"cross-env": "^7.0.3",
+		"prettier": "^3.4.2",
+		"prettier-plugin-classnames": "^0.7.4",
+		"prettier-plugin-merge": "^0.7.1",
+		"prettier-plugin-tailwindcss": "^0.6.9",
 		"publint": "^0.2.11",
 		"size-limit": "^11.1.6",
-		"tailwindcss": "^3.4.15",
+		"tailwindcss": "3.4.16",
 		"terser": "^5.34.1",
 		"tsup": "^8.3.0",
 		"typescript": "catalog:"

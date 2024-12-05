@@ -1,4 +1,4 @@
-import type { PolymorphicProps } from "@/react/types";
+import type { PolymorphicProps } from "@/react/util-types";
 
 // prettier-ignore
 type RenderPropFn<TArrayItem> = (

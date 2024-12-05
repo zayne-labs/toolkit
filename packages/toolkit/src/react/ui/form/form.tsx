@@ -1,9 +1,9 @@
 "use client";
 
-import { cnMerge } from "@/core/cn";
 import { toArray } from "@/core";
-import { createCustomContext, useToggle } from "@/react/hooks";
-import type { InferProps, PolymorphicProps } from "@/react/types";
+import { cnMerge } from "@/core/cn";
+import { createCustomContext, useToggle } from "@/react";
+import type { InferProps, PolymorphicProps } from "@/react/util-types";
 import { getOtherChildren, getSlotElement } from "@/react/utils";
 import { Fragment as ReactFragment, useEffect, useId, useMemo, useRef } from "react";
 import {
@@ -21,8 +21,8 @@ import {
 	useFormState,
 	useFormContext as useHookFormContext,
 } from "react-hook-form";
-import { getElementList } from "./Slot";
-import { IconBox } from "./IconBox";
+import { getElementList } from "../For";
+import { IconBox } from "../IconBox";
 
 type FieldValues = Record<string, unknown>;
 
@@ -47,7 +47,7 @@ const [LaxFormItemProvider, useLaxFormItemContext] = createCustomContext<Context
 	strict: false,
 });
 
-function FormRoot<TValues extends FieldValues>(props: FormRootProps<TValues>) {
+export function FormRoot<TValues extends FieldValues>(props: FormRootProps<TValues>) {
 	const { children, className, methods, ...restOfProps } = props;
 
 	return (
@@ -73,7 +73,7 @@ type FormItemProps<TControl, TFieldValues extends FieldValues> = (TControl exten
 	withWrapper?: boolean;
 };
 
-function FormItem<TControl, TFieldValues extends FieldValues = FieldValues>(
+export function FormItem<TControl, TFieldValues extends FieldValues = FieldValues>(
 	props: FormItemProps<TControl, TFieldValues>
 ) {
 	const { children, className, name, withWrapper = true } = props;
@@ -100,7 +100,7 @@ function FormItem<TControl, TFieldValues extends FieldValues = FieldValues>(
 	);
 }
 
-function FormLabel(props: InferProps<"label">) {
+export function FormLabel(props: InferProps<"label">) {
 	const { uniqueId } = useStrictFormItemContext();
 	const { children, className, ...restOfProps } = props;
 
@@ -111,7 +111,7 @@ function FormLabel(props: InferProps<"label">) {
 	);
 }
 
-function FormInputGroup(props: React.ComponentPropsWithRef<"div">) {
+export function FormInputGroup(props: React.ComponentPropsWithRef<"div">) {
 	const { children, className, ...restOfProps } = props;
 	const LeftItemSlot = getSlotElement(children, FormInputLeftItem);
 	const RightItemSlot = getSlotElement(children, FormInputRightItem);
@@ -132,7 +132,7 @@ type FormSideItemProps = {
 	className?: string;
 };
 
-function FormInputLeftItem<TElement extends React.ElementType = "span">(
+export function FormInputLeftItem<TElement extends React.ElementType = "span">(
 	props: PolymorphicProps<TElement, FormSideItemProps>
 ) {
 	const { children, className, ...restOfProps } = props;
@@ -145,7 +145,7 @@ function FormInputLeftItem<TElement extends React.ElementType = "span">(
 }
 FormInputLeftItem.slot = Symbol.for("leftItem");
 
-function FormInputRightItem<TElement extends React.ElementType = "span">(
+export function FormInputRightItem<TElement extends React.ElementType = "span">(
 	props: PolymorphicProps<TElement, FormSideItemProps>
 ) {
 	const { as: Element = "span", children, className, ...restOfProps } = props;
@@ -158,7 +158,7 @@ function FormInputRightItem<TElement extends React.ElementType = "span">(
 }
 FormInputRightItem.slot = Symbol.for("rightItem");
 
-export type FormInputPrimitiveProps<TFieldValues extends FieldValues = FieldValues> = Omit<
+type FormInputPrimitiveProps<TFieldValues extends FieldValues = FieldValues> = Omit<
 	React.ComponentPropsWithRef<"input">,
 	"children"
 > & {
@@ -172,7 +172,7 @@ export type FormInputPrimitiveProps<TFieldValues extends FieldValues = FieldValu
 
 const inputTypesWithoutFullWith = new Set<React.HTMLInputTypeAttribute>(["checkbox", "radio"]);
 
-function FormInputPrimitive<TFieldValues extends FieldValues>(
+export function FormInputPrimitive<TFieldValues extends FieldValues>(
 	props: FormInputPrimitiveProps<TFieldValues>
 ) {
 	const contextValues = useLaxFormItemContext();

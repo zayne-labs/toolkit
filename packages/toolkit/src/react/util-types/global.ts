@@ -10,4 +10,5 @@ export type InferProps<TComponent extends HTMLElement | React.ElementType> =
 
 export type StateSetter<TSetter = unknown> = React.Dispatch<React.SetStateAction<TSetter>>;
 
-export type MyCustomCss = React.CSSProperties & Record<`--${string}`, string>; // Allows Ts support for inline css variables
+export type MyCustomCss<TExtra extends Record<string, string> = NonNullable<unknown>> =
+	React.CSSProperties & Record<`--${string}`, string> & TExtra; // Allows Ts support for inline css variables

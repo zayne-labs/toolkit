@@ -44,4 +44,4 @@ Show.Fallback = ShowFallback;
 Show.Content = ShowContent;
 Show.OtherWise = ShowFallback;
 
-export default Show;
+export { Show };

@@ -7,8 +7,13 @@ const sharedOptions = {
 	dts: true, // generate d.ts
 	entry: [
 		"src/core/index.ts",
+		"src/core/cn.ts",
 		"src/react/index.ts",
 		"src/react/ui/index.ts",
+		"src/react/ui/form/index.ts",
+		"src/react/ui/drop-zone/index.ts",
+		"src/react/ui/carousel/index.ts",
+		"src/react/util-types/index.ts",
 		"src/react/utils/index.ts",
 		"src/react/zustand/index.ts",
 		"src/type-helpers/index.ts",
@@ -28,6 +33,22 @@ export default defineConfig([
 		name: "ESM",
 		outDir: "./dist/esm",
 	},
+
+	// {
+	// 	...sharedOptions,
+	// 	entry: [],
+	// 	esbuildOptions: (options) => {
+	// 		// Append "use client" to the top of the react entry point
+	// 		// eslint-disable-next-line no-param-reassign
+	// 		options.banner = {
+	// 			js: '"use client";',
+	// 		};
+	// 	},
+	// 	name: "ESM-UI",
+	// 	outDir: "./dist/esm-ui",
+	// 	splitting: false,
+	// 	treeshake: false,
+	// },
 
 	{
 		...sharedOptions,

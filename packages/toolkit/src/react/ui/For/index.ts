@@ -1,2 +1,2 @@
-export * as For from "./For";
+export * from "./For";
 export { getElementList } from "./getElementList";

@@ -1,4 +1,4 @@
-import { useEffectOnce, useMountEffect } from "@/react/hooks";
+import { useEffectOnce, useMountEffect } from "@/react";
 import { type AnyString, isString } from "@/type-helpers";
 import { useState } from "react";
 import { createPortal } from "react-dom";

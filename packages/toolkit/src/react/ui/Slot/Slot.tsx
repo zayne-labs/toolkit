@@ -1,7 +1,7 @@
+import type { InferProps } from "@/react/util-types";
 import { isArray } from "@/type-helpers";
 import { Children, cloneElement, isValidElement } from "react";
 import SlotClone from "./SlotClone";
-import type { InferProps } from "@/react/types";
 
 type SlotProps = InferProps<HTMLElement>;
 

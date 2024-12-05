@@ -1,6 +1,4 @@
 /* eslint-disable unicorn/filename-case */
-/* eslint-disable perfectionist/sort-object-types */
-
 type ParseJSON = {
 	<TResult>(value: string): TResult;
 	<TResult>(value: string | null | undefined): TResult | null;

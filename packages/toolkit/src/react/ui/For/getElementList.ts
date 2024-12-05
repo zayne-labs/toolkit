@@ -5,7 +5,7 @@ type GetElementListResult<TVariant extends "base" | "withWrapper"> = TVariant ex
 	: [typeof For.List];
 
 const getElementList = <TVariant extends "base" | "withWrapper" = "withWrapper">(
-	variant: TVariant
+	variant?: TVariant
 ): GetElementListResult<TVariant> => {
 	switch (variant) {
 		case "base": {
