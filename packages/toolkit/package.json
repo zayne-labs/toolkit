@@ -23,6 +23,7 @@
 	"exports": {
 		".": "./dist/esm-min/core/index.js",
 		"./react": "./dist/esm-min/react/index.js",
+		"./react/ui": "./dist/esm-min/react/ui/index.js",
 		"./react/utils": "./dist/esm-min/react/utils/index.js",
 		"./react/zustand": "./dist/esm-min/react/zustand/index.js",
 		"./type-helpers": "./dist/esm-min/type-helpers/index.js"
@@ -48,14 +49,31 @@
 	},
 	"peerDependencies": {
 		"@types/react": "^18.0.0",
+		"@types/react-dom": "^18.0.0",
+		"clsx": "^2.1.1",
 		"react": "^18.0.0",
-		"zustand": "^5.0.0-rc.2"
+		"react-dom": "^18.0.0",
+		"react-hook-form": "^7.53.2",
+		"tailwind-merge": "^2.5.5",
+		"zustand": "^5.0.0"
 	},
 	"peerDependenciesMeta": {
 		"@types/react": {
 			"optional": true
 		},
+		"@types/react-dom": {
+			"optional": true
+		},
+		"clsx": {
+			"optional": true
+		},
 		"react": {
+			"optional": true
+		},
+		"react-dom": {
+			"optional": true
+		},
+		"tailwind-merge": {
 			"optional": true
 		},
 		"zustand": {

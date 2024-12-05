@@ -8,8 +8,9 @@ const sharedOptions = {
 	entry: [
 		"src/core/index.ts",
 		"src/react/index.ts",
-		"src/react/zustand//index.ts",
+		"src/react/ui/index.ts",
 		"src/react/utils/index.ts",
+		"src/react/zustand/index.ts",
 		"src/type-helpers/index.ts",
 	],
 	format: ["esm"],
