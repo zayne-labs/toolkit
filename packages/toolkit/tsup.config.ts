@@ -28,11 +28,11 @@ const sharedOptions = {
 } satisfies Options;
 
 export default defineConfig([
-	{
-		...sharedOptions,
-		name: "ESM",
-		outDir: "./dist/esm",
-	},
+	// {
+	// 	...sharedOptions,
+	// 	name: "ESM",
+	// 	outDir: "./dist/esm",
+	// },
 
 	// {
 	// 	...sharedOptions,
