@@ -5,7 +5,7 @@ function DropZone(props: UseDropZoneProps) {
 
 	return (
 		<div {...api.getRootProps()}>
-			<input type="file" {...api.getInputProps()} />
+			<input {...api.getInputProps()} />
 
 			{api.getChildren()}
 		</div>

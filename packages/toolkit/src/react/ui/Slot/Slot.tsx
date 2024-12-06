@@ -1,4 +1,4 @@
-import type { InferProps } from "@/react/util-types";
+import type { InferProps } from "@/react";
 import { isArray } from "@/type-helpers";
 import { Children, cloneElement, isValidElement } from "react";
 import SlotClone from "./SlotClone";
@@ -29,8 +29,7 @@ function Slot(props: SlotProps) {
 
 	if (slottable) {
 		// == The new element to render is the one passed as a child of `Slottable`
-		// eslint-disable-next-line ts-eslint/no-unsafe-member-access
-		const newElement = slottable.props.children as unknown;
+		const newElement = (slottable.props as SlotProps).children;
 
 		const newElementChildren = childrenArray.map((child) => {
 			if (child !== slottable) {

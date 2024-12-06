@@ -2,8 +2,7 @@
 
 import { toArray } from "@/core";
 import { cnMerge } from "@/core/cn";
-import { createCustomContext, useToggle } from "@/react";
-import type { InferProps, PolymorphicProps } from "@/react/util-types";
+import { type InferProps, type PolymorphicProps, createCustomContext, useToggle } from "@/react";
 import { getOtherChildren, getSlotElement } from "@/react/utils";
 import { Fragment as ReactFragment, useEffect, useId, useMemo, useRef } from "react";
 import {
@@ -541,3 +540,4 @@ export const TextArea = FormTextArea;
 export const Controller = FormController;
 
 export { Controller as ControllerPrimitive } from "react-hook-form";
+

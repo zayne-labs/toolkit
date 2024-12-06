@@ -24,7 +24,6 @@
 		".": "./dist/esm-min/core/index.js",
 		"./react": "./dist/esm-min/react/index.js",
 		"./react/styles": "./dist/build.css",
-		"./react/util-types": "./dist/esm-min/react/util-types/index.js",
 		"./react/ui": "./dist/esm-min/react/ui/index.js",
 		"./react/ui/form": "./dist/esm-min/react/ui/form/index.js",
 		"./react/ui/carousel": "./dist/esm-min/react/ui/carousel/index.js",
@@ -54,11 +53,11 @@
 		"test:release": "pkg-pr-new publish"
 	},
 	"peerDependencies": {
-		"@types/react": "^18.0.0",
-		"@types/react-dom": "^18.0.0",
+		"@types/react": ">=18.0.0",
+		"@types/react-dom": ">=18.0.0",
 		"clsx": "^2.1.1",
-		"react": "^18.0.0",
-		"react-dom": "^18.0.0",
+		"react": ">=18.0.0",
+		"react-dom": ">=18.0.0",
 		"react-hook-form": "^7.53.2",
 		"tailwind-merge": "^2.5.5",
 		"zustand": "^5.0.0"
@@ -87,13 +86,15 @@
 		}
 	},
 	"devDependencies": {
-		"@arethetypeswrong/cli": "^0.16.4",
+		"@arethetypeswrong/cli": "^0.17.1",
 		"@changesets/cli": "^2.27.9",
 		"@iconify/react": "^5.0.2",
 		"@size-limit/esbuild-why": "^11.1.6",
 		"@size-limit/preset-small-lib": "^11.1.6",
 		"@total-typescript/ts-reset": "^0.6.1",
 		"@types/node": "^22.7.4",
+		"@types/react": "19.0.1",
+		"@types/react-dom": "19.0.1",
 		"@zayne-labs/tsconfig": "catalog:",
 		"concurrently": "^9.0.1",
 		"cross-env": "^7.0.3",

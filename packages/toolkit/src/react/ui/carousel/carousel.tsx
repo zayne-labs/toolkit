@@ -1,7 +1,7 @@
 "use client";
 
 import { cnMerge } from "@/core/cn";
-import type { MyCustomCss, PolymorphicProps } from "@/react/util-types";
+import type { MyCustomCss, PolymorphicProps } from "@/react";
 import { getElementList } from "../For";
 import { IconBox } from "../IconBox";
 import { useCarouselStore } from "./carouselStoreContext";
@@ -56,10 +56,10 @@ export function CarouselContent<TElement extends React.ElementType = "article">(
 }
 
 export function CarouselButton(props: CarouselButtonsProps) {
-	const { classNames, icon, type } = props;
+	const { classNames, icon, variant } = props;
 
 	const nextOrPreviousSlide = useCarouselStore((state) =>
-		type === "prev" ? state.actions.previousSlide : state.actions.nextSlide
+		variant === "prev" ? state.actions.previousSlide : state.actions.nextSlide
 	);
 
 	return (
@@ -67,7 +67,7 @@ export function CarouselButton(props: CarouselButtonsProps) {
 			type="button"
 			className={cnMerge(
 				"z-30 flex h-full w-[15%] items-center",
-				type === "prev" ? "justify-start" : "justify-end",
+				variant === "prev" ? "justify-start" : "justify-end",
 				classNames?.base
 			)}
 			onClick={nextOrPreviousSlide}
@@ -76,7 +76,7 @@ export function CarouselButton(props: CarouselButtonsProps) {
 				{icon ?? (
 					<IconBox
 						icon="lucide:circle-chevron-left"
-						className={cnMerge(type === "next" && "rotate-180", classNames?.defaultIcon)}
+						className={cnMerge(variant === "next" && "rotate-180", classNames?.defaultIcon)}
 					/>
 				)}
 			</span>
@@ -92,7 +92,7 @@ export function CarouselControls(props: CarouselControlProps) {
 			{!icon?.iconType ? (
 				<>
 					<CarouselButton
-						type="prev"
+						variant="prev"
 						classNames={{
 							defaultIcon: classNames?.defaultIcon,
 							iconContainer: classNames?.iconContainer,
@@ -100,7 +100,7 @@ export function CarouselControls(props: CarouselControlProps) {
 						icon={icon?.prev}
 					/>
 					<CarouselButton
-						type="next"
+						variant="next"
 						classNames={{
 							defaultIcon: classNames?.defaultIcon,
 							iconContainer: classNames?.iconContainer,
@@ -111,7 +111,7 @@ export function CarouselControls(props: CarouselControlProps) {
 			) : (
 				<>
 					<CarouselButton
-						type="prev"
+						variant="prev"
 						classNames={{
 							defaultIcon: classNames?.defaultIcon,
 							iconContainer: cnMerge(
@@ -122,7 +122,7 @@ export function CarouselControls(props: CarouselControlProps) {
 						icon={icon.icon}
 					/>
 					<CarouselButton
-						type="next"
+						variant="next"
 						classNames={{
 							defaultIcon: classNames?.defaultIcon,
 							iconContainer: cnMerge(
@@ -243,6 +243,8 @@ export { CarouselContextProvider as Root } from "./carouselStoreContext";
 export const Content = CarouselContent;
 
 export const Controls = CarouselControls;
+
+export const Button = CarouselButton;
 
 export const Item = CarouselItem;
 

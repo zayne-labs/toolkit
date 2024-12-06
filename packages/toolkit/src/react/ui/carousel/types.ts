@@ -48,7 +48,7 @@ export type CarouselButtonsProps = {
 
 	icon?: React.ReactNode;
 
-	type: "next" | "prev";
+	variant: "next" | "prev";
 };
 
 export type CarouselControlProps = {
