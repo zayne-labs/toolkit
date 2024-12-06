@@ -1,79 +1,86 @@
 # dev
 
+## 0.0.12
+
+### Patch Changes
+
+- Updated dependencies [a096fbb]
+   - @zayne-labs/toolkit@0.8.0
+
 ## 0.0.11
 
 ### Patch Changes
 
--  Updated dependencies [9f56ef9]
-   -  @zayne-labs/toolkit@0.7.0
+- Updated dependencies [9f56ef9]
+   - @zayne-labs/toolkit@0.7.0
 
 ## 0.0.10
 
 ### Patch Changes
 
--  Updated dependencies [b61e915]
-   -  @zayne-labs/toolkit@0.6.8
+- Updated dependencies [b61e915]
+   - @zayne-labs/toolkit@0.6.8
 
 ## 0.0.9
 
 ### Patch Changes
 
--  Updated dependencies [8d237d3]
-   -  @zayne-labs/toolkit@0.6.7
+- Updated dependencies [8d237d3]
+   - @zayne-labs/toolkit@0.6.7
 
 ## 0.0.8
 
 ### Patch Changes
 
--  Updated dependencies [9b6bf55]
-   -  @zayne-labs/toolkit@0.6.6
+- Updated dependencies [9b6bf55]
+   - @zayne-labs/toolkit@0.6.6
 
 ## 0.0.7
 
 ### Patch Changes
 
--  Updated dependencies [247e617]
--  Updated dependencies [907d3a4]
-   -  @zayne-labs/toolkit@0.6.5
+- Updated dependencies [247e617]
+- Updated dependencies [907d3a4]
+   - @zayne-labs/toolkit@0.6.5
 
 ## 0.0.6
 
 ### Patch Changes
 
--  Updated dependencies [cc6c4d6]
-   -  @zayne-labs/toolkit@0.6.4
+- Updated dependencies [cc6c4d6]
+   - @zayne-labs/toolkit@0.6.4
 
 ## 0.0.5
 
 ### Patch Changes
 
--  Updated dependencies [9242b24]
-   -  @zayne-labs/toolkit@0.6.3
+- Updated dependencies [9242b24]
+   - @zayne-labs/toolkit@0.6.3
 
 ## 0.0.4
 
 ### Patch Changes
 
--  Updated dependencies [909c6db]
-   -  @zayne-labs/toolkit@0.6.2
+- Updated dependencies [909c6db]
+   - @zayne-labs/toolkit@0.6.2
 
 ## 0.0.3
 
 ### Patch Changes
 
--  Updated dependencies [9516314]
-   -  @zayne-labs/toolkit@0.6.1
+- Updated dependencies [9516314]
+   - @zayne-labs/toolkit@0.6.1
 
 ## 0.0.2
 
 ### Patch Changes
 
--  Updated dependencies [0172250]
-   -  @zayne-labs/toolkit@0.6.0
+- Updated dependencies [0172250]
+   - @zayne-labs/toolkit@0.6.0
 
 ## 0.0.1
 
 ### Patch Changes
 
--  Updated dependencies [f16fff8]
-   -  @zayne-labs/toolkit@0.5.2
+- Updated dependencies [f16fff8]
+   - @zayne-labs/toolkit@0.5.2
