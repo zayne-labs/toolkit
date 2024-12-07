@@ -6,6 +6,9 @@ import { type InferProps, useCallbackRef, useToggle } from "@/react";
 import { isFunction, isObject } from "@/type-helpers";
 import { useRef, useState } from "react";
 
+// eslint-disable-next-line ts-eslint/no-invalid-void-type
+type RefCallback<TElement> = (instance: TElement | null) => (() => void) | void;
+
 type RenderProps = {
 	acceptedFiles: File[];
 	inputRef: React.RefObject<HTMLInputElement | null>;
@@ -36,7 +39,7 @@ export type UseDropZoneProps = {
 
 	onUploadSuccess?: FileValidationOptions["onSuccess"];
 
-	ref?: React.RefCallback<HTMLInputElement | null> | React.RefObject<HTMLInputElement | null>;
+	ref?: React.RefObject<HTMLInputElement | null> | RefCallback<HTMLInputElement>;
 
 	validationSettings?: {
 		disallowDuplicates?: boolean;
@@ -143,7 +146,7 @@ export const useDropZone = (props: UseDropZoneProps) => {
 		onDrop: handleFileUpload,
 	});
 
-	const refCallback: React.RefCallback<HTMLInputElement> = useCallbackRef((node) => {
+	const refCallback: RefCallback<HTMLInputElement> = useCallbackRef((node) => {
 		inputRef.current = node;
 
 		if (!ref) return;
