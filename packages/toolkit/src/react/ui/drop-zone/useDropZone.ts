@@ -39,7 +39,7 @@ export type UseDropZoneProps = {
 
 	onUploadSuccess?: FileValidationOptions["onSuccess"];
 
-	ref?: React.RefObject<HTMLInputElement | null> | RefCallback<HTMLInputElement>;
+	ref?: React.Ref<HTMLInputElement>;
 
 	validationSettings?: {
 		disallowDuplicates?: boolean;
@@ -132,6 +132,7 @@ export const useDropZone = (props: UseDropZoneProps) => {
 
 	const getRootProps = () => ({
 		...extraRootProps,
+		children: getChildren(),
 		className: cnMerge(
 			"relative isolate flex w-fit flex-col",
 			extraRootProps?.className,
@@ -140,6 +141,7 @@ export const useDropZone = (props: UseDropZoneProps) => {
 		),
 		"data-active-drag": isDragging,
 		"data-part": "root",
+		"data-scope": "dropzone",
 		onDragEnter: handleDragOver,
 		onDragLeave: handleDragLeave,
 		onDragOver: handleDragOver,
@@ -167,6 +169,7 @@ export const useDropZone = (props: UseDropZoneProps) => {
 			classNames?.input
 		),
 		"data-part": "input",
+		"data-scope": "dropzone",
 		onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
 			handleFileUpload(event);
 			extraInputProps?.onChange?.(event);

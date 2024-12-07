@@ -6,8 +6,6 @@ function DropZone(props: UseDropZoneProps) {
 	return (
 		<div {...api.getRootProps()}>
 			<input {...api.getInputProps()} />
-
-			{api.getChildren()}
 		</div>
 	);
 }

@@ -1,3 +1,5 @@
+import { isFunction } from "@/type-helpers";
+
 export type PossibleRef<TRef> = React.Ref<TRef> | undefined;
 
 /**
@@ -6,15 +8,14 @@ export type PossibleRef<TRef> = React.Ref<TRef> | undefined;
  * This utility takes care of different types of refs: callback refs and RefObject(s)
  */
 const setRef = <TRef>(ref: PossibleRef<TRef>, value: TRef) => {
-	if (ref == null) return;
+	if (!ref) return;
 
-	if (typeof ref === "function") {
-		ref(value);
-		return;
+	if (isFunction(ref)) {
+		return ref(value);
 	}
 
 	// eslint-disable-next-line no-param-reassign
-	(ref as React.MutableRefObject<TRef>).current = value;
+	ref.current = value;
 };
 
 /**
