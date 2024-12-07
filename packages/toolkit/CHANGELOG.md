@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.8.1
+
+### Patch Changes
+
+- 887f30f: fix types, revert util-types scope
+
 ## 0.8.0
 
 ### Minor Changes
