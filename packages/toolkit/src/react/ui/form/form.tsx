@@ -51,7 +51,12 @@ export function FormRoot<TValues extends FieldValues>(props: FormRootProps<TValu
 
 	return (
 		<HookFormProvider {...methods}>
-			<form className={cnMerge("flex flex-col", className)} {...restOfProps} data-scope="form" data-part="root">
+			<form
+				className={cnMerge("flex flex-col", className)}
+				{...restOfProps}
+				data-scope="form"
+				data-part="root"
+			>
 				{children}
 			</form>
 		</HookFormProvider>
