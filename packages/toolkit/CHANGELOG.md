@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.8.4
+
+### Patch Changes
+
+- cb4ad68: feat: add react import on every component avoid errors.
+
 ## 0.8.3
 
 ### Patch Changes
