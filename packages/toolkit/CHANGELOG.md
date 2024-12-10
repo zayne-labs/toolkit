@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.8.2
+
+### Patch Changes
+
+- 841c4ba: feat: structure exports better
+
 ## 0.8.1
 
 ### Patch Changes
