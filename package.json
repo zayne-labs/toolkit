@@ -27,16 +27,13 @@
 		"@types/node": "^22.10.1",
 		"@zayne-labs/eslint-config": "^0.3.0",
 		"eslint": "^9.16.0",
-		"eslint-plugin-react-hooks": "^5.0.0",
+		"eslint-plugin-react-hooks": "^5.1.0",
 		"eslint-plugin-react-refresh": "^0.4.16",
 		"eslint-plugin-tailwindcss": "^3.17.5",
 		"husky": "^9.1.7",
 		"lint-staged": "^15.2.10",
 		"pkg-pr-new": "^0.0.35",
 		"prettier": "^3.4.2",
-		"prettier-plugin-classnames": "^0.7.5",
-		"prettier-plugin-merge": "^0.7.1",
-		"prettier-plugin-tailwindcss": "^0.6.9",
 		"typescript": "catalog:"
 	}
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { cnMerge } from "@/core/cn";
+import { cnMerge } from "@/internal/cn";
 import type { MyCustomCss, PolymorphicProps } from "@/react/utils/types";
 import { getElementList } from "../utils/For";
 import { IconBox } from "../utils/IconBox";

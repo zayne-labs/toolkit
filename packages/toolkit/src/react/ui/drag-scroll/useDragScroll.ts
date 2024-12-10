@@ -1,5 +1,5 @@
 import { checkIsDeviceMobileOrTablet, off, on } from "@/core";
-import { cnMerge } from "@/core/cn";
+import { cnMerge } from "@/internal/cn";
 import { useRef } from "react";
 import { useCallbackRef } from "../../hooks/useCallbackRef";
 import type { RefCallback } from "../../utils/types";

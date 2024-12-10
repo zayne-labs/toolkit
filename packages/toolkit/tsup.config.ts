@@ -8,10 +8,10 @@ const sharedOptions = {
 	entry: [
 		"src/core/index.ts",
 		"src/react/index.ts",
+		"src/react/utils/index.ts",
 		"src/react/ui/drop-zone/index.ts",
 		"src/react/ui/carousel/index.ts",
 		"src/react/ui/form/index.ts",
-		"src/react/utils/index.ts",
 		"src/react/ui/utils/For/index.ts",
 		"src/react/ui/utils/Teleport/index.ts",
 		"src/react/ui/utils/Show/index.ts",
@@ -54,8 +54,7 @@ export default defineConfig([
 
 	{
 		...sharedOptions,
-		minify: "terser",
-		name: "ESM-MIN",
-		outDir: "./dist/esm-min",
+		name: "ESM",
+		outDir: "./dist/esm",
 	},
 ]);

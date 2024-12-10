@@ -1,7 +1,7 @@
 "use client";
 
 import { toArray } from "@/core";
-import { cnMerge } from "@/core/cn";
+import { cnMerge } from "@/internal/cn";
 import { createCustomContext, useToggle } from "@/react";
 import { type InferProps, type PolymorphicProps, getOtherChildren, getSlotElement } from "@/react/utils";
 import { Fragment as ReactFragment, useEffect, useId, useMemo, useRef } from "react";
