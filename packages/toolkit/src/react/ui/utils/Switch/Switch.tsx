@@ -1,5 +1,7 @@
 "use client";
 
+import * as React from "react";
+
 import { getSlotElement } from "@/react/utils";
 import { isArray } from "@/type-helpers";
 

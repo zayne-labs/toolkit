@@ -3,6 +3,8 @@ import type { Config } from "tailwindcss";
 const config = {
 	content: ["./src/react/ui/**/*.{ts,tsx}", "./src/react/hooks/**/*.ts"],
 
+	corePlugins: { preflight: false },
+
 	theme: {
 		extend: {
 			colors: {

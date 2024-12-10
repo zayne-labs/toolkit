@@ -1,7 +1,10 @@
+import * as React from "react";
+
 import type { InferProps } from "@/react/utils";
+import { type PossibleRef, composeRefs } from "@/react/utils/composeRefs";
+import { type UnknownProps, mergeProps } from "@/react/utils/mergeProps";
 import { isArray } from "@/type-helpers";
 import { Children, cloneElement, isValidElement } from "react";
-import { SlotClone } from "./SlotClone";
 
 type SlotProps = InferProps<HTMLElement>;
 
@@ -52,4 +55,26 @@ export function Slot(props: SlotProps) {
 	}
 
 	return <SlotClone {...restOfSlotProps}>{children}</SlotClone>;
+}
+
+type SlotCloneProps = {
+	children: React.ReactNode;
+	ref?: React.RefObject<HTMLElement>;
+};
+
+function SlotClone(props: SlotCloneProps) {
+	const { children, ref: forwardedRef, ...restOfSlotProps } = props;
+
+	if (!isValidElement<UnknownProps>(children)) {
+		return Children.count(children) > 1 ? Children.only(null) : null;
+	}
+
+	const childRef = children.props.ref ?? (children as unknown as UnknownProps).ref;
+
+	const clonedProps = {
+		...mergeProps(restOfSlotProps, children.props),
+		ref: forwardedRef ? composeRefs([forwardedRef, childRef as PossibleRef<unknown>]) : childRef,
+	};
+
+	return cloneElement(children, clonedProps);
 }

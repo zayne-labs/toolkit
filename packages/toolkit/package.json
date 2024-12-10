@@ -47,7 +47,7 @@
 	},
 	"scripts": {
 		"build": "pnpm build:css && tsup",
-		"build:css": "pnpm tailwindcss -i ./src/react/tailwind.css -o ./dist/build.css --minify",
+		"build:css": "pnpm tailwindcss -i ./src/react/tailwind.css -o ./dist/tailwind.css --minify",
 		"build:dev": "pnpm build:css && cross-env NODE_ENV=development tsup",
 		"build:test": "concurrently --prefix-colors \"yellow.bold,#7da4f8.bold,magenta\" --names PUBLINT,TSUP 'pnpm:lint:publint' 'pnpm:build:dev'",
 		"lint:attw": "attw --pack . --ignore-rules=cjs-resolves-to-esm",

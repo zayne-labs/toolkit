@@ -1,3 +1,4 @@
+import * as React from "react";
 import { type UseDropZoneProps, useDropZone } from "./useDropZone";
 
 function DropZone(props: UseDropZoneProps) {
@@ -6,6 +7,8 @@ function DropZone(props: UseDropZoneProps) {
 	return (
 		<div {...api.getRootProps()}>
 			<input {...api.getInputProps()} />
+
+			{api.getChildren()}
 		</div>
 	);
 }

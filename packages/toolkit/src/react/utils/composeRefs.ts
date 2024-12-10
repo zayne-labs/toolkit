@@ -23,7 +23,7 @@ const setRef = <TRef>(ref: PossibleRef<TRef>, value: TRef) => {
  *
  * Accepts callback refs and RefObject(s)
  */
-const composeRefs = <TRef>(...refs: Array<PossibleRef<TRef>>) => {
+const composeRefs = <TRef>(refs: Array<PossibleRef<TRef>>) => {
 	const refCallBack = (node: TRef) => {
 		const cleanupFnArray = refs.map((ref) => setRef(ref, node)).filter(Boolean);
 

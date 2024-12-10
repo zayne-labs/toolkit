@@ -4,6 +4,7 @@ import { toArray } from "@/core";
 import { cnMerge } from "@/internal/cn";
 import { createCustomContext, useToggle } from "@/react";
 import { type InferProps, type PolymorphicProps, getOtherChildren, getSlotElement } from "@/react/utils";
+import * as React from "react";
 import { Fragment as ReactFragment, useEffect, useId, useMemo, useRef } from "react";
 import {
 	type Control,

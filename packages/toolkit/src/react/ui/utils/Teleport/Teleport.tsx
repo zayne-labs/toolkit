@@ -1,3 +1,5 @@
+import * as React from "react";
+
 import { useEffectOnce, useMountEffect } from "@/react";
 import { type AnyString, isString } from "@/type-helpers";
 import { useState } from "react";

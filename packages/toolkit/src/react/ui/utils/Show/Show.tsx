@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { getOtherChildren, getSlotElement } from "../../../utils";
 
 type ShowProps = {

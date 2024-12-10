@@ -64,7 +64,8 @@ export const useDropZone = (props: UseDropZoneProps) => {
 		ref,
 		validationSettings,
 		validator,
-	} = props;
+		// eslint-disable-next-line ts-eslint/no-unnecessary-condition
+	} = props ?? {};
 
 	const [isDragging, toggleIsDragging] = useToggle(false);
 
@@ -130,7 +131,6 @@ export const useDropZone = (props: UseDropZoneProps) => {
 
 	const getRootProps = () => ({
 		...extraRootProps,
-		children: getChildren(),
 		className: cnMerge(
 			"relative isolate flex w-fit flex-col",
 			extraRootProps?.className,
@@ -162,7 +162,7 @@ export const useDropZone = (props: UseDropZoneProps) => {
 		...extraInputProps,
 		accept: allowedFileTypes ? allowedFileTypes.join(", ") : extraInputProps?.accept,
 		className: cnMerge(
-			"absolute inset-0 z-[100] cursor-pointer opacity-0",
+			"invisible absolute inset-0 z-[100] cursor-pointer opacity-0",
 			extraInputProps?.className,
 			classNames?.input
 		),

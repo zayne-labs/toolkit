@@ -32,12 +32,6 @@ const sharedOptions = {
 export default defineConfig([
 	// {
 	// 	...sharedOptions,
-	// 	name: "ESM",
-	// 	outDir: "./dist/esm",
-	// },
-
-	// {
-	// 	...sharedOptions,
 	// 	entry: [],
 	// 	esbuildOptions: (options) => {
 	// 		// Append "use client" to the top of the react entry point

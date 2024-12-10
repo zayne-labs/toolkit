@@ -1,3 +1,5 @@
+import * as React from "react";
+
 import type { PolymorphicProps } from "@/react/utils";
 
 // prettier-ignore
