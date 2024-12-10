@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.8.3
+
+### Patch Changes
+
+- a50dd44: fix: react bug cause by minification
+
 ## 0.8.2
 
 ### Patch Changes
