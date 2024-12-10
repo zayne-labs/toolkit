@@ -1,6 +1,6 @@
 "use client";
 
-import { getOtherChildren, getSlotElement } from "../utils";
+import { getOtherChildren, getSlotElement } from "../../../utils";
 
 type ShowProps = {
 	children: React.ReactNode;
@@ -8,7 +8,7 @@ type ShowProps = {
 	when: boolean;
 };
 
-function Show({ children, fallback, when }: ShowProps) {
+export function Show({ children, fallback, when }: ShowProps) {
 	const fallBackSlot = getSlotElement(children, ShowFallback, {
 		errorMessage: "Only one <Show.Fallback> or <Show.OtherWise> component is allowed",
 		throwOnMultipleSlotMatch: true,
@@ -40,8 +40,6 @@ function ShowFallback({ children }: Pick<ShowProps, "children">) {
 }
 ShowFallback.slot = Symbol.for("fallback");
 
-Show.Fallback = ShowFallback;
-Show.Content = ShowContent;
-Show.OtherWise = ShowFallback;
-
-export { Show };
+export const Fallback = ShowFallback;
+export const Content = ShowContent;
+export const OtherWise = ShowFallback;

@@ -15,7 +15,7 @@ type SwitchMatchProps<TWhen = boolean> = {
 	when: TWhen;
 };
 
-function Switch<TCondition = true>(props: SwitchProps<TCondition>) {
+export function Switch<TCondition = true>(props: SwitchProps<TCondition>) {
 	const { children, condition = true } = props;
 
 	const defaultCase = getSlotElement(children, Default, {
@@ -38,8 +38,3 @@ export function Default({ children }: Pick<SwitchMatchProps, "children">) {
 	return children;
 }
 Default.slot = Symbol.for("fallback");
-
-Switch.Match = Match;
-Switch.Default = Default;
-
-export { Switch };

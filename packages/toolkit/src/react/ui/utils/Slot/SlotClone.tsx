@@ -1,6 +1,6 @@
 import { Children, cloneElement, isValidElement } from "react";
-import { type PossibleRef, composeRefs } from "./composeRefs";
-import { type UnknownProps, mergeProps } from "./mergeProps";
+import { type PossibleRef, composeRefs } from "../../../utils/composeRefs";
+import { type UnknownProps, mergeProps } from "../../../utils/mergeProps";
 
 type SlotCloneProps = {
 	children: React.ReactNode;
@@ -28,4 +28,4 @@ function SlotClone(props: SlotCloneProps) {
 	return Children.count(children) > 1 ? Children.only(null) : null;
 }
 
-export default SlotClone;
+export { SlotClone };

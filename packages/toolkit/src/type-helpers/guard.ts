@@ -15,7 +15,11 @@ export const isPlainObject = <TObject extends AnyObject>(
 	// eslint-disable-next-line ts-eslint/no-unsafe-function-type
 	Class?: Function
 ): value is TObject => {
-	if (!isObject(value)) {
+	if (!(typeof value === "object" && value !== null)) {
+		return false;
+	}
+
+	if (Array.isArray(value)) {
 		return false;
 	}
 
@@ -25,7 +29,7 @@ export const isPlainObject = <TObject extends AnyObject>(
 
 	const prototype = Object.getPrototypeOf(value) as unknown;
 
-	// Check if it's a plain object
+	// == Check if it's a plain object
 	return (
 		(prototype == null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) &&
 		!(Symbol.toStringTag in value)

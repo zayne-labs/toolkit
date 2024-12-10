@@ -1,9 +1,9 @@
 "use client";
 
 import { cnMerge } from "@/core/cn";
-import type { MyCustomCss, PolymorphicProps } from "@/react";
-import { getElementList } from "../For";
-import { IconBox } from "../IconBox";
+import type { MyCustomCss, PolymorphicProps } from "@/react/utils/types";
+import { getElementList } from "../utils/For";
+import { IconBox } from "../utils/IconBox";
 import { useCarouselStore } from "./carouselStoreContext";
 import type {
 	CarouselButtonsProps,

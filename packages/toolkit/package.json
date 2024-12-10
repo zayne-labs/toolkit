@@ -24,10 +24,14 @@
 		".": "./dist/esm-min/core/index.js",
 		"./react": "./dist/esm-min/react/index.js",
 		"./react/styles": "./dist/build.css",
-		"./react/ui": "./dist/esm-min/react/ui/index.js",
 		"./react/ui/form": "./dist/esm-min/react/ui/form/index.js",
 		"./react/ui/carousel": "./dist/esm-min/react/ui/carousel/index.js",
 		"./react/ui/drop-zone": "./dist/esm-min/react/ui/drop-zone/index.js",
+		"./react/ui/utils/For": "./dist/esm-min/react/ui/utils/For/index.js",
+		"./react/ui/utils/Show": "./dist/esm-min/react/ui/utils/Show/index.js",
+		"./react/ui/utils/Slot": "./dist/esm-min/react/ui/utils/Slot/index.js",
+		"./react/ui/utils/Switch": "./dist/esm-min/react/ui/utils/Switch/index.js",
+		"./react/ui/utils/Teleport": "./dist/esm-min/react/ui/utils/Teleport/index.js",
 		"./react/utils": "./dist/esm-min/react/utils/index.js",
 		"./react/zustand": "./dist/esm-min/react/zustand/index.js",
 		"./type-helpers": "./dist/esm-min/type-helpers/index.js"
@@ -53,16 +57,20 @@
 		"test:release": "pkg-pr-new publish"
 	},
 	"peerDependencies": {
+		"@iconify/react": ">=5.0.2",
 		"@types/react": ">=18.0.0",
 		"@types/react-dom": ">=18.0.0",
-		"clsx": "^2.1.1",
+		"clsx": ">=2.1.1",
 		"react": ">=18.0.0",
 		"react-dom": ">=18.0.0",
-		"react-hook-form": "^7.53.2",
-		"tailwind-merge": "^2.5.5",
-		"zustand": "^5.0.0"
+		"react-hook-form": ">=7.53.2",
+		"tailwind-merge": ">=2.5.5",
+		"zustand": ">=4.0.0"
 	},
 	"peerDependenciesMeta": {
+		"@iconify/react": {
+			"optional": true
+		},
 		"@types/react": {
 			"optional": true
 		},
@@ -96,6 +104,7 @@
 		"@types/react": "19.0.1",
 		"@types/react-dom": "19.0.1",
 		"@zayne-labs/tsconfig": "catalog:",
+		"clsx": "2.1.1",
 		"concurrently": "^9.0.1",
 		"cross-env": "^7.0.3",
 		"prettier": "^3.4.2",
@@ -103,11 +112,16 @@
 		"prettier-plugin-merge": "^0.7.1",
 		"prettier-plugin-tailwindcss": "^0.6.9",
 		"publint": "^0.2.11",
+		"react": "19.0.0",
+		"react-dom": "19.0.0",
+		"react-hook-form": "7.53.2",
 		"size-limit": "^11.1.6",
+		"tailwind-merge": "2.5.5",
 		"tailwindcss": "3.4.16",
 		"terser": "^5.34.1",
 		"tsup": "^8.3.0",
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"zustand": "5.0.2"
 	},
 	"publishConfig": {
 		"access": "public",

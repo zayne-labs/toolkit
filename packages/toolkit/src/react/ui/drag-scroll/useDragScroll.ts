@@ -1,7 +1,8 @@
 import { checkIsDeviceMobileOrTablet, off, on } from "@/core";
+import { cnMerge } from "@/core/cn";
 import { useRef } from "react";
-import { useEffectOnce } from "./effects";
-import { useCallbackRef } from "./useCallbackRef";
+import { useCallbackRef } from "../../hooks/useCallbackRef";
+import type { RefCallback } from "../../utils/types";
 
 /* eslint-disable no-param-reassign */
 const updateCursor = <TElement extends HTMLElement>(element: TElement) => {
@@ -33,25 +34,23 @@ const resetCursor = <TElement extends HTMLElement>(element: TElement) => {
 	element.style.userSelect = "";
 };
 
-const classResolver = (...params: Array<false | string>) => params.filter(Boolean).join(" ");
-
-type DragScrollOptions = {
-	// eslint-disable-next-line ts-eslint/no-explicit-any
-	cn?: (...params: any[]) => string;
-	dragOrientation?: "both" | "horizontal" | "vertical";
+type DragScrollProps = {
+	classNames?: { base?: string; item?: string };
+	orientation?: "both" | "horizontal" | "vertical";
 	usage?: "allScreens" | "desktopOnly" | "mobileAndTabletOnly";
 };
 
-const useDragScroll = <TElement extends HTMLElement>(options: DragScrollOptions = {}) => {
-	const { cn = classResolver, dragOrientation = "horizontal", usage = "allScreens" } = options;
+const useDragScroll = <TElement extends HTMLElement>(props: DragScrollProps = {}) => {
+	const { classNames, orientation = "horizontal", usage = "allScreens" } = props;
 
 	const dragContainerRef = useRef<TElement>(null);
+
 	const positionRef = useRef({ left: 0, top: 0, x: 0, y: 0 });
 
 	const handleMouseMove = useCallbackRef((event: MouseEvent) => {
 		if (!dragContainerRef.current) return;
 
-		if (dragOrientation === "horizontal" || dragOrientation === "both") {
+		if (orientation === "horizontal" || orientation === "both") {
 			// == calculate the current change in the horizontal scroll position based on the difference between the previous mouse position and the new mouse position
 			const dx = event.clientX - positionRef.current.x;
 
@@ -59,7 +58,7 @@ const useDragScroll = <TElement extends HTMLElement>(options: DragScrollOptions 
 			dragContainerRef.current.scrollLeft = positionRef.current.left - dx;
 		}
 
-		if (dragOrientation === "vertical" || dragOrientation === "both") {
+		if (orientation === "vertical" || orientation === "both") {
 			// == calculate the current change in the vertical scroll position based on the difference between the previous mouse position and the new mouse position
 			const dy = event.clientY - positionRef.current.y;
 
@@ -85,12 +84,12 @@ const useDragScroll = <TElement extends HTMLElement>(options: DragScrollOptions 
 		if (!dragContainerRef.current) return;
 
 		// == Update all initial position properties stored in the positionRef
-		if (dragOrientation === "horizontal" || dragOrientation === "both") {
+		if (orientation === "horizontal" || orientation === "both") {
 			positionRef.current.x = event.clientX;
 			positionRef.current.left = dragContainerRef.current.scrollLeft;
 		}
 
-		if (dragOrientation === "vertical" || dragOrientation === "both") {
+		if (orientation === "vertical" || orientation === "both") {
 			positionRef.current.y = event.clientY;
 			positionRef.current.top = dragContainerRef.current.scrollTop;
 		}
@@ -102,33 +101,40 @@ const useDragScroll = <TElement extends HTMLElement>(options: DragScrollOptions 
 		on("mouseleave", dragContainerRef.current, handleMouseUpOrLeave);
 	});
 
-	// TODO - Change to callback ref node in future
-	useEffectOnce(() => {
-		if (!dragContainerRef.current) return;
+	const refCallBack: RefCallback<TElement> = useCallbackRef((node) => {
+		dragContainerRef.current = node;
 
-		handleScrollSnap(dragContainerRef.current);
+		node && handleScrollSnap(node);
 
 		const cleanup = on("mousedown", dragContainerRef.current, handleMouseDown);
+
+		// == Run cleanup manually on unmount if the user is using a version of react that doesn't support cleanup
+		if (!node) {
+			cleanup();
+			return;
+		}
 
 		return cleanup;
 	});
 
-	const dragScrollProps = {
-		ref: dragContainerRef,
-	};
+	const getRootProps = () => ({
+		className: cnMerge(
+			`flex w-full cursor-grab snap-x snap-mandatory overflow-y-clip overflow-x-scroll
+			[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`,
+			orientation === "horizontal" && "flex-row",
+			orientation === "vertical" && "flex-col",
+			usage === "mobileAndTabletOnly" && "md:cursor-default md:flex-col",
+			usage === "desktopOnly" && "max-md:cursor-default max-md:flex-col",
+			classNames?.base
+		),
+		ref: refCallBack,
+	});
 
-	const dragContainerClasses = cn(
-		`flex w-full cursor-grab snap-x snap-mandatory overflow-y-clip overflow-x-scroll
-		[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`,
-		dragOrientation === "horizontal" && "w-full flex-row",
-		dragOrientation === "vertical" && "flex-col",
-		usage === "mobileAndTabletOnly" && "md:cursor-default md:flex-col",
-		usage === "desktopOnly" && "max-md:cursor-default max-md:flex-col"
-	);
+	const getItemProps = () => ({
+		className: cnMerge("snap-center snap-always", classNames?.item),
+	});
 
-	const dragItemClasses = "snap-center snap-always";
-
-	return { dragContainerClasses, dragItemClasses, dragScrollProps };
+	return { getItemProps, getRootProps };
 };
 
 export { useDragScroll };

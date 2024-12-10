@@ -44,4 +44,4 @@ function Teleport(props: PortalProps) {
 	return reactPortal;
 }
 
-export default Teleport;
+export { Teleport };

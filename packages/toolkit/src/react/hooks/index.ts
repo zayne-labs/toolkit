@@ -7,7 +7,6 @@ export { useConstant } from "./useConstant";
 export { useCopyToClipboard } from "./useCopyToClipboard";
 export * from "./useDebounce";
 export { useDisclosure } from "./useDisclosure";
-export { useDragScroll } from "./useDragScroll";
 export { useIsServer } from "./useIsServer";
 export { useLocation } from "./useLocation";
 export { usePresence } from "./usePresence/usePresence";

@@ -2,12 +2,10 @@
 
 import { type FileValidationOptions, handleFileValidation } from "@/core";
 import { cnMerge } from "@/core/cn";
-import { type InferProps, useCallbackRef, useToggle } from "@/react";
+import { useCallbackRef, useToggle } from "@/react";
+import type { InferProps } from "@/react/utils";
 import { isFunction, isObject } from "@/type-helpers";
-import { useRef, useState } from "react";
-
-// eslint-disable-next-line ts-eslint/no-invalid-void-type
-type RefCallback<TElement> = (instance: TElement | null) => (() => void) | void;
+import { type RefCallback, useRef, useState } from "react";
 
 type RenderProps = {
 	acceptedFiles: File[];

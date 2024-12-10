@@ -1,6 +1,6 @@
 import type { Prettify } from "@/type-helpers";
 import type { StoreApi } from "zustand";
-import type { EachProp, ForRenderProps } from "../For";
+import type { EachProp, ForRenderProps } from "../utils/For";
 
 // Carousel store types
 export type ImagesType = Array<Record<string, string>> | string[];

@@ -2,8 +2,8 @@
 
 import { toArray } from "@/core";
 import { cnMerge } from "@/core/cn";
-import { type InferProps, type PolymorphicProps, createCustomContext, useToggle } from "@/react";
-import { getOtherChildren, getSlotElement } from "@/react/utils";
+import { createCustomContext, useToggle } from "@/react";
+import { type InferProps, type PolymorphicProps, getOtherChildren, getSlotElement } from "@/react/utils";
 import { Fragment as ReactFragment, useEffect, useId, useMemo, useRef } from "react";
 import {
 	type Control,
@@ -20,8 +20,8 @@ import {
 	useFormState,
 	useFormContext as useHookFormContext,
 } from "react-hook-form";
-import { getElementList } from "../For";
-import { IconBox } from "../IconBox";
+import { getElementList } from "../utils/For";
+import { IconBox } from "../utils/IconBox";
 
 type FieldValues = Record<string, unknown>;
 
@@ -504,13 +504,12 @@ function FormErrorMessage<TControl, TFieldValues extends FieldValues = FieldValu
 			control={control}
 			errorField={errorField as string}
 			type={type as "root"}
-			render={({ field: { errorMessage, index }, ...restOfProps }) => (
+			render={({ className: renderPropsClassName, field: { errorMessage, index }, ...restOfProps }) => (
 				<p
 					key={errorMessage}
+					className={cnMerge("text-[13px]", renderPropsClassName, className, index === 0 && "mt-1")}
 					{...restOfProps}
-					className={cnMerge("text-[13px]", restOfProps.className, className, index === 0 && "mt-1")}
 				>
-					<span>*</span>
 					{errorMessage}
 				</p>
 			)}

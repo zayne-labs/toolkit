@@ -1,7 +1,7 @@
-import type { InferProps } from "@/react";
+import type { InferProps } from "@/react/utils";
 import { isArray } from "@/type-helpers";
 import { Children, cloneElement, isValidElement } from "react";
-import SlotClone from "./SlotClone";
+import { SlotClone } from "./SlotClone";
 
 type SlotProps = InferProps<HTMLElement>;
 
@@ -21,7 +21,7 @@ const isSlottable = (child: React.ReactNode): child is React.ReactElement => {
  * Slot
  * ----------------------------------------------------------------------------------------------- */
 
-function Slot(props: SlotProps) {
+export function Slot(props: SlotProps) {
 	const { children, ...restOfSlotProps } = props;
 
 	const childrenArray = isArray<React.ReactNode>(children) ? children : [children];
@@ -53,5 +53,3 @@ function Slot(props: SlotProps) {
 
 	return <SlotClone {...restOfSlotProps}>{children}</SlotClone>;
 }
-
-export default Slot;
