@@ -46,8 +46,8 @@ jobs:
            id: changesets
            uses: changesets/action@v1
            with:
-              commit: "[ci]: update package version"
-              title: "[ci]: update package version"
+              commit: "ci(changesets): update package version"
+              title: "ci(changesets): update package version"
               publish: pnpm release
            env:
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
