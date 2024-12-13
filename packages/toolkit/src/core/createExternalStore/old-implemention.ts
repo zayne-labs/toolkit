@@ -117,10 +117,10 @@ const createExternalStorageStore = <TState>(
 		return subscribe(handleStoreChange);
 	};
 
-	const removeState = () => {
+	const removeState = (providedKey?: string) => {
 		setAndDispatchStorageEvent({
-			eventFn: () => selectedStorage.removeItem(key),
-			key,
+			eventFn: () => selectedStorage.removeItem(providedKey ?? key),
+			key: providedKey ?? key,
 			storageArea: selectedStorage,
 		});
 	};

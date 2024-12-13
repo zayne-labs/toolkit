@@ -2,18 +2,19 @@ import { isFunction } from "@/type-helpers";
 import { createStore } from "../createStore";
 import { on } from "../on";
 import { parseJSON } from "../parseJSON";
-import type { SetState, StorageOptions } from "./types";
+import type { RemoveState, SetState, StorageOptions } from "./types";
 import { generateWindowIdentity, setAndDispatchStorageEvent } from "./utils";
 
 const createExternalStorageStore = <TState>(
 	key: string,
-	defaultValue: TState,
+	defaultValue: TState = null as never,
 	options: StorageOptions<TState> = {}
 ) => {
 	const {
 		equalityFn = Object.is,
 		logger = console.info,
 		parser = parseJSON<TState>,
+		partialize = (state) => state,
 		shouldSyncAcrossTabs = true,
 		storageArea = "localStorage",
 		stringifier = JSON.stringify,
@@ -56,9 +57,11 @@ const createExternalStorageStore = <TState>(
 
 		if (equalityFn(nextState, previousState)) return;
 
-		storeApi.setState(nextState, shouldReplace as false);
+		storeApi.setState(nextState, shouldReplace as never);
 
-		const newValue = stringifier(storeApi.getState());
+		const partializedState = partialize(nextState);
+
+		const newValue = stringifier(partializedState);
 
 		const oldValue = rawStorageValue;
 
@@ -89,11 +92,11 @@ const createExternalStorageStore = <TState>(
 		};
 
 		// eslint-disable-next-line unicorn/prefer-global-this
-		const removeStorageEvent = on("storage", window, handleStorageStoreChange);
+		const storageEventCleanup = on("storage", window, handleStorageStoreChange);
 
 		return () => {
 			unSubFromStoreApi();
-			removeStorageEvent();
+			storageEventCleanup();
 		};
 	};
 
@@ -119,10 +122,10 @@ const createExternalStorageStore = <TState>(
 		return subscribe(handleStoreChange);
 	};
 
-	const removeState = () => {
+	const removeState: RemoveState = (providedKey) => {
 		setAndDispatchStorageEvent({
-			eventFn: () => selectedStorage.removeItem(key),
-			key,
+			eventFn: () => selectedStorage.removeItem(providedKey ?? key),
+			key: providedKey ?? key,
 			storageArea: selectedStorage,
 		});
 	};

@@ -162,7 +162,7 @@ export const useDropZone = (props: UseDropZoneProps) => {
 		...extraInputProps,
 		accept: allowedFileTypes ? allowedFileTypes.join(", ") : extraInputProps?.accept,
 		className: cnMerge(
-			"invisible absolute inset-0 z-[100] cursor-pointer opacity-0",
+			"absolute inset-0 z-[100] cursor-pointer opacity-0",
 			extraInputProps?.className,
 			classNames?.input
 		),

@@ -5,12 +5,14 @@ import { useStore } from "./useStore";
 
 const useStorageState = <TValue, TSlice = TValue>(
 	key: string,
-	defaultValue: TValue,
+	defaultValue?: TValue,
 	options: StorageOptions<TValue> & { select?: SelectorFn<TValue, TSlice> } = {}
 ) => {
 	const { select = (value: TValue) => value as never, ...restOfOptions } = options;
 
-	const externalStore = useConstant(() => createExternalStorageStore(key, defaultValue, restOfOptions));
+	const externalStore = useConstant(() =>
+		createExternalStorageStore(key, defaultValue as never, restOfOptions)
+	);
 
 	const stateInStorage = useStore(externalStore as never, select);
 
