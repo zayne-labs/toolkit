@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.8.5
+
+### Patch Changes
+
+- 6250317: feat: updates to storage state impl
+
 ## 0.8.4
 
 ### Patch Changes
