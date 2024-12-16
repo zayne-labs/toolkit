@@ -1,22 +1,19 @@
-import { isFunction } from "@/type-helpers";
-import type { StoreApi } from "../createStore";
-import { on } from "../on";
-import { parseJSON } from "../parseJSON";
-import type { SetState, StorageOptions } from "./types";
-import { generateWindowIdentity, setAndDispatchStorageEvent } from "./utils";
+import { type StoreApi, on, parseJSON } from "@/core";
+import { isFunction, isObject } from "@/type-helpers";
+import type { RemoveStorageState, SetStorageState, StorageOptions } from "./types";
+import { setAndDispatchStorageEvent } from "./utils";
 
-const createExternalStorageStore = <TState>(
-	key: string,
-	defaultValue: TState,
-	options: StorageOptions<TState> = {}
-) => {
+const createExternalStorageStore = <TState>(options: StorageOptions<TState> = {} as never) => {
 	const {
 		equalityFn = Object.is,
+		initialValue = null,
+		key,
 		logger = console.info,
 		parser = parseJSON<TState>,
-		shouldSyncAcrossTabs = true,
+		partialize = (state) => state,
 		storageArea = "localStorage",
 		stringifier = JSON.stringify,
+		syncStateAcrossTabs = true,
 	} = options;
 
 	const selectedStorage = window[storageArea];
@@ -26,7 +23,7 @@ const createExternalStorageStore = <TState>(
 	const getInitialStorageValue = () => {
 		try {
 			if (rawStorageValue === null) {
-				return defaultValue;
+				return initialValue;
 			}
 
 			const initialStorageValue = parser(rawStorageValue);
@@ -34,18 +31,34 @@ const createExternalStorageStore = <TState>(
 			return initialStorageValue;
 		} catch (error) {
 			logger(error);
-			return defaultValue;
+			return initialValue;
 		}
 	};
 
-	const getState = () => parser(selectedStorage.getItem(key)) ?? getInitialStorageValue();
+	const safeParser = (value: string) => {
+		try {
+			return parser(value);
+		} catch (error) {
+			logger(error);
+			return null as never;
+		}
+	};
 
-	const getInitialState = () => defaultValue;
+	const initialState = rawStorageValue ? safeParser(rawStorageValue) : getInitialStorageValue();
 
-	const currentWindowId = generateWindowIdentity();
-	!shouldSyncAcrossTabs && currentWindowId.set();
+	let state: TState = initialState as never;
 
-	const setState: SetState<TState> = (newState, shouldReplace) => {
+	const getState = () => state;
+
+	const getInitialState = () => initialState;
+
+	const mergeState = (nextState: Partial<TState> | null, shouldReplace?: boolean) => {
+		return !shouldReplace && isObject(state) && isObject(nextState)
+			? { ...state, ...nextState }
+			: (nextState as TState);
+	};
+
+	const setState: SetStorageState<TState> = (newState, shouldReplace) => {
 		const previousState = getState();
 
 		const nextState = isFunction(newState) ? newState(previousState) : newState;
@@ -58,15 +71,15 @@ const createExternalStorageStore = <TState>(
 
 		if (equalityFn(nextState, previousState)) return;
 
-		const newValue = !shouldReplace
-			? stringifier({ ...previousState, ...nextState })
-			: stringifier(nextState);
+		state = mergeState(nextState, shouldReplace);
+
+		const partializedState = partialize(state);
+
+		const newValue = stringifier(partializedState);
 
 		const oldValue = rawStorageValue;
 
 		rawStorageValue = newValue;
-
-		!shouldSyncAcrossTabs && currentWindowId.set();
 
 		setAndDispatchStorageEvent({
 			eventFn: () => selectedStorage.setItem(key, newValue),
@@ -80,17 +93,23 @@ const createExternalStorageStore = <TState>(
 	type Subscribe = StoreApi<TState>["subscribe"];
 
 	const subscribe: Subscribe = (onStoreChange) => {
-		const handleStorageStoreChange = (event: StorageEvent) => {
-			// == Early return when `shouldSyncAcrossTabs` is set to `false` and the current window/tab is not the one that triggered the event
-			if (!shouldSyncAcrossTabs && window.name !== currentWindowId.get()) return;
-
+		const handleStorageChange = (event: StorageEvent) => {
 			if (event.key !== key || event.storageArea !== selectedStorage) return;
 
-			onStoreChange(parser(event.oldValue as string), parser(event.newValue as string));
+			const currentState = safeParser(event.newValue as string);
+
+			const previousState = safeParser(event.oldValue as string);
+
+			if (syncStateAcrossTabs) {
+				state = mergeState(currentState);
+				rawStorageValue = event.newValue;
+			}
+
+			onStoreChange(currentState, previousState);
 		};
 
 		// eslint-disable-next-line unicorn/prefer-global-this
-		const removeStorageEvent = on("storage", window, handleStorageStoreChange);
+		const removeStorageEvent = on("storage", window, handleStorageChange);
 
 		return removeStorageEvent;
 	};
@@ -105,9 +124,9 @@ const createExternalStorageStore = <TState>(
 			onStoreChange(slice, slice);
 		}
 
-		const handleStoreChange: Parameters<Subscribe>[0] = (state, prevState) => {
+		const handleStoreChange: Parameters<Subscribe>[0] = ($state, prevState) => {
 			const previousSlice = selector(prevState);
-			const slice = selector(state);
+			const slice = selector($state);
 
 			if (sliceEqualityFn(slice as never, previousSlice as never)) return;
 
@@ -117,10 +136,10 @@ const createExternalStorageStore = <TState>(
 		return subscribe(handleStoreChange);
 	};
 
-	const removeState = (providedKey?: string) => {
+	const removeState: RemoveStorageState = () => {
 		setAndDispatchStorageEvent({
-			eventFn: () => selectedStorage.removeItem(providedKey ?? key),
-			key: providedKey ?? key,
+			eventFn: () => selectedStorage.removeItem(key),
+			key,
 			storageArea: selectedStorage,
 		});
 	};

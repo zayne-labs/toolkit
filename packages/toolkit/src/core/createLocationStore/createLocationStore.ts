@@ -1,6 +1,6 @@
-import { isBrowser } from "./constants";
-import type { EqualityFn, StoreApi } from "./createStore";
-import { on } from "./on";
+import { isBrowser } from "../constants";
+import type { EqualityFn, StoreApi } from "../createStore";
+import { on } from "../on";
 
 export type LocationState = {
 	hash: string;
@@ -9,7 +9,7 @@ export type LocationState = {
 	state: NonNullable<unknown> | null;
 };
 
-type LocationStoreOptions = {
+export type LocationStoreOptions = {
 	equalityFn?: EqualityFn<LocationState>;
 };
 
@@ -31,48 +31,48 @@ const createLocationStore = (options: LocationStoreOptions = {}) => {
 	const getInitialState = () => initialState;
 
 	const triggerPopstateEvent = (state?: unknown) => {
-		// == This has to be done in order to actually trigger the popState event, which usually only fires in the user clicks on the forward/back button.
+		// == This has to be done in order to actually trigger the popState event, otherwise it would only fire when the user clicks on the forward/back button.
 		// LINK - https://stackoverflow.com/a/37492075/18813022
 		window.dispatchEvent(new PopStateEvent("popstate", { state }));
 	};
 
+	// TODO -  Support nextjs object syntax for the URL
 	const push = (url: string | URL, state: unknown = null) => {
 		window.history.pushState(state, "", url);
 
 		triggerPopstateEvent(state);
 	};
 
+	// TODO -  Support nextjs object syntax for the URL
 	const replace = (url: string | URL, state: unknown = null) => {
 		window.history.replaceState(state, "", url);
 
 		triggerPopstateEvent(state);
 	};
 
-	const setLocationState = (nextLocationState: LocationState) => {
-		if (equalityFn(locationState, nextLocationState)) {
-			return locationState;
-		}
-
-		const previousLocationState = locationState;
-
-		locationState = nextLocationState;
-
-		return previousLocationState;
-	};
-
 	type Subscribe = StoreApi<LocationState>["subscribe"];
 
-	const subscribe: Subscribe = (onLocationStoreChange) => {
+	const subscribe: Subscribe = (onLocationStoreChange, subscribeOptions = {}) => {
+		const { fireListenerImmediately = false } = subscribeOptions;
+
+		const previousLocationState = getState();
+
 		const handleLocationStoreChange = () => {
-			const previousLocationState = setLocationState({
+			const newLocationState = {
 				hash: window.location.hash,
 				pathname: window.location.pathname,
 				search: window.location.search,
 				state: window.history.state as LocationState["state"],
-			});
+			};
 
-			onLocationStoreChange(locationState, previousLocationState);
+			locationState = newLocationState;
+
+			onLocationStoreChange(newLocationState, previousLocationState);
 		};
+
+		if (fireListenerImmediately) {
+			handleLocationStoreChange();
+		}
 
 		const removePopStateEvent = on("popstate", window, handleLocationStoreChange);
 

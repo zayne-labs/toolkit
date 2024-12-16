@@ -8,8 +8,6 @@ type ParseJSON = {
 // Implementation
 const parseJSON: ParseJSON = <TResult>(value: unknown, defaultValue = null) => {
 	if (typeof value !== "string") {
-		console.warn("parseJSON: value to be parsed is not a string");
-
 		return defaultValue;
 	}
 

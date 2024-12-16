@@ -1,11 +1,11 @@
 import type { UnmaskType } from "@/type-helpers";
 
-export type StateSetter<TState, TResult = TState> = UnmaskType<(prevState: TState) => TResult>;
+export type StoreStateSetter<TState, TResult = TState> = UnmaskType<(prevState: TState) => TResult>;
 
 type SetState<TState> = UnmaskType<{
-	(newState: Partial<TState> | StateSetter<TState, Partial<TState>>, shouldReplace?: false): void;
+	(newState: Partial<TState> | StoreStateSetter<TState, Partial<TState>>, shouldReplace?: false): void;
 	// eslint-disable-next-line perfectionist/sort-union-types
-	(newState: TState | StateSetter<TState>, shouldReplace: true): void;
+	(newState: TState | StoreStateSetter<TState>, shouldReplace: true): void;
 }>;
 
 export type Listener<TState> = UnmaskType<(state: TState, prevState: TState) => void>;
@@ -26,7 +26,8 @@ export type StoreApi<in out TState> = {
 	getState: () => TState;
 	setState: SetState<TState>;
 	subscribe: {
-		(onStoreChange: Listener<TState>): () => void;
+		// prettier-ignore
+		(onStoreChange: Listener<TState>, subscribeOptions?: Pick< SubscribeOptions<TState>,"fireListenerImmediately">): () => void;
 
 		withSelector: <TSlice = TState>(
 			selector: SelectorFn<TState, TSlice>,

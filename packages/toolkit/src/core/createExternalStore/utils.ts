@@ -1,19 +1,4 @@
 /* eslint-disable unicorn/prefer-global-this */
-export const generateWindowIdentity = () => {
-	window.name = crypto.randomUUID();
-	localStorage.setItem("currentTab", window.name);
-
-	const currentTabId = {
-		get: () => localStorage.getItem("currentTab"),
-		set: () => {
-			if (currentTabId.get() === window.name) return;
-
-			localStorage.setItem("currentTab", window.name);
-		},
-	};
-
-	return currentTabId;
-};
 
 type DispatchOptions = StorageEventInit & {
 	eventFn: () => void;

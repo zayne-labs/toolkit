@@ -21,7 +21,7 @@
 	],
 	"sideEffects": false,
 	"exports": {
-		".": "./dist/esm/core/index.js",
+		"./core": "./dist/esm/core/index.js",
 		"./react": "./dist/esm/react/index.js",
 		"./tailwind.css": "./dist/tailwind.css",
 		"./react/ui/form": "./dist/esm/react/ui/form/index.js",

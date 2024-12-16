@@ -1,4 +1,4 @@
-import { isFunction } from "@/type-helpers/guard";
+import { isFunction, isObject } from "@/type-helpers/guard";
 import type { EqualityFn, Listener, StoreApi } from "./types";
 
 export type StateInitializer<TState, TResult = TState> = (
@@ -34,12 +34,23 @@ const createStore = <TState>(
 
 		if (equalityFn(nextState, state)) return;
 
-		state = !shouldReplace ? { ...state, ...nextState } : (nextState as TState);
+		state =
+			!shouldReplace && isObject(state) && isObject(nextState)
+				? { ...state, ...nextState }
+				: (nextState as TState);
 
 		listeners.forEach((onStoreChange) => onStoreChange(state, previousState));
 	};
 
-	const subscribe: $StoreApi["subscribe"] = (onStoreChange) => {
+	const subscribe: $StoreApi["subscribe"] = (onStoreChange, subscribeOptions = {}) => {
+		const { fireListenerImmediately = false } = subscribeOptions;
+
+		const currentState = getState();
+
+		if (fireListenerImmediately) {
+			onStoreChange(currentState, currentState);
+		}
+
 		listeners.add(onStoreChange);
 
 		return () => listeners.delete(onStoreChange);
@@ -75,3 +86,4 @@ const createStore = <TState>(
 };
 
 export { createStore };
+
