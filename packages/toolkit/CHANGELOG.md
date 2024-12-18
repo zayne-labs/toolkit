@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.8.9
+
+### Patch Changes
+
+- da01405: edit polymorphism type helper
+
 ## 0.8.5
 
 ### Patch Changes
