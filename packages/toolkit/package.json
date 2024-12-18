@@ -1,7 +1,7 @@
 {
 	"name": "@zayne-labs/toolkit",
 	"type": "module",
-	"version": "0.8.5",
+	"version": "0.8.8",
 	"packageManager": "pnpm@9.15.0",
 	"description": "A collection of utility functions, types and composables used by my other projects. Nothing too fancy but can be useful.",
 	"author": "Ryan Zayne",
@@ -21,6 +21,7 @@
 	],
 	"sideEffects": false,
 	"exports": {
+		".": null,
 		"./core": "./dist/esm/core/index.js",
 		"./react": "./dist/esm/react/index.js",
 		"./tailwind.css": "./dist/tailwind.css",
