@@ -5,11 +5,10 @@ type PropsWithOptionalAs<TElement extends React.ElementType, TProps> = "as" exte
 	? TProps
 	: AsProp<TElement> & TProps;
 
-// == Get all other primitive element props by Omitting the result of MergedProps from React.ComponentPropsWithoutRef
+// == Get all other primitive element props by Omitting the result of MergedProps from React.ComponentPropsWithRef
 type InferOtherProps<TElement extends React.ElementType, TProps> = Omit<
 	React.ComponentPropsWithRef<TElement>,
-	// == Removing children and className as well to give components control over these props
-	"children" | "className" | keyof PropsWithOptionalAs<TElement, TProps>
+	keyof PropsWithOptionalAs<TElement, TProps>
 >;
 
 // == Polymorphic props helper
