@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.8.10
+
+### Patch Changes
+
+- 7595424: upgrade assert functionality
+
 ## 0.8.9
 
 ### Patch Changes
