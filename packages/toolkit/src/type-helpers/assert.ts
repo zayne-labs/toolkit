@@ -1,3 +1,5 @@
+import { isString } from "./guard";
+
 class AssertionError extends Error {
 	override name = "AssertionError";
 
@@ -10,7 +12,7 @@ class AssertionError extends Error {
 
 export const assertDefined = <TValue>(value: TValue) => {
 	if (value == null) {
-		throw new AssertionError(`The value passed is not defined!`);
+		throw new AssertionError(`The value passed is "${value as null | undefined}!"`);
 	}
 
 	return value;
@@ -24,15 +26,23 @@ export const assertENV = (variable: string | undefined, message?: string) => {
 	return variable;
 };
 
-type AssertFn = {
-	(condition: boolean, message?: string): asserts condition;
-	<TValue>(value: TValue, message?: string): NonNullable<TValue>;
+type AssertOptions = {
+	message: string;
 };
 
-export const assert: AssertFn = (input: unknown, message?: string) => {
+type AssertFn = {
+	(condition: boolean, messageOrOptions?: string | AssertOptions): asserts condition;
+
+	<TValue>(
+		value: TValue,
+		messageOrOptions?: string | AssertOptions
+	): asserts value is NonNullable<TValue>;
+};
+
+export const assert: AssertFn = (input: unknown, messageOrOptions?: string | AssertOptions) => {
 	if (input === false || input == null) {
+		const message = isString(messageOrOptions) ? messageOrOptions : messageOrOptions?.message;
+
 		throw new AssertionError(message);
 	}
-
-	return input;
 };
