@@ -10,16 +10,35 @@ export const isObject = (value: unknown) => {
 	return typeof value === "object" && value !== null;
 };
 
+type IsPlainObjectOptions = {
+	/**
+	 * @description Will be used to check if the value is an instance of this class
+	 */
+	// eslint-disable-next-line ts-eslint/no-unsafe-function-type
+	Class?: Function;
+
+	/**
+	 * @description Will return true if the value is not an array, this is useful if you want to allow instances of classes pass the check but you don't want to allow arrays and you also don't have access to the class
+	 * @default false
+	 */
+	returnTrueIfNotArray?: boolean;
+};
+
 export const isPlainObject = <TObject extends AnyObject>(
 	value: unknown,
-	// eslint-disable-next-line ts-eslint/no-unsafe-function-type
-	Class?: Function
+	options: IsPlainObjectOptions = {}
 ): value is TObject => {
-	if (!(typeof value === "object" && value !== null)) {
+	const { Class, returnTrueIfNotArray = false } = options;
+
+	if (!isObject(value)) {
 		return false;
 	}
 
-	if (Array.isArray(value)) {
+	if (!isArray(value) && returnTrueIfNotArray) {
+		return true;
+	}
+
+	if (isArray(value)) {
 		return false;
 	}
 
