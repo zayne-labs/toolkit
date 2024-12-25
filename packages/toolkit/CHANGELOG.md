@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.8.12
+
+### Patch Changes
+
+- 727987f: fix: regression in assert
+
 ## 0.8.11
 
 ### Patch Changes
