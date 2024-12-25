@@ -1,5 +1,37 @@
 # @zayne-labs/toolkit
 
+## 0.8.11
+
+### Patch Changes
+
+- fa0c266: ✨ feat(location): add equality check for location state updates
+  🔧 refactor(search): improve useSearchParams hook implementation
+  📝 docs(types): enhance isPlainObject options documentation
+
+   - Add equality check to prevent unnecessary location state updates
+   - Refactor useSearchParams hook to use URLSearchParams more effectively
+   - Update isPlainObject type documentation for better clarity
+   - Replace isObject with isPlainObject for more accurate type checking
+
+- b968cc3: refactor(type-guards): ✨ enhance isPlainObject with configuration options
+
+   The isPlainObject type guard now accepts an options object with:
+
+   - Class: for instance checking (existing functionality)
+   - returnTrueIfNotArray: new option for more flexible type checking
+
+   ♻️ Also improves internal implementation by using existing type guards
+
+   feat(toolkit): 🔧 refactor code organization and enhance type safety
+
+   - ♻️ Move cn.ts to internal-lib/utils
+   - 🔒 Improve type safety in guard.ts and assert.ts
+   - 🎨 Add data-scope and data-part attributes to form components
+   - ⚡️ Optimize useEffectOnce with effectGuard ref
+   - 🏷️ Add DiscriminatedRenderProps type for better render prop patterns
+   - 🔄 Update Switch.tsx default case slot name
+   - 🛠️ Enhance tsconfig and tsup build setup
+
 ## 0.8.10
 
 ### Patch Changes
