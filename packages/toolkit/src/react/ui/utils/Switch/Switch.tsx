@@ -39,4 +39,4 @@ export function Match<TWhen>({ children }: SwitchMatchProps<TWhen>) {
 export function Default({ children }: Pick<SwitchMatchProps, "children">) {
 	return children;
 }
-Default.slot = Symbol.for("fallback");
+Default.slot = Symbol.for("default-case");

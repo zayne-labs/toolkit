@@ -1,13 +1,13 @@
+import { toArray } from "@/core/toArray";
 import { isArray } from "@/type-helpers";
 import { isValidElement } from "react";
-import { toArray } from "@/core/toArray";
 
 type Noop = () => void;
 type WithSlot = { slot?: string };
 
 export const isSlotElement = <TProps>(
 	child: React.ReactNode,
-	SlotWrapper: React.ComponentType<TProps>
+	SlotWrapper: React.FunctionComponent<TProps>
 ) => {
 	if (!isValidElement(child)) {
 		return false;
@@ -35,7 +35,7 @@ type SlotOptions = {
 
 export const getSlotElement = <TProps>(
 	children: React.ReactNode,
-	SlotWrapper: React.ComponentType<TProps>,
+	SlotWrapper: React.FunctionComponent<TProps>,
 	options: SlotOptions = {}
 ) => {
 	const {
@@ -56,13 +56,13 @@ export const getSlotElement = <TProps>(
 
 const isSlotElementMultiple = <TProps>(
 	child: React.ReactNode,
-	SlotWrapperArray: Array<React.ComponentType<TProps>>
+	SlotWrapperArray: Array<React.FunctionComponent<TProps>>
 ) => SlotWrapperArray.some((slotWrapper) => isSlotElement(child, slotWrapper));
 
 // Check if the child is a Slot element by matching any in the SlotWrapperArray
 export const getOtherChildren = <TProps>(
 	children: React.ReactNode,
-	SlotWrapperOrWrappers: Array<React.ComponentType<TProps>> | React.ComponentType<TProps>
+	SlotWrapperOrWrappers: Array<React.FunctionComponent<TProps>> | React.FunctionComponent<TProps>
 ) => {
 	const childrenArray = isArray<React.ReactNode>(children) ? children : [children];
 

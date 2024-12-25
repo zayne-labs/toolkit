@@ -1,7 +1,7 @@
 "use client";
 
 import { type FileValidationOptions, handleFileValidation } from "@/core";
-import { cnMerge } from "@/internal/cn";
+import { cnMerge } from "@/internal-lib/utils/cn";
 import { useCallbackRef, useToggle } from "@/react";
 import type { InferProps } from "@/react/utils";
 import { isFunction, isObject } from "@/type-helpers";

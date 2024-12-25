@@ -1,12 +1,12 @@
 import type { AnyAsyncFunction, AnyFunction, AnyObject } from "./type-utils";
 
-export const isString = (value: unknown) => typeof value === "string";
+export const isString = (value: unknown): value is string => typeof value === "string";
 
 export const isArray = <TArray>(value: unknown): value is TArray[] => Array.isArray(value);
 
-export const isFormData = (value: unknown) => value instanceof FormData;
+export const isFormData = (value: unknown): value is FormData => value instanceof FormData;
 
-export const isObject = (value: unknown) => {
+export const isObject = (value: unknown): value is object => {
 	return typeof value === "object" && value !== null;
 };
 
@@ -34,12 +34,12 @@ export const isPlainObject = <TObject extends AnyObject>(
 		return false;
 	}
 
-	if (!isArray(value) && returnTrueIfNotArray) {
-		return true;
-	}
-
 	if (isArray(value)) {
 		return false;
+	}
+
+	if (returnTrueIfNotArray) {
+		return true;
 	}
 
 	if (Class && value instanceof Class) {
@@ -65,4 +65,4 @@ export const isAsyncFunction = <TAsyncFunction extends AnyAsyncFunction>(
 	return isFunction(value) && value.constructor.name === "AsyncFunction";
 };
 
-export const isFile = (value: unknown) => value instanceof File;
+export const isFile = (value: unknown): value is File => value instanceof File;

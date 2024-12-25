@@ -1,6 +1,7 @@
 import * as React from "react";
 
-import type { PolymorphicProps } from "@/react/utils";
+import type { DiscriminatedRenderProps, PolymorphicProps } from "@/react/utils";
+import { isArray } from "@/type-helpers";
 
 // prettier-ignore
 type RenderPropFn<TArrayItem> = (
@@ -11,27 +12,14 @@ type RenderPropFn<TArrayItem> = (
 
 export type EachProp<TArrayItem> = { each: TArrayItem[] };
 
-export type ForRenderProps<TArrayItem> =
-	| {
-			children: RenderPropFn<TArrayItem>;
-			render?: "Hey, Sorry but since your're currently using the children prop, the render prop is now redundant";
-	  }
-	| {
-			children?: "Hey, Sorry but since your're currently using the render prop, so the children prop is now redundant";
-			render: RenderPropFn<TArrayItem>;
-	  };
+export type ForRenderProps<TArrayItem> = DiscriminatedRenderProps<RenderPropFn<TArrayItem>>;
 
 type ForProps<TArrayItem> = EachProp<TArrayItem> & ForRenderProps<TArrayItem>;
 
 export function ForBase<TArrayItem>(props: ForProps<TArrayItem>) {
 	const { children, each, render } = props;
 
-	// eslint-disable-next-line ts-eslint/no-unnecessary-condition
-	if (each == null) {
-		return null;
-	}
-
-	if (each.length === 0) {
+	if (!isArray(each)) {
 		return each;
 	}
 
@@ -50,11 +38,6 @@ export function ForList<TArrayItem, TElement extends React.ElementType = "ul">(
 	props: PolymorphicProps<TElement, ForProps<TArrayItem> & { className?: string }>
 ) {
 	const { as: ListContainer = "ul", children, className, each, ref, render, ...restOfListProps } = props;
-
-	// eslint-disable-next-line ts-eslint/no-unnecessary-condition
-	if (each == null) {
-		return null;
-	}
 
 	return (
 		<ListContainer ref={ref} className={className} {...restOfListProps}>

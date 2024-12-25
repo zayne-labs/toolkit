@@ -2,7 +2,7 @@ import { isFunction, isPlainObject } from "@/type-helpers";
 
 export type UnknownProps = Record<string, unknown>;
 
-const mergeProps = (slotProps: UnknownProps, childProps: UnknownProps) => {
+const mergeProps = (slotProps: UnknownProps, childProps: UnknownProps): UnknownProps => {
 	// all child props should override slotProps
 	const overrideProps = { ...childProps };
 

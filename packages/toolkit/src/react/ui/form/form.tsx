@@ -1,9 +1,15 @@
 "use client";
 
 import { toArray } from "@/core";
-import { cnMerge } from "@/internal/cn";
+import { cnMerge } from "@/internal-lib/utils/cn";
 import { createCustomContext, useToggle } from "@/react";
-import { type InferProps, type PolymorphicProps, getOtherChildren, getSlotElement } from "@/react/utils";
+import {
+	type DiscriminatedRenderProps,
+	type InferProps,
+	type PolymorphicProps,
+	getOtherChildren,
+	getSlotElement,
+} from "@/react/utils";
 import * as React from "react";
 import { Fragment as ReactFragment, useEffect, useId, useMemo, useRef } from "react";
 import {
@@ -94,6 +100,8 @@ export function FormItem<TControl, TFieldValues extends FieldValues = FieldValue
 
 	const wrapperElementProps = withWrapper && {
 		className: cnMerge("flex flex-col", className),
+		"data-part": "item",
+		"data-scope": "form",
 	};
 
 	return (
@@ -105,12 +113,25 @@ export function FormItem<TControl, TFieldValues extends FieldValues = FieldValue
 	);
 }
 
+type FormItemContextProps = DiscriminatedRenderProps<(contextValue: ContextValue) => React.ReactNode>;
+
+function FormItemContext(props: FormItemContextProps) {
+	const { children, render } = props;
+	const contextValues = useStrictFormItemContext();
+
+	if (typeof children === "function") {
+		return children(contextValues);
+	}
+
+	return render(contextValues);
+}
+
 export function FormLabel(props: InferProps<"label">) {
 	const { uniqueId } = useStrictFormItemContext();
 	const { children, className, ...restOfProps } = props;
 
 	return (
-		<label htmlFor={uniqueId} className={className} {...restOfProps}>
+		<label data-scope="form" data-part="label" htmlFor={uniqueId} className={className} {...restOfProps}>
 			{children}
 		</label>
 	);
@@ -124,7 +145,12 @@ export function FormInputGroup(props: React.ComponentPropsWithRef<"div">) {
 	const otherChildren = getOtherChildren(children, [FormInputLeftItem, FormInputRightItem]);
 
 	return (
-		<div className={cnMerge("flex items-center justify-between gap-2", className)} {...restOfProps}>
+		<div
+			data-scope="form"
+			data-part="input-group"
+			className={cnMerge("flex items-center justify-between gap-2", className)}
+			{...restOfProps}
+		>
 			{LeftItemSlot}
 			{otherChildren}
 			{RightItemSlot}
@@ -140,12 +166,17 @@ type FormSideItemProps = {
 export function FormInputLeftItem<TElement extends React.ElementType = "span">(
 	props: PolymorphicProps<TElement, FormSideItemProps>
 ) {
-	const { children, className, ...restOfProps } = props;
+	const { as: Element = "span", children, className, ...restOfProps } = props;
 
 	return (
-		<span className={cnMerge("inline-flex items-center justify-center", className)} {...restOfProps}>
+		<Element
+			data-scope="form"
+			data-part="left-item"
+			className={cnMerge("inline-flex items-center justify-center", className)}
+			{...restOfProps}
+		>
 			{children}
-		</span>
+		</Element>
 	);
 }
 FormInputLeftItem.slot = Symbol.for("leftItem");
@@ -156,7 +187,12 @@ export function FormInputRightItem<TElement extends React.ElementType = "span">(
 	const { as: Element = "span", children, className, ...restOfProps } = props;
 
 	return (
-		<Element className={cnMerge("inline-flex items-center justify-center", className)} {...restOfProps}>
+		<Element
+			data-scope="form"
+			data-part="right-item"
+			className={cnMerge("inline-flex items-center justify-center", className)}
+			{...restOfProps}
+		>
 			{children}
 		</Element>
 	);
@@ -211,6 +247,8 @@ export function FormInputPrimitive<TFieldValues extends FieldValues>(
 	return (
 		<WrapperElement {...wrapperElementProps}>
 			<input
+				data-scope="form"
+				data-part="input"
 				id={id}
 				name={name}
 				type={type === "password" && isPasswordVisible ? "text" : type}
@@ -300,6 +338,8 @@ function FormTextAreaPrimitive<TFieldValues extends FieldValues>(
 
 	return (
 		<textarea
+			data-scope="form"
+			data-part="textarea"
 			id={id}
 			name={name}
 			className={cnMerge(
@@ -355,9 +395,13 @@ function FormController<TFieldValues = never>(props: FormControllerProps<TFieldV
 
 type FormErrorRenderProps = {
 	className: string;
-	field: { errorMessage: string; errorMessageArray: string[]; index: number };
+	"data-index": number;
+	"data-part": string;
+	"data-scope": string;
 	onAnimationEnd?: React.ReactEventHandler<HTMLElement>;
 };
+
+type FormErrorRenderPropState = { errorMessage: string; errorMessageArray: string[]; index: number };
 
 type FormErrorMessagePrimitiveProps<TFieldValues extends FieldValues> = {
 	className?: string;
@@ -367,7 +411,7 @@ type FormErrorMessagePrimitiveProps<TFieldValues extends FieldValues> = {
 		errorMessageAnimation?: string;
 	};
 	control: Control<TFieldValues>; // == Here for type inference of errorField prop
-	render: (props: FormErrorRenderProps) => React.ReactNode;
+	render: (context: { props: FormErrorRenderProps; state: FormErrorRenderPropState }) => React.ReactNode;
 	withAnimationOnInvalid?: boolean;
 } & (
 	| {
@@ -461,9 +505,14 @@ function FormErrorMessagePrimitive<TFieldValues extends FieldValues>(
 			className={cnMerge("flex flex-col", classNames?.container)}
 			render={(errorMessage, index) => {
 				return render({
-					className: cnMerge(errorAnimationClass, className, classNames?.errorMessage),
-					field: { errorMessage, errorMessageArray, index },
-					onAnimationEnd,
+					props: {
+						className: cnMerge(errorAnimationClass, className, classNames?.errorMessage),
+						"data-index": index,
+						"data-part": "error-message",
+						"data-scope": "form",
+						onAnimationEnd,
+					},
+					state: { errorMessage, errorMessageArray, index },
 				});
 			}}
 		/>
@@ -505,11 +554,11 @@ function FormErrorMessage<TControl, TFieldValues extends FieldValues = FieldValu
 			control={control}
 			errorField={errorField as string}
 			type={type as "root"}
-			render={({ className: renderPropsClassName, field: { errorMessage, index }, ...restOfProps }) => (
+			render={({ props: renderProps, state: { errorMessage } }) => (
 				<p
 					key={errorMessage}
-					className={cnMerge("text-[13px]", renderPropsClassName, className, index === 0 && "mt-1")}
-					{...restOfProps}
+					{...renderProps}
+					className={cnMerge("text-[13px]", "data-[index=0]:mt-1", renderProps.className, className)}
 				>
 					{errorMessage}
 				</p>
@@ -521,6 +570,8 @@ function FormErrorMessage<TControl, TFieldValues extends FieldValues = FieldValu
 export const Root = FormRoot;
 
 export const Item = FormItem;
+
+export const ItemContext = FormItemContext;
 
 export const Label = FormLabel;
 
@@ -543,5 +594,8 @@ export const TextAreaPrimitive = FormTextAreaPrimitive;
 export const TextArea = FormTextArea;
 
 export const Controller = FormController;
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { useStrictFormItemContext as useFormItemContext };
 
 export { Controller as ControllerPrimitive } from "react-hook-form";

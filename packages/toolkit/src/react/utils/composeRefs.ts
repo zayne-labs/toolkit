@@ -1,4 +1,5 @@
 import { isFunction } from "@/type-helpers";
+import type { RefCallback } from "./types";
 
 export type PossibleRef<TRef> = React.Ref<TRef> | undefined;
 
@@ -23,8 +24,8 @@ const setRef = <TRef>(ref: PossibleRef<TRef>, value: TRef) => {
  *
  * Accepts callback refs and RefObject(s)
  */
-const composeRefs = <TRef>(refs: Array<PossibleRef<TRef>>) => {
-	const refCallBack = (node: TRef) => {
+const composeRefs = <TRef>(refs: Array<PossibleRef<TRef>>): RefCallback<TRef> => {
+	const refCallBack: RefCallback<TRef> = (node) => {
 		const cleanupFnArray = refs.map((ref) => setRef(ref, node)).filter(Boolean);
 
 		if (cleanupFnArray.length === 0) return;

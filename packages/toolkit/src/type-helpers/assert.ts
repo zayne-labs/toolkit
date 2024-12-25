@@ -10,7 +10,7 @@ class AssertionError extends Error {
 	}
 }
 
-export const assertDefined = <TValue>(value: TValue) => {
+export const assertDefined = <TValue>(value: TValue): TValue => {
 	if (value == null) {
 		throw new AssertionError(`The value passed is "${value as null | undefined}!"`);
 	}
@@ -18,7 +18,7 @@ export const assertDefined = <TValue>(value: TValue) => {
 	return value;
 };
 
-export const assertENV = (variable: string | undefined, message?: string) => {
+export const assertENV = (variable: string | undefined, message?: string): string => {
 	if (variable === undefined) {
 		throw new AssertionError(message);
 	}

@@ -1,3 +1,5 @@
+import type { AnyFunction } from "@/type-helpers";
+
 export type ForwardedRefType<TComponent extends HTMLElement | React.ElementType> =
 	TComponent extends React.ElementType
 		? React.ForwardedRef<React.ElementRef<TComponent>>
@@ -18,3 +20,17 @@ export type MyCustomCss<TExtra extends Record<string, string> = NonNullable<unkn
  */
 // eslint-disable-next-line ts-eslint/no-invalid-void-type
 export type RefCallback<TElement> = (instance: TElement | null) => (() => void) | void;
+
+export type DiscriminatedRenderProps<
+	RenderPropType extends AnyFunction,
+	TMessage extends
+		string = "Hey, Sorry but since you're currently using the children prop, the render prop is therefore redundant",
+> =
+	| {
+			children: RenderPropType;
+			render?: TMessage;
+	  }
+	| {
+			children?: TMessage;
+			render: RenderPropType;
+	  };

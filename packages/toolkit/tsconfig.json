@@ -6,6 +6,8 @@
 		"paths": {
 			"@/*": ["src/*"]
 		}
+		// "declaration": true,
+		// "isolatedDeclarations": true
 	},
 
 	"include": ["src/**/*", "**/*"],

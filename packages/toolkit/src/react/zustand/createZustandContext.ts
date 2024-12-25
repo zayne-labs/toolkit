@@ -33,7 +33,10 @@ const createZustandContext = <
 
 	const useBoundStore = <TResult>(selector: SelectorFn<TState, TResult>) => useCustomContext()(selector);
 
-	return [ZustandProvider, useBoundStore] as const;
+	return [ZustandProvider, useBoundStore] as [
+		ZustandProvider: typeof ZustandProvider,
+		useBoundStore: typeof useBoundStore,
+	];
 };
 
 export { createZustandContext };

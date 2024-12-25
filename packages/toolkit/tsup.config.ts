@@ -29,26 +29,12 @@ const sharedOptions = {
 	tsconfig: "tsconfig.json",
 } satisfies Options;
 
-export default defineConfig([
-	// {
-	// 	...sharedOptions,
-	// 	entry: [],
-	// 	esbuildOptions: (options) => {
-	// 		// Append "use client" to the top of the react entry point
-	// 		// eslint-disable-next-line no-param-reassign
-	// 		options.banner = {
-	// 			js: '"use client";',
-	// 		};
-	// 	},
-	// 	name: "ESM-UI",
-	// 	outDir: "./dist/esm-ui",
-	// 	splitting: false,
-	// 	treeshake: false,
-	// },
-
+const config = defineConfig([
 	{
 		...sharedOptions,
 		name: "ESM",
 		outDir: "./dist/esm",
 	},
 ]);
+
+export default config;

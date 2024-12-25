@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
-import { cnMerge } from "@/internal/cn";
+import { cnMerge } from "@/internal-lib/utils/cn";
 import type { MyCustomCss, PolymorphicProps } from "@/react/utils/types";
+import * as React from "react";
 import { getElementList } from "../utils/For";
 import { IconBox } from "../utils/IconBox";
 import { useCarouselStore } from "./carouselStoreContext";

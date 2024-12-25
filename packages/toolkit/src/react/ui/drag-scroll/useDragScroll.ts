@@ -1,5 +1,5 @@
 import { checkIsDeviceMobileOrTablet, off, on } from "@/core";
-import { cnMerge } from "@/internal/cn";
+import { cnMerge } from "@/internal-lib/utils/cn";
 import { useRef } from "react";
 import { useCallbackRef } from "../../hooks/useCallbackRef";
 import type { RefCallback } from "../../utils/types";
@@ -127,11 +127,15 @@ const useDragScroll = <TElement extends HTMLElement>(props: DragScrollProps = {}
 			usage === "desktopOnly" && "max-md:cursor-default max-md:flex-col",
 			classNames?.base
 		),
+		"data-part": "root",
+		"data-scope": "drag-scroll",
 		ref: refCallBack,
 	});
 
 	const getItemProps = () => ({
 		className: cnMerge("snap-center snap-always", classNames?.item),
+		"data-part": "item",
+		"data-scope": "drag-scroll",
 	});
 
 	return { getItemProps, getRootProps };
