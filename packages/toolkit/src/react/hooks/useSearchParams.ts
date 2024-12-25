@@ -1,4 +1,4 @@
-import { type UnmaskType, isArray, isFunction, isObject } from "@/type-helpers";
+import { type UnmaskType, isArray, isFunction, isPlainObject } from "@/type-helpers";
 import { useLocation } from "./useLocation";
 
 type KeyValuePair = [string, string];
@@ -10,7 +10,7 @@ export type URLSearchParamsInit =
 	| URLSearchParams;
 
 export const createSearchParams = (paramsInit: URLSearchParamsInit = ""): URLSearchParams => {
-	if (!isObject(paramsInit)) {
+	if (!isPlainObject(paramsInit, { returnTrueIfNotArray: true })) {
 		return new URLSearchParams(paramsInit);
 	}
 
@@ -40,16 +40,14 @@ const useSearchParams = <TSearchParams extends URLSearchParamsInit>(options?: Us
 
 	const searchParams = new URLSearchParams(search);
 
-	type QueryParams = UnmaskType<TSearchParams | ((prev: TSearchParams) => TSearchParams)>;
+	type QueryParams = UnmaskType<TSearchParams | ((prev: URLSearchParams) => TSearchParams)>;
 
-	const setSearchParams = (queryParams: QueryParams) => {
-		const nextSearchParams = isFunction(queryParams)
-			? queryParams(searchParams as TSearchParams)
-			: queryParams;
+	const setSearchParams = (newQueryParams: QueryParams) => {
+		const params = isFunction(newQueryParams) ? newQueryParams(searchParams) : newQueryParams;
 
-		const params = createSearchParams(nextSearchParams);
+		const nextSearchParams = createSearchParams(params);
 
-		setSearch[action](`?${params.toString()}`);
+		setSearch[action](`?${nextSearchParams.toString()}`);
 	};
 
 	setSearchParams.triggerPopstate = setSearch.triggerPopstate;

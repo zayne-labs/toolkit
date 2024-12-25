@@ -18,7 +18,11 @@ type IsPlainObjectOptions = {
 	Class?: Function;
 
 	/**
-	 * @description Will return true if the value is not an array, this is useful if you want to allow instances of classes pass the check but you don't want to allow arrays and you also don't have access to the class
+	 * @description
+	 * Will return true if the value is not an array but is an object of any kind.
+	 *
+	 * This is useful if you want to allow instances of classes pass the check but you don't have access to the class itself to pass as the `Class` option.
+	 *
 	 * @default false
 	 */
 	returnTrueIfNotArray?: boolean;

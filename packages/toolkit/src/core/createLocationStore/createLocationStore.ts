@@ -65,6 +65,8 @@ const createLocationStore = (options: LocationStoreOptions = {}) => {
 				state: window.history.state as LocationState["state"],
 			};
 
+			if (equalityFn(newLocationState, previousLocationState)) return;
+
 			locationState = newLocationState;
 
 			onLocationStoreChange(newLocationState, previousLocationState);
