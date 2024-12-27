@@ -1,5 +1,11 @@
 # @zayne-labs/toolkit
 
+## 0.8.15
+
+### Patch Changes
+
+- a347bf2: update workflow
+
 ## 0.8.14
 
 ### Patch Changes
