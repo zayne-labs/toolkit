@@ -5,5 +5,5 @@ export default defineConfig({
 	all: true,
 	commit: "chore: update package version",
 	files: ["./packages/**/package.json"],
-	// tag: "@zayne-labs/toolkit@v",
+	tag: "@zayne-labs/toolkit@v",
 });
