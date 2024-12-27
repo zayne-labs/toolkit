@@ -1,4 +1,4 @@
-name: Test - Release and Publish
+name: Release and Publish - pkg.pr.new
 on:
    pull_request:
    push:

@@ -1,4 +1,4 @@
-name: Changeset - Release and Publish
+name: Release and Publish - Changeset
 on:
    push:
       branches: main
