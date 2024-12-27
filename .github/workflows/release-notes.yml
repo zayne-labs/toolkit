@@ -3,8 +3,7 @@ name: Release Notes - Changelogithub
 on:
    push:
       tags:
-         - "*v"
-         - "*@zayne-labs/toolkit"
+         - "*"
 
 jobs:
    release-note:
