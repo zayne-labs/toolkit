@@ -1,5 +1,13 @@
 # @zayne-labs/toolkit
 
+## 0.8.14
+
+### Patch Changes
+
+- 3bc8a6e: style(drop-zone): 🎨 remove fixed width from drop zone root element
+
+   The drop zone root element's width is now determined by its content rather than being set to "w-fit".
+
 ## 0.8.13
 
 ### Patch Changes
