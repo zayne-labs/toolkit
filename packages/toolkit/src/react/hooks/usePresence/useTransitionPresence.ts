@@ -52,7 +52,7 @@ const useTransitionPresence: UseSpecificPresence = (options = {}) => {
 
 	useEffect(() => {
 		!isMounted && stableOnExitComplete();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- stableOnExitComplete is stable
 	}, [isMounted]);
 
 	return {

@@ -47,6 +47,8 @@ const useSearchParams = <TSearchParams extends URLSearchParamsInit>(options?: Us
 
 		const nextSearchParams = createSearchParams(params);
 
+		if (nextSearchParams.toString() === searchParams.toString()) return;
+
 		setSearch[action](`?${nextSearchParams.toString()}`);
 	};
 

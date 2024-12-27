@@ -102,7 +102,7 @@ const createExternalStorageStore = <TState>(options: StorageOptions<TState> = {}
 			unsubscribe = store.subscribe(onStoreChange, { fireListenerImmediately: true });
 		};
 
-		// eslint-disable-next-line unicorn/prefer-global-this
+		// eslint-disable-next-line unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window
 		const storageEventCleanup = on("storage", window, handleStorageChange);
 
 		return () => {

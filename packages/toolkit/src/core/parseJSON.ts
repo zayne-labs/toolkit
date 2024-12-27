@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/filename-case */
+/* eslint-disable unicorn/filename-case -- leave as is */
 type ParseJSON = {
 	<TResult>(value: string): TResult;
 	<TResult>(value: string | null | undefined): TResult | null;

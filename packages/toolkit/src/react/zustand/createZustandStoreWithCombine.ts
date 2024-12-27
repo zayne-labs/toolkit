@@ -13,7 +13,7 @@ export type Combine = <
 
 export const combine: Combine =
 	(initialState, storeCreator) =>
-	// eslint-disable-next-line ts-eslint/no-unsafe-return
+	// eslint-disable-next-line ts-eslint/no-unsafe-return -- We don't know what the storeCreator will return
 	(...params) => ({
 		...initialState,
 		...(storeCreator as AnyFunction)(...params),

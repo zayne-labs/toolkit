@@ -4,7 +4,7 @@ export type StoreStateSetter<TState, TResult = TState> = UnmaskType<(prevState: 
 
 type SetState<TState> = UnmaskType<{
 	(newState: Partial<TState> | StoreStateSetter<TState, Partial<TState>>, shouldReplace?: false): void;
-	// eslint-disable-next-line perfectionist/sort-union-types
+	// eslint-disable-next-line perfectionist/sort-union-types -- I want TState to be first in the union
 	(newState: TState | StoreStateSetter<TState>, shouldReplace: true): void;
 }>;
 

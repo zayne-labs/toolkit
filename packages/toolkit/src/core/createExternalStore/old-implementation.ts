@@ -108,7 +108,7 @@ const createExternalStorageStore = <TState>(options: StorageOptions<TState> = {}
 			onStoreChange(currentState, previousState);
 		};
 
-		// eslint-disable-next-line unicorn/prefer-global-this
+		// eslint-disable-next-line unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window
 		const removeStorageEvent = on("storage", window, handleStorageChange);
 
 		return removeStorageEvent;

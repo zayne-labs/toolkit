@@ -1,5 +1,7 @@
 "use client";
 
+import * as React from "react";
+
 import { toArray } from "@/core";
 import { cnMerge } from "@/internal-lib/utils/cn";
 import { createCustomContext, useToggle } from "@/react";
@@ -10,7 +12,6 @@ import {
 	getOtherChildren,
 	getSlotElement,
 } from "@/react/utils";
-import * as React from "react";
 import { Fragment as ReactFragment, useEffect, useId, useMemo, useRef } from "react";
 import {
 	type Control,
@@ -429,7 +430,7 @@ function FormErrorMessagePrimitive<TFieldValues extends FieldValues>(
 ): React.ReactNode;
 
 function FormErrorMessagePrimitive<TFieldValues extends FieldValues>(
-	// eslint-disable-next-line ts-eslint/unified-signatures
+	// eslint-disable-next-line ts-eslint/unified-signatures -- This is intentional
 	props: Extract<FormErrorMessagePrimitiveProps<TFieldValues>, { type: "root" }>
 ): React.ReactNode;
 
@@ -595,7 +596,7 @@ export const TextArea = FormTextArea;
 
 export const Controller = FormController;
 
-// eslint-disable-next-line react-refresh/only-export-components
+// eslint-disable-next-line react-refresh/only-export-components -- It's fine
 export { useStrictFormItemContext as useFormItemContext };
 
 export { Controller as ControllerPrimitive } from "react-hook-form";

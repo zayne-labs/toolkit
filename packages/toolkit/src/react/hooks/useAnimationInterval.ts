@@ -26,7 +26,7 @@ const useAnimationInterval = (options: AnimationOptions) => {
 		start();
 
 		return stop;
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- start and stop are stable
 	}, [intervalDuration]);
 
 	return { start, stop };

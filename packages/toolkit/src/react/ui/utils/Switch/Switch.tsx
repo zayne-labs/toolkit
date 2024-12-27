@@ -2,8 +2,7 @@
 
 import * as React from "react";
 
-import { getSlotElement } from "@/react/utils";
-import { isArray } from "@/type-helpers";
+import { getOtherChildren, getSlotElement } from "@/react/utils";
 
 type ValidSwitchComponentType = React.ReactElement<SwitchMatchProps>;
 
@@ -25,7 +24,7 @@ export function Switch<TCondition = true>(props: SwitchProps<TCondition>) {
 		throwOnMultipleSlotMatch: true,
 	});
 
-	const childrenCasesArray = isArray(children) ? children : [children];
+	const childrenCasesArray = getOtherChildren(children, Default);
 
 	const matchedCase = childrenCasesArray.find((child) => child.props.when === condition);
 

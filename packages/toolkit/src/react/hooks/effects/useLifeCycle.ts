@@ -16,7 +16,7 @@ const useLifeCycle = ({ onMount, onUnmount }: LifeCycleOptions) => {
 		stableOnMount();
 
 		return stableOnUnmount;
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- stableOnMount and stableOnUnmount are stable
 	}, []);
 };
 

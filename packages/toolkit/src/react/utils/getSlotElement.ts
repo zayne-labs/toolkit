@@ -1,5 +1,5 @@
-import { toArray } from "@/core/toArray";
-import { isArray } from "@/type-helpers";
+import { toArray } from "@/core";
+import { AssertionError, isArray } from "@/type-helpers";
 import { isValidElement } from "react";
 
 type Noop = () => void;
@@ -48,7 +48,7 @@ export const getSlotElement = <TProps>(
 	const Slot = childrenArray.filter((child) => isSlotElement(child, SlotWrapper));
 
 	if (throwOnMultipleSlotMatch && Slot.length > 1) {
-		throw new Error(errorMessage);
+		throw new AssertionError(errorMessage);
 	}
 
 	return Slot[0] as React.ReactElement<TProps> | undefined;
@@ -60,15 +60,15 @@ const isSlotElementMultiple = <TProps>(
 ) => SlotWrapperArray.some((slotWrapper) => isSlotElement(child, slotWrapper));
 
 // Check if the child is a Slot element by matching any in the SlotWrapperArray
-export const getOtherChildren = <TProps>(
-	children: React.ReactNode,
+export const getOtherChildren = <TProps, TChildren extends React.ReactNode = React.ReactNode>(
+	children: TChildren,
 	SlotWrapperOrWrappers: Array<React.FunctionComponent<TProps>> | React.FunctionComponent<TProps>
 ) => {
-	const childrenArray = isArray<React.ReactNode>(children) ? children : [children];
+	const childrenArray = toArray<TChildren>(children);
 
 	const otherChildren = isArray(SlotWrapperOrWrappers)
 		? childrenArray.filter((child) => !isSlotElementMultiple(child, SlotWrapperOrWrappers))
 		: childrenArray.filter((child) => !isSlotElement(child, SlotWrapperOrWrappers));
 
-	return otherChildren;
+	return otherChildren as TChildren extends unknown[] ? TChildren : TChildren[];
 };

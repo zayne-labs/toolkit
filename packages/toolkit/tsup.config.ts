@@ -10,6 +10,7 @@ const sharedOptions = {
 		"src/react/index.ts",
 		"src/react/utils/index.ts",
 		"src/react/ui/drop-zone/index.ts",
+		"src/react/ui/drag-scroll/index.ts",
 		"src/react/ui/carousel/index.ts",
 		"src/react/ui/form/index.ts",
 		"src/react/ui/utils/For/index.ts",

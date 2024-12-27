@@ -13,7 +13,7 @@ export type LocationStoreOptions = {
 	equalityFn?: EqualityFn<LocationState>;
 };
 
-/* eslint-disable unicorn/prefer-global-this */
+/* eslint-disable unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window */
 const createLocationStore = (options: LocationStoreOptions = {}) => {
 	const { equalityFn = Object.is } = options;
 
@@ -38,6 +38,8 @@ const createLocationStore = (options: LocationStoreOptions = {}) => {
 
 	// TODO -  Support nextjs object syntax for the URL
 	const push = (url: string | URL, state: unknown = null) => {
+		// TODO - Do an equality check here between the url being passed in and the current url to avoid useless re-renders
+
 		window.history.pushState(state, "", url);
 
 		triggerPopstateEvent(state);
@@ -45,6 +47,8 @@ const createLocationStore = (options: LocationStoreOptions = {}) => {
 
 	// TODO -  Support nextjs object syntax for the URL
 	const replace = (url: string | URL, state: unknown = null) => {
+		// TODO - Do an equality check here between the url being passed in and the current url to avoid useless re-renders
+
 		window.history.replaceState(state, "", url);
 
 		triggerPopstateEvent(state);
@@ -64,8 +68,6 @@ const createLocationStore = (options: LocationStoreOptions = {}) => {
 				search: window.location.search,
 				state: window.history.state as LocationState["state"],
 			};
-
-			if (equalityFn(newLocationState, previousLocationState)) return;
 
 			locationState = newLocationState;
 
@@ -113,5 +115,6 @@ const createLocationStore = (options: LocationStoreOptions = {}) => {
 
 	return locationStore;
 };
+/* eslint-enable unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window */
 
 export { createLocationStore };

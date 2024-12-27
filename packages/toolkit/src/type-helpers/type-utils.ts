@@ -37,20 +37,25 @@ export type NonEmptyArray<TArrayItem> = [TArrayItem, ...TArrayItem[]];
 
 export type AnyObject = UnmaskType<Record<string, unknown>>;
 
-/* eslint-disable ts-eslint/no-explicit-any */
-/* == `Any` is required here so that one can pass custom function type without type errors */
+/* eslint-disable ts-eslint/no-explicit-any -- `Any` is required here so that one can pass custom function type without type errors */
 export type AnyFunction<TResult = any> = UnmaskType<(...args: any[]) => TResult>;
 
 export type AnyAsyncFunction<TResult = any> = UnmaskType<(...args: any[]) => Promise<TResult>>;
+/* eslint-enable ts-eslint/no-explicit-any -- `Any` is required here so that one can pass custom function type without type errors */
 
 /**
- *  These types allows for adding arbitrary literal types, while still provided autocomplete for defaults.
- *  Usually intersection with "{}" or "NonNullable<unknown>" would make it work fine, but the "ignore" property with never type will help make it appear at the bottom of intellisense list and errors because of never .
+ *  - This types allows for adding arbitrary literal types, while still provided autocomplete for defaults.
+ *  - Usually intersection with "{}" or "NonNullable<unknown>" would make it work fine, but the "ignore" property with never type will help make it appear at the bottom of intellisense list and errors because of never .
  * @see [typescript issue](https://github.com/microsoft/TypeScript/issues/29729#issuecomment-471566609)
  */
-export type AnyString = string & { _ignore?: never };
+export type AnyString = string & Record<never, never>;
 
-export type AnyNumber = number & { _ignore?: never };
+/**
+ *  - This types allows for adding arbitrary literal types, while still provided autocomplete for defaults.
+ *  - Usually intersection with "{}" or "NonNullable<unknown>" would make it work fine, but the "ignore" property with never type will help make it appear at the bottom of intellisense list and errors because of never .
+ * @see [typescript issue](https://github.com/microsoft/TypeScript/issues/29729#issuecomment-471566609)
+ */
+export type AnyNumber = number & Record<never, never>;
 
-// eslint-disable-next-line perfectionist/sort-union-types
-export type LiteralUnion<TUnion extends TBase, TBase = string> = TUnion | (TBase & { _ignore?: never });
+// eslint-disable-next-line perfectionist/sort-union-types, perfectionist/sort-intersection-types -- I want TUnion to be first in the union
+export type LiteralUnion<TUnion extends TBase, TBase = string> = TUnion | (TBase & Record<never, never>);

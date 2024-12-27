@@ -64,7 +64,7 @@ export const useDropZone = (props: UseDropZoneProps) => {
 		ref,
 		validationSettings,
 		validator,
-		// eslint-disable-next-line ts-eslint/no-unnecessary-condition
+		// eslint-disable-next-line ts-eslint/no-unnecessary-condition -- Can be undefined
 	} = props ?? {};
 
 	const [isDragging, toggleIsDragging] = useToggle(false);

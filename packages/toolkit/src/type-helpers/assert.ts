@@ -1,6 +1,6 @@
 import { isString } from "./guard";
 
-class AssertionError extends Error {
+export class AssertionError extends Error {
 	override name = "AssertionError";
 
 	constructor(message?: string) {

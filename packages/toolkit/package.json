@@ -28,6 +28,7 @@
 		"./react/ui/form": "./dist/esm/react/ui/form/index.js",
 		"./react/ui/carousel": "./dist/esm/react/ui/carousel/index.js",
 		"./react/ui/drop-zone": "./dist/esm/react/ui/drop-zone/index.js",
+		"./react/ui/drag-scroll": "./dist/esm/react/ui/drag-scroll/index.js",
 		"./react/ui/for": "./dist/esm/react/ui/utils/For/index.js",
 		"./react/ui/show": "./dist/esm/react/ui/utils/Show/index.js",
 		"./react/ui/slot": "./dist/esm/react/ui/utils/Slot/index.js",

@@ -2,7 +2,7 @@ import type { AnyFunction } from "@/type-helpers";
 
 export type ForwardedRefType<TComponent extends HTMLElement | React.ElementType> =
 	TComponent extends React.ElementType
-		? React.ForwardedRef<React.ElementRef<TComponent>>
+		? React.ForwardedRef<React.Ref<TComponent>>
 		: React.ForwardedRef<TComponent>;
 
 export type InferProps<TComponent extends HTMLElement | React.ElementType> =
@@ -18,19 +18,26 @@ export type MyCustomCss<TExtra extends Record<string, string> = NonNullable<unkn
 /**
  *  @description Using this instead of the official react one to avoid build errors
  */
-// eslint-disable-next-line ts-eslint/no-invalid-void-type
-export type RefCallback<TElement> = (instance: TElement | null) => (() => void) | void;
+// eslint-disable-next-line perfectionist/sort-union-types, ts-eslint/no-invalid-void-type -- I want void to be first in union
+export type RefCallback<TElement> = (instance: TElement | null) => void | (() => void);
 
+/**
+ * @description Represents a set of props that can be used to render a component conditionally based on a discriminated union type.
+ * This type allows for the use of either a render prop or children prop, but not both at the same time.
+ * If both are provided, a TypeScript error will be thrown.
+ * @template TRenderPropType The type of the function that will be called to render the component when using the render prop.
+ * @template TMessage A message to display when the render prop is not used and the children prop is instead used.
+ */
 export type DiscriminatedRenderProps<
-	RenderPropType extends AnyFunction,
+	TRenderPropType extends AnyFunction,
 	TMessage extends
 		string = "Hey, Sorry but since you're currently using the children prop, the render prop is therefore redundant",
 > =
 	| {
-			children: RenderPropType;
+			children: TRenderPropType;
 			render?: TMessage;
 	  }
 	| {
 			children?: TMessage;
-			render: RenderPropType;
+			render: TRenderPropType;
 	  };

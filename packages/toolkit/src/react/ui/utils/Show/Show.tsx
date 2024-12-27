@@ -1,7 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { getOtherChildren, getSlotElement } from "../../../utils";
+
+import { getOtherChildren, getSlotElement } from "@/react/utils";
+import { AssertionError } from "@/type-helpers";
 
 type ShowProps = {
 	children: React.ReactNode;
@@ -23,7 +25,7 @@ export function Show({ children, fallback, when }: ShowProps) {
 	const otherChildren = getOtherChildren(children, [ShowFallback, ShowContent]);
 
 	if (fallBackSlot && fallback) {
-		throw new Error(`
+		throw new AssertionError(`
 			The fallback prop and <Show.Fallback> or <Show.OtherWise> cannot be used at the same time.
 		`);
 	}

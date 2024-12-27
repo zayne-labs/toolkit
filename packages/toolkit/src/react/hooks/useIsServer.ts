@@ -3,7 +3,7 @@ import { useSyncExternalStore } from "react";
 const noopStore = {
 	getServerSnapshot: () => true,
 	getSnapshot: () => false,
-	// eslint-disable-next-line unicorn/consistent-function-scoping
+	// eslint-disable-next-line unicorn/consistent-function-scoping -- It's fine
 	subscribe: () => () => {},
 };
 

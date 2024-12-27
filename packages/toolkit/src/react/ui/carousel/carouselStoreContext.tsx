@@ -22,8 +22,10 @@ const createCarouselStore = <TImages extends ImagesType>(
 		images,
 		maxSlide: images.length - 1,
 
-		/* eslint-disable perfectionist/sort-objects */
+		/* eslint-disable perfectionist/sort-objects -- actions should be last */
 		actions: {
+			/* eslint-enable perfectionist/sort-objects -- actions should be last */
+
 			goToSlide: (newValue) => {
 				onSlideBtnClick?.();
 
@@ -68,11 +70,11 @@ function CarouselContextProvider<TImages extends ImagesType>(props: CarouselProv
 	// == To set images again when a page is mounted, preventing stale images from previous page
 	useEffect(() => {
 		useInitCarouselStore.setState({ images });
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- useInitCarouselStore is stable
 	}, [images]);
 
 	return <Provider value={useInitCarouselStore}>{children}</Provider>;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
+// eslint-disable-next-line react-refresh/only-export-components -- It's fine
 export { useCarouselStore, CarouselContextProvider };

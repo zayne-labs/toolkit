@@ -13,7 +13,7 @@ const useEffectOnce = (callBackFn: React.EffectCallback) => {
 		effectGuard.current = true;
 
 		return stableCallback();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- stableCallback is stable
 	}, []);
 };
 

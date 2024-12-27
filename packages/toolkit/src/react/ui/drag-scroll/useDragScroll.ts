@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { useCallbackRef } from "../../hooks/useCallbackRef";
 import type { RefCallback } from "../../utils/types";
 
-/* eslint-disable no-param-reassign */
+/* eslint-disable no-param-reassign -- Mutation is needed here since it's an element */
 const updateCursor = <TElement extends HTMLElement>(element: TElement) => {
 	element.style.cursor = "grabbing";
 	element.style.userSelect = "none";
@@ -19,6 +19,12 @@ const onScrollSnap = <TElement extends HTMLElement>(action: "remove" | "reset", 
 	element.style.scrollSnapType = "";
 };
 
+const resetCursor = <TElement extends HTMLElement>(element: TElement) => {
+	element.style.cursor = "";
+	element.style.userSelect = "";
+};
+/* eslint-enable no-param-reassign  -- Mutation is needed here since it's an element */
+
 const handleScrollSnap = (dragContainer: HTMLElement) => {
 	const isMobileOrTablet = checkIsDeviceMobileOrTablet();
 
@@ -27,11 +33,6 @@ const handleScrollSnap = (dragContainer: HTMLElement) => {
 	} else {
 		onScrollSnap("reset", dragContainer);
 	}
-};
-
-const resetCursor = <TElement extends HTMLElement>(element: TElement) => {
-	element.style.cursor = "";
-	element.style.userSelect = "";
 };
 
 type DragScrollProps = {

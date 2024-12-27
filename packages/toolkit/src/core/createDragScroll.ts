@@ -1,7 +1,8 @@
+import type { AnyFunction } from "@/type-helpers";
 import { checkIsDeviceMobileOrTablet } from "./checkIsDeviceMobileOrTablet";
 import { off, on } from "./on";
 
-/* eslint-disable no-param-reassign */
+/* eslint-disable no-param-reassign -- Mutation is needed here since it's an element */
 const updateCursor = <TElement extends HTMLElement>(element: TElement) => {
 	element.style.cursor = "grabbing";
 	element.style.userSelect = "none";
@@ -16,6 +17,11 @@ const onScrollSnap = <TElement extends HTMLElement>(action: "remove" | "reset", 
 	element.style.scrollSnapType = "";
 };
 
+const resetCursor = <TElement extends HTMLElement>(element: TElement) => {
+	element.style.cursor = "";
+	element.style.userSelect = "";
+};
+
 const handleScrollSnap = (dragContainer: HTMLElement) => {
 	const isMobileOrTablet = checkIsDeviceMobileOrTablet();
 
@@ -26,14 +32,8 @@ const handleScrollSnap = (dragContainer: HTMLElement) => {
 	}
 };
 
-const resetCursor = <TElement extends HTMLElement>(element: TElement) => {
-	element.style.cursor = "";
-	element.style.userSelect = "";
-};
-
 export type DragScrollOptions = {
-	// eslint-disable-next-line ts-eslint/no-explicit-any
-	cn?: (...params: any[]) => string;
+	cn?: AnyFunction<string>;
 	dragOrientation?: "both" | "horizontal" | "vertical";
 	usage?: "allScreens" | "desktopOnly" | "mobileAndTabletOnly";
 };
@@ -122,5 +122,6 @@ const createDragScroll = <TElement extends HTMLElement>(
 
 	return { cleanupFn, dragContainerClasses, dragItemClasses };
 };
+/* eslint-enable no-param-reassign -- Mutation is needed here since it's an element */
 
 export { createDragScroll };

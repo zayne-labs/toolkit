@@ -1,21 +1,19 @@
 import { isFunction } from "@/type-helpers";
 import type { RefCallback } from "./types";
 
-export type PossibleRef<TRef> = React.Ref<TRef> | undefined;
-
 /**
  * @description Set a given ref to a given value.
  *
  * This utility takes care of different types of refs: callback refs and RefObject(s)
  */
-const setRef = <TRef>(ref: PossibleRef<TRef>, value: TRef) => {
+const setRef = <TRef>(ref: React.Ref<TRef>, value: TRef) => {
 	if (!ref) return;
 
 	if (isFunction(ref)) {
 		return ref(value);
 	}
 
-	// eslint-disable-next-line no-param-reassign
+	// eslint-disable-next-line no-param-reassign -- Mutation is needed here
 	ref.current = value;
 };
 
@@ -24,7 +22,7 @@ const setRef = <TRef>(ref: PossibleRef<TRef>, value: TRef) => {
  *
  * Accepts callback refs and RefObject(s)
  */
-const composeRefs = <TRef>(refs: Array<PossibleRef<TRef>>): RefCallback<TRef> => {
+const composeRefs = <TRef>(refs: Array<React.Ref<TRef>>): RefCallback<TRef> => {
 	const refCallBack: RefCallback<TRef> = (node) => {
 		const cleanupFnArray = refs.map((ref) => setRef(ref, node)).filter(Boolean);
 

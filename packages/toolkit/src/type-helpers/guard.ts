@@ -14,7 +14,7 @@ type IsPlainObjectOptions = {
 	/**
 	 * @description Will be used to check if the value is an instance of this class
 	 */
-	// eslint-disable-next-line ts-eslint/no-unsafe-function-type
+	// eslint-disable-next-line ts-eslint/no-unsafe-function-type -- Generic class can only be denoted as Function
 	Class?: Function;
 
 	/**

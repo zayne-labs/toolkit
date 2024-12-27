@@ -3,7 +3,7 @@ const fallBackCopy = (text: string) => {
 	tempTextArea.value = text;
 	document.body.append(tempTextArea);
 	tempTextArea.select();
-	// eslint-disable-next-line ts-eslint/no-deprecated
+	// eslint-disable-next-line ts-eslint/no-deprecated -- It's a fallback so the deprecation is fine
 	document.execCommand("copy");
 	tempTextArea.remove();
 };
@@ -12,7 +12,7 @@ const copyToClipboard = async (text: string) => {
 	if (text === "") return;
 
 	try {
-		// eslint-disable-next-line ts-eslint/no-unnecessary-condition
+		// eslint-disable-next-line ts-eslint/no-unnecessary-condition -- navigator can be undefined sometimes
 		if (!navigator?.clipboard?.writeText) {
 			throw new Error("writeText not supported");
 		}

@@ -18,7 +18,7 @@ export const waitUntil = (delay: number | Delay) => {
 	const delayInMs =
 		typeof delay === "number"
 			? delay
-			: // eslint-disable-next-line unicorn/no-nested-ternary
+			: // eslint-disable-next-line unicorn/no-nested-ternary -- ignore for now
 				typeof delay.seconds === "number"
 				? delay.seconds * 1000
 				: delay.milliseconds;
@@ -36,7 +36,7 @@ export const waitUntilSync = (delay: number | Delay) => {
 	const delayInMs =
 		typeof delay === "number"
 			? delay
-			: // eslint-disable-next-line unicorn/no-nested-ternary
+			: // eslint-disable-next-line unicorn/no-nested-ternary -- ignore for now
 				typeof delay.seconds === "number"
 				? delay.seconds * 1000
 				: delay.milliseconds;
