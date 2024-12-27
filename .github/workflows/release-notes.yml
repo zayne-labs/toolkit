@@ -1,8 +1,5 @@
 name: Release Note
 
-permissions:
-   contents: write
-
 on:
    push:
       tags:
@@ -51,6 +48,7 @@ jobs:
                  echo "::set-output name=tag::latest"
               fi
 
-         - run: pnpx changelogithub
+         - name: Generate Release Notes
            env:
-              GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+           run: pnpx changelogithub
