@@ -132,7 +132,7 @@ export const useDropZone = (props: UseDropZoneProps) => {
 	const getRootProps = () => ({
 		...extraRootProps,
 		className: cnMerge(
-			"relative isolate flex w-fit flex-col",
+			"relative isolate flex flex-col",
 			extraRootProps?.className,
 			classNames?.base,
 			isDragging && ["opacity-60", classNames?.activeDrag]
