@@ -4,6 +4,7 @@ on:
    push:
       tags:
          - "v*"
+         - "@zayne-labs/toolkit@*"
 
 jobs:
    release-note:
@@ -53,3 +54,15 @@ jobs:
            if: steps.check_version.outputs.tag == 'latest'
            env:
               GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+         - name: Install dependencies and build
+           run: |
+              pnpm install --frozen-lockfile
+              pnpm build
+
+         - name: Publish to npm
+           uses: changesets/action@v1
+           run: pnpm release
+           env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

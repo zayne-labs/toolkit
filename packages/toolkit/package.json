@@ -1,7 +1,7 @@
 {
 	"name": "@zayne-labs/toolkit",
 	"type": "module",
-	"version": "0.8.15",
+	"version": "0.8.18",
 	"packageManager": "pnpm@9.15.0",
 	"description": "A collection of utility functions, types and composables used by my other projects. Nothing too fancy but can be useful.",
 	"author": "Ryan Zayne",
@@ -119,8 +119,7 @@
 	},
 	"publishConfig": {
 		"access": "public",
-		"registry": "https://registry.npmjs.org/",
-		"provenance": true
+		"registry": "https://registry.npmjs.org/"
 	},
 	"size-limit": [
 		{
