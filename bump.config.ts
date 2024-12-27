@@ -3,7 +3,7 @@ import { defineConfig } from "bumpp";
 
 export default defineConfig({
 	// all: true,
-	// commit: "chore: update package version to v%",
+	commit: "chore(bumpp): update package version to v",
 	files: ["./packages/**/package.json"],
 	// push: false,
 	// tag: "@zayne-labs/toolkit@%",
