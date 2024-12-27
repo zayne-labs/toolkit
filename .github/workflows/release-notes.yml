@@ -39,6 +39,18 @@ jobs:
               registry-url: https://registry.npmjs.org/
               node-version: ${{ matrix.node-version }}
 
+         - name: Check version
+           id: check_version
+           run: |
+              tag=$(echo ${GITHUB_REF#refs/tags/})
+              if [[ $tag == *"beta"* ]]; then
+                 echo "::set-output name=tag::beta"
+              elif [[ $tag == *"alpha"* ]]; then
+                 echo "::set-output name=tag::alpha"
+              else
+                 echo "::set-output name=tag::latest"
+              fi
+
          - run: pnpx changelogithub
            env:
               GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
