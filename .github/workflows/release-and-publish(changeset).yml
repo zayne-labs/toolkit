@@ -52,3 +52,30 @@ jobs:
            env:
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+   release-note:
+      runs-on: ubuntu-latest
+      timeout-minutes: 15
+      strategy:
+         matrix:
+            node-version: [lts/*]
+
+      steps:
+         - name: Checkout repo
+           uses: actions/checkout@v4
+           with:
+              fetch-depth: 0
+
+         - name: Setup pnpm
+           uses: pnpm/action-setup@v4
+           with:
+              version: 9.15.0
+
+         - name: Setup Node.js
+           uses: actions/setup-node@v4
+           with:
+              registry-url: https://registry.npmjs.org/
+              node-version: ${{ matrix.node-version }}
+
+         - run: pnpx changelogithub
+           env:
+              GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
