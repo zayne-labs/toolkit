@@ -1,9 +1,10 @@
-name: Release Note
+name: Release Notes - Changelogithub
 
 on:
    push:
       tags:
-         - "*"
+         - "*v"
+         - "*@zayne-labs/toolkit@"
 
 jobs:
    release-note:
@@ -49,6 +50,7 @@ jobs:
               fi
 
          - name: Generate Release Notes
-           env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
            run: pnpx changelogithub
+           if: steps.check_version.outputs.tag == 'latest'
+           env:
+              GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
