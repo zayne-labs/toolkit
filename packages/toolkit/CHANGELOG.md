@@ -1,5 +1,14 @@
 # @zayne-labs/toolkit
 
+## 0.8.13
+
+### Patch Changes
+
+- 5f13b85: - Add drag-scroll to package exports
+   - Update dependencies including eslint, typescript-eslint, and react-hook-form
+   - Improve eslint disable comments with explanations
+   - Add eslint-interactive script for better DX
+
 ## 0.8.12
 
 ### Patch Changes
