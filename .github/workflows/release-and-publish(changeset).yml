@@ -1,13 +1,12 @@
-# name: Release and Publish - Changeset
-# on:
-#    push:
-#       branches: main
+name: Release and Publish - Changeset
+on:
+   push:
+      branches: main
 
-# permissions:
-#    contents: write
-#    pull-requests: write
-#    id-token: write
-
+permissions:
+   contents: write
+   pull-requests: write
+   id-token: write
 # jobs:
 #    release:
 #       runs-on: ubuntu-latest
