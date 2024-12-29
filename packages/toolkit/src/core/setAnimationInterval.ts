@@ -1,4 +1,4 @@
-export type AnimationIntervelOptions = {
+export type AnimationIntervalOptions = {
 	immediate?: boolean;
 	once?: boolean;
 };
@@ -6,7 +6,7 @@ export type AnimationIntervelOptions = {
 const setAnimationInterval = (
 	onAnimation: () => void,
 	intervalDuration: number | null,
-	options?: AnimationIntervelOptions
+	options?: AnimationIntervalOptions
 ) => {
 	let startTimeStamp: number | null = null;
 	let animationFrameId: number;

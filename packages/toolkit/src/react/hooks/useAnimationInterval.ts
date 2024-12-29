@@ -1,12 +1,12 @@
 import { setAnimationInterval } from "@/core";
-import type { AnimationIntervelOptions } from "@/core/setAnimationInterval";
+import type { AnimationIntervalOptions } from "@/core/setAnimationInterval";
 import type { Prettify } from "@/type-helpers";
 import { useEffect } from "react";
 import { useCallbackRef } from "./useCallbackRef";
 import { useConstant } from "./useConstant";
 
 type AnimationOptions = Prettify<
-	AnimationIntervelOptions & {
+	AnimationIntervalOptions & {
 		intervalDuration: number | null;
 		onAnimation: () => void;
 	}

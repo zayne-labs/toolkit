@@ -26,9 +26,15 @@ const composeRefs = <TRef>(refs: Array<React.Ref<TRef>>): RefCallback<TRef> => {
 	const refCallBack: RefCallback<TRef> = (node) => {
 		const cleanupFnArray = refs.map((ref) => setRef(ref, node)).filter(Boolean);
 
-		if (cleanupFnArray.length === 0) return;
+		const cleanupFn = () => cleanupFnArray.forEach((cleanup) => cleanup?.());
 
-		return () => cleanupFnArray.forEach((cleanup) => cleanup?.());
+		// == React 18 may not call the cleanup function so we need to call it manually on element unmount
+		if (!node) {
+			cleanupFn();
+			return;
+		}
+
+		return cleanupFn;
 	};
 
 	return refCallBack;

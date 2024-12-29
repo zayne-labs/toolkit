@@ -56,6 +56,7 @@
 		"lint:check-types": "tsc --pretty --incremental -p tsconfig.json",
 		"lint:publint": "publint --strict .",
 		"lint:size": "size-limit",
+		"release": "pnpm publish --no-git-checks",
 		"test:release": "pkg-pr-new publish"
 	},
 	"peerDependencies": {

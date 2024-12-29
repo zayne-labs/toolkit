@@ -1,11 +1,11 @@
 import { isBrowser } from "@/core/constants";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import type { RefCallback } from "../utils";
+import { useCallbackRef } from "./useCallbackRef";
 import { useConstant } from "./useConstant";
 
 const useScrollObserver = <TElement extends HTMLElement>(options: IntersectionObserverInit = {}) => {
 	const { rootMargin = "10px 0px 0px 0px", ...restOfOptions } = options;
-
-	const observedElementRef = useRef<TElement>(null);
 
 	const [isScrolled, setIsScrolled] = useState(false);
 
@@ -21,21 +21,29 @@ const useScrollObserver = <TElement extends HTMLElement>(options: IntersectionOb
 		);
 	});
 
-	useEffect(() => {
-		if (!observedElementRef.current || !elementObserver) return;
-
+	const observedElementRef: RefCallback<TElement> = useCallbackRef((element) => {
 		const scrollWatcher = document.createElement("span");
 		scrollWatcher.dataset.scrollWatcher = "";
 
-		observedElementRef.current.before(scrollWatcher);
+		element?.before(scrollWatcher);
+
+		if (!elementObserver) return;
 
 		elementObserver.observe(scrollWatcher);
 
-		return () => {
+		const cleanupFn = () => {
 			scrollWatcher.remove();
 			elementObserver.disconnect();
 		};
-	}, [elementObserver]);
+
+		// React 18 may not call the cleanup function so we need to call it manually on element unmount
+		if (!element) {
+			cleanupFn();
+			return;
+		}
+
+		return cleanupFn;
+	});
 
 	return { isScrolled, observedElementRef };
 };
