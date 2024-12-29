@@ -12,7 +12,9 @@ export type CallbackFn<in TParams, out TResult = void> = (...params: TParams[]) 
 
 export type SelectorFn<TStore, TResult> = (state: TStore) => TResult;
 
-export type Writeable<TObject, TType extends "deep" | "shallow" = "shallow"> = {
+export type WriteableLevel = "deep" | "shallow";
+
+export type Writeable<TObject, TType extends WriteableLevel = "shallow"> = {
 	-readonly [key in keyof TObject]: TType extends "shallow"
 		? TObject[key]
 		: TType extends "deep"

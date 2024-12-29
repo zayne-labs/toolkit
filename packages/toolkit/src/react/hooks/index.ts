@@ -12,7 +12,7 @@ export { useLocation } from "./useLocation";
 export { usePresence } from "./usePresence/usePresence";
 export { useScrollObserver } from "./useScrollObserver";
 export { useSearch } from "./useSearch";
-export { useSearchParams } from "./useSearchParams";
+export * from "./useSearchParams";
 export { useStorageState } from "./useStorageState";
 export { useStore } from "./useStore";
 export * from "./useThrottle";

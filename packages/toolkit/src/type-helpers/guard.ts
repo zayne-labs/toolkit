@@ -16,23 +16,13 @@ type IsPlainObjectOptions = {
 	 */
 	// eslint-disable-next-line ts-eslint/no-unsafe-function-type -- Generic class can only be denoted as Function
 	Class?: Function;
-
-	/**
-	 * @description
-	 * Will return true if the value is not an array but is an object of any kind.
-	 *
-	 * This is useful if you want to allow instances of classes pass the check but you don't have access to the class itself to pass as the `Class` option.
-	 *
-	 * @default false
-	 */
-	returnTrueIfNotArray?: boolean;
 };
 
 export const isPlainObject = <TObject extends AnyObject>(
 	value: unknown,
 	options: IsPlainObjectOptions = {}
 ): value is TObject => {
-	const { Class, returnTrueIfNotArray = false } = options;
+	const { Class } = options;
 
 	if (!isObject(value)) {
 		return false;
@@ -40,10 +30,6 @@ export const isPlainObject = <TObject extends AnyObject>(
 
 	if (isArray(value)) {
 		return false;
-	}
-
-	if (returnTrueIfNotArray) {
-		return true;
 	}
 
 	if (Class && value instanceof Class) {
@@ -70,3 +56,5 @@ export const isAsyncFunction = <TAsyncFunction extends AnyAsyncFunction>(
 };
 
 export const isFile = (value: unknown): value is File => value instanceof File;
+
+export const isIterable = <TIterable>(obj: object): obj is Iterable<TIterable> => Symbol.iterator in obj;

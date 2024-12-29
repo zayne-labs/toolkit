@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-	content: ["./src/react/ui/**/*.{ts,tsx}", "./src/react/hooks/**/*.ts"],
+	content: ["./src/react/**/*.{ts,tsx}"],
 
 	corePlugins: { preflight: false },
 

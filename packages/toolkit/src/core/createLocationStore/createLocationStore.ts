@@ -1,27 +1,24 @@
 import { isBrowser } from "../constants";
 import type { EqualityFn, StoreApi } from "../createStore";
+import { type UrlInfo, pushState, replaceState } from "../navigation";
 import { on } from "../on";
 
-export type LocationState = {
-	hash: string;
-	pathname: string;
-	search: string;
-	state: NonNullable<unknown> | null;
-};
+export type LocationInfo = Omit<UrlInfo, "search"> & { search: URLSearchParams };
 
 export type LocationStoreOptions = {
-	equalityFn?: EqualityFn<LocationState>;
+	equalityFn?: EqualityFn<LocationInfo>;
 };
 
 /* eslint-disable unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window */
 const createLocationStore = (options: LocationStoreOptions = {}) => {
+	// TODO - Apply shallow equality here
 	const { equalityFn = Object.is } = options;
 
-	let locationState: LocationState = {
+	let locationState: LocationInfo = {
 		hash: isBrowser() ? window.location.hash : "",
 		pathname: isBrowser() ? window.location.pathname : "",
-		search: isBrowser() ? window.location.search : "",
-		state: isBrowser() ? (window.history.state as LocationState["state"]) : null,
+		search: isBrowser() ? new URLSearchParams(window.location.search) : new URLSearchParams(),
+		state: isBrowser() ? (window.history.state as LocationInfo["state"]) : null,
 	};
 
 	const initialState = locationState;
@@ -30,31 +27,29 @@ const createLocationStore = (options: LocationStoreOptions = {}) => {
 
 	const getInitialState = () => initialState;
 
-	const triggerPopstateEvent = (state?: unknown) => {
+	const triggerPopstateEvent = (state?: LocationInfo["state"]) => {
 		// == This has to be done in order to actually trigger the popState event, otherwise it would only fire when the user clicks on the forward/back button.
 		// LINK - https://stackoverflow.com/a/37492075/18813022
 		window.dispatchEvent(new PopStateEvent("popstate", { state }));
 	};
 
-	// TODO -  Support nextjs object syntax for the URL
-	const push = (url: string | URL, state: unknown = null) => {
+	const push: typeof pushState = (url, state) => {
 		// TODO - Do an equality check here between the url being passed in and the current url to avoid useless re-renders
 
-		window.history.pushState(state, "", url);
+		pushState(url, state);
 
 		triggerPopstateEvent(state);
 	};
 
-	// TODO -  Support nextjs object syntax for the URL
-	const replace = (url: string | URL, state: unknown = null) => {
+	const replace: typeof replaceState = (url, state) => {
 		// TODO - Do an equality check here between the url being passed in and the current url to avoid useless re-renders
 
-		window.history.replaceState(state, "", url);
+		replaceState(url, state);
 
 		triggerPopstateEvent(state);
 	};
 
-	type Subscribe = StoreApi<LocationState>["subscribe"];
+	type Subscribe = StoreApi<LocationInfo>["subscribe"];
 
 	const subscribe: Subscribe = (onLocationStoreChange, subscribeOptions = {}) => {
 		const { fireListenerImmediately = false } = subscribeOptions;
@@ -62,11 +57,11 @@ const createLocationStore = (options: LocationStoreOptions = {}) => {
 		const previousLocationState = getState();
 
 		const handleLocationStoreChange = () => {
-			const newLocationState = {
+			const newLocationState: LocationInfo = {
 				hash: window.location.hash,
 				pathname: window.location.pathname,
-				search: window.location.search,
-				state: window.history.state as LocationState["state"],
+				search: new URLSearchParams(window.location.search),
+				state: window.history.state as LocationInfo["state"],
 			};
 
 			locationState = newLocationState;

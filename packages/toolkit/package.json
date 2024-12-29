@@ -124,7 +124,7 @@
 	"size-limit": [
 		{
 			"path": "./src/core/index.ts",
-			"limit": "3.2 kb"
+			"limit": "3.5 kb"
 		},
 		{
 			"path": "./src/react/index.ts",

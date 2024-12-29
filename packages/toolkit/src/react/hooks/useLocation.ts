@@ -1,4 +1,8 @@
-import { type LocationState, createLocationStore } from "@/core/createLocationStore";
+import {
+	type LocationInfo,
+	type LocationStoreOptions,
+	createLocationStore,
+} from "@/core/createLocationStore";
 import type { SelectorFn } from "@/type-helpers";
 import { useConstant } from "./useConstant";
 import { useStore } from "./useStore";
@@ -14,8 +18,11 @@ type UseLocationResult<TSlice> = [
 	},
 ];
 
-const useLocation = <TSlice = LocationState>(selector: SelectorFn<LocationState, TSlice>) => {
-	const locationStore = useConstant(() => createLocationStore());
+const useLocation = <TSlice = LocationInfo>(
+	selector: SelectorFn<LocationInfo, TSlice>,
+	options?: LocationStoreOptions
+) => {
+	const locationStore = useConstant(() => createLocationStore(options));
 
 	const stateSlice = useStore(locationStore as never, selector);
 
