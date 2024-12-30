@@ -2,38 +2,23 @@ import type { AnyAsyncFunction, AnyFunction, AnyObject } from "./type-utils";
 
 export const isString = (value: unknown): value is string => typeof value === "string";
 
+export const isBoolean = (value: unknown) => typeof value === "boolean";
+
 export const isArray = <TArray>(value: unknown): value is TArray[] => Array.isArray(value);
 
-export const isFormData = (value: unknown): value is FormData => value instanceof FormData;
+export const isFormData = (value: unknown) => value instanceof FormData;
 
-export const isObject = (value: unknown): value is object => {
-	return typeof value === "object" && value !== null;
-};
+export const isObject = (value: unknown) => typeof value === "object" && value !== null;
 
-type IsPlainObjectOptions = {
-	/**
-	 * @description Will be used to check if the value is an instance of this class
-	 */
-	// eslint-disable-next-line ts-eslint/no-unsafe-function-type -- Generic class can only be denoted as Function
-	Class?: Function;
-};
-
-export const isPlainObject = <TObject extends AnyObject>(
-	value: unknown,
-	options: IsPlainObjectOptions = {}
+export const isObjectAndNotArray = <TObject = Record<string, unknown>>(
+	value: unknown
 ): value is TObject => {
-	const { Class } = options;
+	return isObject(value) && !isArray(value);
+};
 
+export const isPlainObject = <TObject extends AnyObject>(value: unknown): value is TObject => {
 	if (!isObject(value)) {
 		return false;
-	}
-
-	if (isArray(value)) {
-		return false;
-	}
-
-	if (Class && value instanceof Class) {
-		return true;
 	}
 
 	const prototype = Object.getPrototypeOf(value) as unknown;
