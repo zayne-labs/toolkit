@@ -43,7 +43,7 @@
 		"lint:publint": "publint --strict .",
 		"lint:size": "size-limit",
 		"release": "pnpm publish --no-git-checks",
-		"test:release": "pkg-pr-new publish"
+		"test:release": "pnpx pkg-pr-new publish"
 	},
 	"peerDependencies": {
 		"react": ">=18.0.0",

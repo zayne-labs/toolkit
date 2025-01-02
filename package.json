@@ -35,7 +35,6 @@
 		"eslint-plugin-tailwindcss": "^3.17.5",
 		"husky": "^9.1.7",
 		"lint-staged": "^15.3.0",
-		"pkg-pr-new": "^0.0.39",
 		"prettier": "^3.4.2",
 		"typescript": "catalog:"
 	}

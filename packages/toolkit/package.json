@@ -45,7 +45,7 @@
 		"lint:check-types": "tsc --pretty --incremental -p tsconfig.json",
 		"lint:publint": "publint --strict .",
 		"release": "pnpm publish --no-git-checks",
-		"test:release": "pkg-pr-new publish"
+		"test:release": "pnpx pkg-pr-new publish"
 	},
 	"peerDependencies": {
 		"react": ">=18.0.0",
