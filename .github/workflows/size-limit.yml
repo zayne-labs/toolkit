@@ -29,7 +29,10 @@ jobs:
               node-version: ${{ matrix.node-version }}
               cache: pnpm
 
-         - name: Install dependencies and run size limit check
+         - name: Install dependencies and build
            run: |
               pnpm install --frozen-lockfile
-              pnpm lint:size
+              pnpm build
+
+         - name: Run size limit check
+           run: pnpm lint:size
