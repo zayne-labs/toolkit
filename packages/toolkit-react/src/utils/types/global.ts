@@ -16,12 +16,6 @@ export type MyCustomCss<TExtra extends Record<string, string> = NonNullable<unkn
 	React.CSSProperties & Record<`--${string}`, string> & TExtra; // Allows Ts support for inline css variables
 
 /**
- *  @description Using this instead of the official react one to avoid build errors
- */
-// eslint-disable-next-line perfectionist/sort-union-types, ts-eslint/no-invalid-void-type -- I want void to be first in union
-export type RefCallback<TElement> = (instance: TElement | null) => void | (() => void);
-
-/**
  * @description Represents a set of props that can be used to render a component conditionally based on a discriminated union type.
  * This type allows for the use of either a render prop or children prop, but not both at the same time.
  * If both are provided, a TypeScript error will be thrown.

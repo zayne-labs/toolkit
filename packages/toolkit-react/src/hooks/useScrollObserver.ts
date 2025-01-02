@@ -1,6 +1,5 @@
 import { isBrowser } from "@zayne-labs/toolkit-core";
-import { useState } from "react";
-import type { RefCallback } from "../utils";
+import { type RefCallback, useState } from "react";
 import { useCallbackRef } from "./useCallbackRef";
 import { useConstant } from "./useConstant";
 

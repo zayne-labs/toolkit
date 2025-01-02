@@ -1,5 +1,5 @@
 import { isFunction } from "@zayne-labs/toolkit-type-helpers";
-import type { RefCallback } from "./types";
+import type { RefCallback } from "react";
 
 /**
  * @description Set a given ref to a given value.
