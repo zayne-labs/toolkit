@@ -19,7 +19,7 @@
 		"lint:size": "pnpm --filter \"./packages/*\" lint:size",
 		"prepare": "husky",
 		"release": "pnpm --filter \"./packages/*\" release",
-		"test:release": "pnpx pkg-pr-new publish './packages/*'",
+		"test:release": "pnpx pkg-pr-new publish './packages/*' --compact",
 		"version-package": "changeset version"
 	},
 	"devDependencies": {
