@@ -1,5 +1,5 @@
 {
-	"name": "@zayne-labs/toolkit",
+	"name": "@zayne-labs/toolkit-react",
 	"type": "module",
 	"version": "0.8.21",
 	"packageManager": "pnpm@9.15.0",
@@ -21,16 +21,13 @@
 	],
 	"sideEffects": false,
 	"exports": {
-		".": null,
-		"./core": "./dist/esm/core/index.js",
-		"./react": "./dist/esm/react/hooks/index.js",
-		"./react/utils": "./dist/esm/react/utils/index.js",
-		"./react/zustand": "./dist/esm/react/zustand/index.js",
-		"./type-helpers": "./dist/esm/type-helpers/index.js"
+		".": "./dist/esm/hooks/index.js",
+		"./utils": "./dist/esm/utils/index.js",
+		"./zustand": "./dist/esm/zustand/index.js"
 	},
-	"main": "./dist/esm/core/index.js",
-	"module": "./dist/esm/core/index.js",
-	"types": "./dist/esm/core/index.d.ts",
+	"main": "./dist/esm/hooks/index.js",
+	"module": "./dist/esm/hooks/index.js",
+	"types": "./dist/esm/hooks/index.d.ts",
 	"files": [
 		"dist"
 	],
@@ -44,6 +41,7 @@
 		"lint:attw": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
 		"lint:check-types": "tsc --pretty --incremental -p tsconfig.json",
 		"lint:publint": "publint --strict .",
+		"lint:size": "size-limit",
 		"release": "pnpm publish --no-git-checks",
 		"test:release": "pkg-pr-new publish"
 	},
@@ -65,12 +63,13 @@
 	},
 	"dependencies": {
 		"@zayne-labs/toolkit-core": "workspace:*",
-		"@zayne-labs/toolkit-react": "workspace:*",
 		"@zayne-labs/toolkit-type-helpers": "workspace:*"
 	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.17.2",
 		"@changesets/cli": "^2.27.11",
+		"@size-limit/esbuild-why": "^11.1.6",
+		"@size-limit/preset-small-lib": "^11.1.6",
 		"@total-typescript/ts-reset": "^0.6.1",
 		"@types/node": "^22.10.3",
 		"@types/react": "^19.0.2",
@@ -84,6 +83,7 @@
 		"publint": "^0.2.12",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
+		"size-limit": "^11.1.6",
 		"tailwindcss": "^3.4.17",
 		"terser": "^5.37.0",
 		"tsup": "^8.3.5",
@@ -94,5 +94,19 @@
 		"access": "public",
 		"registry": "https://registry.npmjs.org/",
 		"provenance": true
-	}
+	},
+	"size-limit": [
+		{
+			"path": "./src/hooks/index.ts",
+			"limit": "5.2 kb"
+		},
+		{
+			"path": "./src/utils/index.ts",
+			"limit": "1 kb"
+		},
+		{
+			"path": "./src/zustand/index.ts",
+			"limit": "600 b"
+		}
+	]
 }
