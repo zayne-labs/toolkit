@@ -1,20 +1,19 @@
 import { isFunction } from "@zayne-labs/toolkit-type-helpers";
-import type { RefCallback } from "react";
 
 /**
  * @description Set a given ref to a given value.
  *
  * This utility takes care of different types of refs: callback refs and RefObject(s)
  */
-const setRef = <TRef>(ref: React.Ref<TRef>, value: TRef) => {
+export const setRef = <TRef>(ref: React.Ref<TRef> | undefined, node: TRef) => {
 	if (!ref) return;
 
 	if (isFunction(ref)) {
-		return ref(value);
+		return ref(node);
 	}
 
 	// eslint-disable-next-line no-param-reassign -- Mutation is needed here
-	ref.current = value;
+	ref.current = node;
 };
 
 /**
@@ -22,9 +21,9 @@ const setRef = <TRef>(ref: React.Ref<TRef>, value: TRef) => {
  *
  * Accepts callback refs and RefObject(s)
  */
-const composeRefs = <TRef>(refs: Array<React.Ref<TRef>>): RefCallback<TRef> => {
-	const refCallBack: RefCallback<TRef> = (node) => {
-		const cleanupFnArray = refs.map((ref) => setRef(ref, node)).filter(Boolean);
+export const composeRefs = <TRef>(refs: Array<React.Ref<TRef> | undefined>): React.RefCallback<TRef> => {
+	const refCallBack: React.RefCallback<TRef> = (node) => {
+		const cleanupFnArray = refs.map((ref) => setRef(ref, node));
 
 		const cleanupFn = () => cleanupFnArray.forEach((cleanup) => cleanup?.());
 
@@ -39,5 +38,3 @@ const composeRefs = <TRef>(refs: Array<React.Ref<TRef>>): RefCallback<TRef> => {
 
 	return refCallBack;
 };
-
-export { composeRefs };

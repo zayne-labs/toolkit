@@ -1,5 +1,5 @@
 import { isBrowser } from "@zayne-labs/toolkit-core";
-import { type RefCallback, useState } from "react";
+import { useState } from "react";
 import { useCallbackRef } from "./useCallbackRef";
 import { useConstant } from "./useConstant";
 
@@ -20,7 +20,7 @@ const useScrollObserver = <TElement extends HTMLElement>(options: IntersectionOb
 		);
 	});
 
-	const observedElementRef: RefCallback<TElement> = useCallbackRef((element) => {
+	const observedElementRef: React.RefCallback<TElement> = useCallbackRef((element) => {
 		const scrollWatcher = document.createElement("span");
 		scrollWatcher.dataset.scrollWatcher = "";
 

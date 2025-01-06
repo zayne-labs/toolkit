@@ -5,6 +5,7 @@ import { isValidElement } from "react";
 type Noop = () => void;
 type WithSlot = { slot?: string };
 
+// TODO - Add support for thing like <div slot="foo"> OR <Slot name="foo">
 export const isSlotElement = <TProps>(
 	child: React.ReactNode,
 	SlotWrapper: React.FunctionComponent<TProps>
