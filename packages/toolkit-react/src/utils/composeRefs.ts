@@ -1,11 +1,14 @@
 import { isFunction } from "@zayne-labs/toolkit-type-helpers";
+import type { RefCallback } from "react";
+
+type PossiblyRef<TRef> = React.Ref<TRef> | undefined;
 
 /**
  * @description Set a given ref to a given value.
  *
  * This utility takes care of different types of refs: callback refs and RefObject(s)
  */
-export const setRef = <TRef>(ref: React.Ref<TRef> | undefined, node: TRef) => {
+export const setRef = <TRef>(ref: PossiblyRef<TRef>, node: TRef): ReturnType<RefCallback<TRef>> => {
 	if (!ref) return;
 
 	if (isFunction(ref)) {
@@ -21,8 +24,8 @@ export const setRef = <TRef>(ref: React.Ref<TRef> | undefined, node: TRef) => {
  *
  * Accepts callback refs and RefObject(s)
  */
-export const composeRefs = <TRef>(refs: Array<React.Ref<TRef> | undefined>): React.RefCallback<TRef> => {
-	const refCallBack: React.RefCallback<TRef> = (node) => {
+export const composeRefs = <TRef>(refs: Array<PossiblyRef<TRef>>) => {
+	const refCallBack: RefCallback<TRef> = (node) => {
 		const cleanupFnArray = refs.map((ref) => setRef(ref, node));
 
 		const cleanupFn = () => cleanupFnArray.forEach((cleanup) => cleanup?.());
