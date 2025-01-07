@@ -2,8 +2,15 @@ import { isFunction, isPlainObject } from "@zayne-labs/toolkit-type-helpers";
 
 type UnknownProps = Record<string, unknown>;
 
-const mergeProps = (slotProps: UnknownProps, childProps: UnknownProps): UnknownProps => {
-	// all child props should override slotProps
+const mergeProps = (
+	slotProps: UnknownProps | undefined,
+	childProps: UnknownProps | undefined
+): UnknownProps => {
+	if (!slotProps || !childProps) {
+		return childProps ?? slotProps ?? {};
+	}
+
+	// == all child props should override slotProps
 	const overrideProps = { ...childProps };
 
 	for (const propName of Object.keys(slotProps)) {
@@ -15,7 +22,7 @@ const mergeProps = (slotProps: UnknownProps, childProps: UnknownProps): UnknownP
 			overrideProps[propName] = { ...slotPropValue, ...childPropValue };
 		}
 
-		if (propName === "className") {
+		if (propName === "className" || propName === "class") {
 			overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(" ");
 		}
 
