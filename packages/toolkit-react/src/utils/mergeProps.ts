@@ -1,6 +1,6 @@
 import { isFunction, isPlainObject } from "@zayne-labs/toolkit-type-helpers";
 
-type UnknownProps = Record<string, unknown>;
+type UnknownProps = Record<never, never>;
 
 const mergeProps = <TProps extends UnknownProps>(
 	slotProps: TProps | undefined,
@@ -11,11 +11,11 @@ const mergeProps = <TProps extends UnknownProps>(
 	}
 
 	// == all child props should override slotProps
-	const overrideProps = { ...childProps } as UnknownProps;
+	const overrideProps = { ...childProps } as Record<string, unknown>;
 
 	for (const propName of Object.keys(slotProps)) {
-		const slotPropValue = slotProps[propName];
-		const childPropValue = childProps[propName];
+		const slotPropValue = (slotProps as Record<string, unknown>)[propName];
+		const childPropValue = (childProps as Record<string, unknown>)[propName];
 
 		// == if it's `style`, we merge them
 		if (propName === "style" && isPlainObject(slotPropValue) && isPlainObject(childPropValue)) {
