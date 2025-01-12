@@ -66,7 +66,10 @@ const isSlotElementMultiple = <TProps>(
 ) => SlotWrapperArray.some((slotWrapper) => isSlotElement(child, slotWrapper));
 
 // Check if the child is a Slot element by matching any in the SlotWrapperArray
-export const getOtherChildren = <TProps, TChildren extends React.ReactNode = React.ReactNode>(
+export const getOtherChildren = <
+	TProps = Record<string, unknown>,
+	TChildren extends React.ReactNode = React.ReactNode,
+>(
 	children: TChildren,
 	SlotWrapperOrWrappers: Array<FunctionalComponent<TProps>> | FunctionalComponent<TProps>
 ) => {
