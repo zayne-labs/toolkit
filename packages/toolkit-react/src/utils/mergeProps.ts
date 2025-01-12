@@ -76,10 +76,14 @@ const addMissingPropsToResult = (
 
 type UnknownProps = Record<never, never>;
 
-const mergeProps = <TProps extends UnknownProps>(...parameters: TProps[]): UnionToIntersection<TProps> => {
+const mergeProps = <TProps extends UnknownProps>(
+	...parameters: Array<TProps | undefined>
+): UnionToIntersection<TProps> => {
 	const mergedResult: Record<string, unknown> = {};
 
 	for (const propsObject of parameters) {
+		if (!propsObject) continue;
+
 		handleMergePropsIntoResult(mergedResult, propsObject);
 
 		// == Add props from propsObject that are not in the mergedResult

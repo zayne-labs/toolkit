@@ -5,7 +5,7 @@ import { isValidElement } from "react";
 type Noop = () => void;
 type WithSlot = { slot?: string };
 
-type FunctionalComponent<TProps> = (
+type FunctionalComponent<TProps = Record<string, unknown>> = (
 	props: TProps
 	// eslint-disable-next-line perfectionist/sort-union-types -- Lets keep the first one first
 ) => ReturnType<React.FunctionComponent<TProps>> | AnyFunction<React.ReactNode>;
