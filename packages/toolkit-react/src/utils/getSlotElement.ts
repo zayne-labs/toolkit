@@ -1,14 +1,19 @@
 import { toArray } from "@zayne-labs/toolkit-core";
-import { AssertionError, isArray } from "@zayne-labs/toolkit-type-helpers";
+import { type AnyFunction, AssertionError, isArray } from "@zayne-labs/toolkit-type-helpers";
 import { isValidElement } from "react";
 
 type Noop = () => void;
 type WithSlot = { slot?: string };
 
+type FunctionalComponent<TProps> = (
+	props: TProps
+	// eslint-disable-next-line perfectionist/sort-union-types -- Lets keep the first one first
+) => ReturnType<React.FunctionComponent<TProps>> | AnyFunction<React.ReactNode>;
+
 // TODO - Add support for thing like <div slot="foo"> OR <Slot name="foo">
 export const isSlotElement = <TProps>(
 	child: React.ReactNode,
-	SlotWrapper: React.FunctionComponent<TProps>
+	SlotWrapper: FunctionalComponent<TProps>
 ) => {
 	if (!isValidElement(child)) {
 		return false;
@@ -36,7 +41,7 @@ type SlotOptions = {
 
 export const getSlotElement = <TProps>(
 	children: React.ReactNode,
-	SlotWrapper: React.FunctionComponent<TProps>,
+	SlotWrapper: FunctionalComponent<TProps>,
 	options: SlotOptions = {}
 ) => {
 	const {
@@ -57,13 +62,13 @@ export const getSlotElement = <TProps>(
 
 const isSlotElementMultiple = <TProps>(
 	child: React.ReactNode,
-	SlotWrapperArray: Array<React.FunctionComponent<TProps>>
+	SlotWrapperArray: Array<FunctionalComponent<TProps>>
 ) => SlotWrapperArray.some((slotWrapper) => isSlotElement(child, slotWrapper));
 
 // Check if the child is a Slot element by matching any in the SlotWrapperArray
 export const getOtherChildren = <TProps, TChildren extends React.ReactNode = React.ReactNode>(
 	children: TChildren,
-	SlotWrapperOrWrappers: Array<React.FunctionComponent<TProps>> | React.FunctionComponent<TProps>
+	SlotWrapperOrWrappers: Array<FunctionalComponent<TProps>> | FunctionalComponent<TProps>
 ) => {
 	const childrenArray = toArray<TChildren>(children);
 
