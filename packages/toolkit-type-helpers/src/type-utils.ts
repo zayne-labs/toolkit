@@ -12,6 +12,10 @@ export type CallbackFn<in TParams, out TResult = void> = (...params: TParams[]) 
 
 export type SelectorFn<TStore, TResult> = (state: TStore) => TResult;
 
+export type ExtractUnion<TEnum extends Record<string, unknown> | unknown[]> = TEnum extends unknown[]
+	? TEnum[number]
+	: TEnum[keyof TEnum];
+
 export type WriteableLevel = "deep" | "shallow";
 
 export type Writeable<TObject, TType extends WriteableLevel = "shallow"> = {
