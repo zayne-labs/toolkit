@@ -1,6 +1,8 @@
 import type { AnyAsyncFunction, AnyFunction, AnyObject } from "./type-utils";
 
-export const isString = (value: unknown): value is string => typeof value === "string";
+export const isString = (value: unknown) => typeof value === "string";
+
+export const isNumber = (value: unknown) => typeof value === "number";
 
 export const isBoolean = (value: unknown) => typeof value === "boolean";
 
