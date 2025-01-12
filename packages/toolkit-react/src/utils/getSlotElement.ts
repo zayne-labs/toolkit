@@ -5,7 +5,7 @@ import { isValidElement } from "react";
 type Noop = () => void;
 type WithSlot = { slot?: string };
 
-type FunctionalComponent<TProps = Record<string, unknown>> = (
+type FunctionalComponent<TProps> = (
 	props: TProps
 	// eslint-disable-next-line perfectionist/sort-union-types -- Lets keep the first one first
 ) => ReturnType<React.FunctionComponent<TProps>> | AnyFunction<React.ReactNode>;
@@ -39,7 +39,7 @@ type SlotOptions = {
 	throwOnMultipleSlotMatch?: boolean;
 };
 
-export const getSlotElement = <TProps>(
+export const getSlotElement = <TProps = Record<string, unknown>>(
 	children: React.ReactNode,
 	SlotWrapper: FunctionalComponent<TProps>,
 	options: SlotOptions = {}
