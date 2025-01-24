@@ -2,8 +2,8 @@ import { isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
 import type { EqualityFn, Listener, StoreApi } from "./types";
 
 export type StateInitializer<TState, TResult = TState> = (
-	get: StoreApi<TState>["getState"],
 	set: StoreApi<TState>["setState"],
+	get: StoreApi<TState>["getState"],
 	api: StoreApi<TState>
 ) => TResult;
 
@@ -80,7 +80,7 @@ const createStore = <TState>(
 
 	const api: $StoreApi = { getInitialState, getState, setState, subscribe };
 
-	const initialState = (state = initializer(getState, setState, api));
+	const initialState = (state = initializer(setState, getState, api));
 
 	return api;
 };
