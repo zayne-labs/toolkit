@@ -39,6 +39,11 @@ type SlotOptions = {
 	throwOnMultipleSlotMatch?: boolean;
 };
 
+/**
+ * @description Retrieves a single slot element from a collection of React children that matches the provided SlotWrapper component.
+ *
+ * @throws {AssertionError} When throwOnMultipleSlotMatch is true and multiple slots are found
+ */
 export const getSlotElement = <TProps = Record<string, unknown>>(
 	children: React.ReactNode,
 	SlotWrapper: FunctionalComponent<TProps>,
