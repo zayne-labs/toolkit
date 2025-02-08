@@ -9,7 +9,6 @@ export type ImagePreviewOptions = {
 
 function handleImagePreview(options: {
 	file: File | undefined;
-	onError?: never;
 	onSuccess?: (ctx: { result: string }) => void;
 	resultType?: "objectURL";
 }): string;
@@ -26,29 +25,29 @@ function handleImagePreview(options: ImagePreviewOptions) {
 
 	if (!isFile(file)) return;
 
-	if (resultType === "objectURL") {
-		const result = URL.createObjectURL(file);
+	if (resultType === "base64") {
+		const reader = new FileReader();
 
-		onSuccess?.({ result });
+		reader.addEventListener("load", () => {
+			if (!reader.result) return;
 
-		return result;
+			onSuccess?.({ result: reader.result as string });
+		});
+
+		reader.addEventListener("error", () => {
+			onError?.({ error: reader.error });
+		});
+
+		reader.readAsDataURL(file);
+
+		return;
 	}
 
-	const reader = new FileReader();
+	const result = URL.createObjectURL(file);
 
-	reader.addEventListener("load", () => {
-		if (!reader.result) return;
+	onSuccess?.({ result });
 
-		onSuccess?.({ result: reader.result as string });
-	});
-
-	reader.addEventListener("error", () => {
-		onError?.({ error: reader.error });
-	});
-
-	reader.readAsDataURL(file);
-
-	return reader.result as string;
+	return result;
 }
 
 export { handleImagePreview };

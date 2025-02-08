@@ -24,12 +24,20 @@ export type FileValidationOptions = {
 	onError?: (context: FileValidationErrorContext) => void;
 	onSuccess?: (context: FileValidationSuccessContext) => void;
 	validationSettings?: ValidationSettings;
+	validator?: (context: { existingFileArray: File[] | undefined; newFileList: FileList }) => File[];
 };
 
 const toMegaByte = (size: number) => size * 1024 * 1024;
 
 const handleFileValidation = (options: FileValidationOptions) => {
-	const { existingFileArray = [], newFileList, onError, onSuccess, validationSettings = {} } = options;
+	const {
+		existingFileArray = [],
+		newFileList,
+		onError,
+		onSuccess,
+		validationSettings = {},
+		validator,
+	} = options;
 
 	const { allowedFileTypes, disallowDuplicates, fileLimit, maxFileSize } = validationSettings;
 
@@ -89,7 +97,9 @@ const handleFileValidation = (options: FileValidationOptions) => {
 		});
 	}
 
-	return validFilesArray;
+	const validatorFnFileArray = validator?.({ existingFileArray, newFileList }) ?? [];
+
+	return [...validFilesArray, ...validatorFnFileArray];
 };
 
 export { handleFileValidation };
