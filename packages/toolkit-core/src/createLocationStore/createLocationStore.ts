@@ -1,9 +1,9 @@
 import { isBrowser } from "../constants";
 import type { EqualityFn, StoreApi } from "../createStore";
-import { type UrlInfo, pushState, replaceState } from "../navigation";
+import { type URLInfo, pushState, replaceState } from "../navigation";
 import { on } from "../on";
 
-export type LocationInfo = Omit<UrlInfo, "search"> & { search: URLSearchParams };
+export type LocationInfo = Omit<URLInfo, "search"> & { search: URLSearchParams };
 
 export type LocationStoreOptions = {
 	equalityFn?: EqualityFn<LocationInfo>;
