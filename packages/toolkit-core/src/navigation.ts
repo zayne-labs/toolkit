@@ -8,13 +8,6 @@ export type URLSearchParamsInit =
 	| Record<string, string | string[]>
 	| URLSearchParams;
 
-export type UrlInfo = {
-	hash: string;
-	pathname: string;
-	search: string | URLSearchParamsInit;
-	state: NonNullable<unknown> | null;
-};
-
 export const createSearchParams = (paramsInit: URLSearchParamsInit = ""): URLSearchParams => {
 	if (isString(paramsInit) || isIterable(paramsInit)) {
 		return new URLSearchParams(paramsInit);
@@ -35,12 +28,23 @@ export const createSearchParams = (paramsInit: URLSearchParamsInit = ""): URLSea
 	return new URLSearchParams(keyValuePair);
 };
 
+export type URLInfo = {
+	hash: string;
+	pathname: string;
+	search: string | URLSearchParamsInit;
+	state: NonNullable<unknown> | null;
+};
+
 const questionMark = "?";
 const hashMark = "#";
 
-const formatUrl = (url: string | Partial<UrlInfo>) => {
+const formatUrl = (url: string | Partial<URLInfo> | URL) => {
 	if (isString(url)) {
 		return { urlObject: null, urlString: url };
+	}
+
+	if (url instanceof URL) {
+		return { urlObject: null, urlString: url.toString() };
 	}
 
 	const urlObject = {
@@ -65,20 +69,22 @@ const formatUrl = (url: string | Partial<UrlInfo>) => {
 
 /* eslint-disable unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window */
 
-export const pushState = (url: string | Partial<UrlInfo>, state?: UrlInfo["state"]) => {
+export const pushState = (url: string | Partial<URLInfo> | URL, state?: URLInfo["state"]) => {
 	const { urlObject, urlString } = formatUrl(url);
 
 	window.history.pushState(urlObject?.state ?? state, "", urlString);
 };
 
-export const replaceState = (url: string | Partial<UrlInfo>, state?: UrlInfo["state"]) => {
+export const replaceState = (url: string | Partial<URLInfo>, state?: URLInfo["state"]) => {
 	const { urlObject, urlString } = formatUrl(url);
 
 	window.history.replaceState(urlObject?.state ?? state, "", urlString);
 };
 
-// type FullUrlInfo = Location & UrlInfo;
+export const hardNavigate = (url: string | Partial<URLInfo> | URL, type?: "assign" | "replace") => {
+	const { urlString } = formatUrl(url);
 
-// const hardNavigate = (url: string | Partial<UrlInfo>) => window.location.assign(formatUrl(url).urlString);
+	window.location[type ?? "assign"](urlString);
+};
 
 /* eslint-enable unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window */

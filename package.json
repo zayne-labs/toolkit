@@ -2,7 +2,7 @@
 	"name": "@zayne-labs/toolkit-root",
 	"type": "module",
 	"version": "0.0.0",
-	"packageManager": "pnpm@9.15.0",
+	"packageManager": "pnpm@9.15.4",
 	"author": "Ryan Zayne",
 	"scripts": {
 		"build": "pnpm --filter \"./packages/*\" build",
@@ -24,17 +24,17 @@
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.27.12",
-		"@eslint-react/eslint-plugin": "^1.25.0",
-		"@types/node": "^22.12.0",
+		"@eslint-react/eslint-plugin": "^1.26.2",
+		"@types/node": "^22.13.4",
 		"@zayne-labs/eslint-config": "^0.5.1",
 		"@zayne-labs/tsconfig": "catalog:",
-		"bumpp": "^10.0.1",
-		"eslint": "^9.19.0",
+		"bumpp": "^10.0.3",
+		"eslint": "^9.20.1",
 		"eslint-plugin-react-hooks": "^5.1.0",
-		"eslint-plugin-react-refresh": "^0.4.18",
+		"eslint-plugin-react-refresh": "^0.4.19",
 		"husky": "^9.1.7",
 		"lint-staged": "^15.4.3",
-		"prettier": "^3.4.2",
-		"typescript": "catalog:"
+		"prettier": "^3.5.1",
+		"typescript": "5.7.3"
 	}
 }

@@ -1,10 +1,10 @@
-import { createContext, useContext } from "react";
+import { createContext, use } from "react";
 
 export class ContextError extends Error {
 	override name = "ContextError";
 
-	constructor(message: string) {
-		super(message);
+	constructor(...args: Parameters<typeof Error>) {
+		super(...args);
 
 		Error.captureStackTrace(this, this.constructor);
 	}
@@ -44,7 +44,7 @@ const createCustomContext = <TContextValue, TStrict extends boolean = true>(
 	Context.displayName = name;
 
 	const useCustomContext = (): UseCustomContextResult<TContextValue, TStrict> => {
-		const contextValue = useContext(Context);
+		const contextValue = use(Context);
 
 		if (strict && contextValue === null) {
 			throw new ContextError(errorMessage ?? getErrorMessage(hookName, providerName));
