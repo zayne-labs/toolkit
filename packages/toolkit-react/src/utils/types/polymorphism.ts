@@ -14,5 +14,6 @@ type InferOtherProps<TElement extends React.ElementType, TProps> = Omit<
 // == Polymorphic props helper
 export type PolymorphicProps<
 	TElement extends React.ElementType,
-	TProps extends Record<string, unknown> = AsProp<TElement>,
+	// eslint-disable-next-line ts-eslint/no-explicit-any -- Any is need so one can pass any prop without type errors
+	TProps extends Record<keyof any, any> = AsProp<TElement>,
 > = InferOtherProps<TElement, TProps> & PropsWithOptionalAs<TElement, TProps>;
