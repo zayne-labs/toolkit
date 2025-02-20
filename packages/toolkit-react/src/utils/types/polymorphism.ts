@@ -1,19 +1,20 @@
+import type { Prettify } from "@zayne-labs/toolkit-type-helpers";
+
 export type AsProp<TElement extends React.ElementType> = { as?: TElement };
 
-// == Return the prop object if it already contains the "as" prop, else merge it with the "as" prop
-type PropsWithOptionalAs<TElement extends React.ElementType, TProps> = "as" extends keyof TProps
-	? TProps
-	: AsProp<TElement> & TProps;
-
-// == Get all other primitive element props by Omitting the result of MergedProps from React.ComponentPropsWithRef
-type InferOtherProps<TElement extends React.ElementType, TProps> = Omit<
+// == Get the rest of the primitive props by omitting the result of TProps from the ones gotten from React.ComponentPropsWithRef
+type InferRestOfProps<TElement extends React.ElementType, TProps> = Omit<
 	React.ComponentPropsWithRef<TElement>,
-	keyof PropsWithOptionalAs<TElement, TProps>
+	keyof TProps
 >;
+
+// prettier-ignore
+// == Merge the AsProp and the TProps, or omit the AsProp if the user passed their own
+type MergedPropsWithAs<TElement extends React.ElementType, TProps> = Omit<AsProp<TElement>, keyof TProps> & TProps;
 
 // == Polymorphic props helper
 export type PolymorphicProps<
 	TElement extends React.ElementType,
-	// eslint-disable-next-line ts-eslint/no-explicit-any -- Any is need so one can pass any prop without type errors
-	TProps extends Record<keyof any, any> = AsProp<TElement>,
-> = InferOtherProps<TElement, TProps> & PropsWithOptionalAs<TElement, TProps>;
+	// eslint-disable-next-line ts-eslint/no-explicit-any -- Any is needed so one can pass any prop type without type errors
+	TProps extends Record<keyof any, any>,
+> = InferRestOfProps<TElement, TProps> & Prettify<MergedPropsWithAs<TElement, TProps>>;
