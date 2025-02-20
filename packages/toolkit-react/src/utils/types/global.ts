@@ -1,5 +1,3 @@
-import type { AnyFunction } from "@zayne-labs/toolkit-type-helpers";
-
 export type ForwardedRefType<TComponent extends HTMLElement | React.ElementType> =
 	TComponent extends React.ElementType
 		? React.ForwardedRef<React.Ref<TComponent>>
