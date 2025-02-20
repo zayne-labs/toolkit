@@ -14,7 +14,7 @@ const createZustandContext = <
 	type ZustandProviderProps =
 		| {
 				children: React.ReactNode;
-				createStore: () => TUseBoundStore;
+				storeCreator: () => TUseBoundStore;
 		  }
 		| {
 				children: React.ReactNode;
@@ -25,7 +25,7 @@ const createZustandContext = <
 		const { children, ...restOfProps } = props;
 
 		const useZustandStore = useConstant(() =>
-			"createStore" in restOfProps ? restOfProps.createStore() : restOfProps.value
+			"storeCreator" in restOfProps ? restOfProps.storeCreator() : restOfProps.value
 		);
 
 		return createElement(Provider, { value: useZustandStore }, children);

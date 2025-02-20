@@ -19,11 +19,10 @@ export type MyCustomCss<TExtra extends Record<string, string> = NonNullable<unkn
  * @description Represents a set of props that can be used to render a component conditionally based on a discriminated union type.
  * This type allows for the use of either a render prop or children prop, but not both at the same time.
  * If both are provided, a TypeScript error will be thrown.
- * @template TRenderPropType The type of the function that will be called to render the component when using the render prop.
  * @template TMessage A message to display when the render prop is not used and the children prop is instead used.
  */
 export type DiscriminatedRenderProps<
-	TRenderPropType extends AnyFunction,
+	TRenderPropType,
 	TMessage extends
 		string = "Hey, Sorry but since you're currently using the children prop, the render prop is therefore redundant",
 > =
