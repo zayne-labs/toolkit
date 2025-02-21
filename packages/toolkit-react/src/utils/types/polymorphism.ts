@@ -16,5 +16,5 @@ type MergedPropsWithAs<TElement extends React.ElementType, TProps> = Omit<AsProp
 export type PolymorphicProps<
 	TElement extends React.ElementType,
 	// eslint-disable-next-line ts-eslint/no-explicit-any -- Any is needed so one can pass any prop type without type errors
-	TProps extends Record<keyof any, any>,
+	TProps extends Record<keyof any, any> = NonNullable<unknown>,
 > = InferRestOfProps<TElement, TProps> & Prettify<MergedPropsWithAs<TElement, TProps>>;
