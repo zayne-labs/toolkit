@@ -1,5 +1,7 @@
-import type { Prettify, Writeable, WriteableLevel } from "./type-utils";
+import type { Prettify, Writeable, WriteableVariantUnion } from "./type-utils";
 
-export const defineEnum = <const TValue, TWriteableLevel extends WriteableLevel = "shallow">(
+export const defineEnum = <const TValue, TVariant extends WriteableVariantUnion = "shallow">(
 	value: TValue
-) => value as Prettify<Writeable<TValue, TWriteableLevel>>;
+) => {
+	return value as Prettify<Writeable<TValue, TVariant>>;
+};

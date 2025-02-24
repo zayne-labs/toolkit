@@ -1,12 +1,12 @@
-import type { AnyObject } from "@zayne-labs/toolkit-type-helpers";
+import type { UnknownObject } from "@zayne-labs/toolkit-type-helpers";
 
-type OmitKeys<TKeys extends keyof TObject, TObject extends AnyObject> = Omit<TObject, TKeys>;
+type OmitKeys<TKeys extends keyof TObject, TObject extends UnknownObject> = Omit<TObject, TKeys>;
 
-export const omitKeys = <TObject extends AnyObject, const TOmitArray extends Array<keyof TObject>>(
+export const omitKeys = <TObject extends UnknownObject, const TOmitArray extends Array<keyof TObject>>(
 	initialObject: TObject,
 	keysToOmit: TOmitArray
 ) => {
-	const updatedObject = {} as AnyObject;
+	const updatedObject = {} as UnknownObject;
 
 	const keysToOmitSet = new Set(keysToOmit);
 
@@ -20,7 +20,7 @@ export const omitKeys = <TObject extends AnyObject, const TOmitArray extends Arr
 };
 
 export const omitKeysWithReduce = <
-	TObject extends AnyObject,
+	TObject extends UnknownObject,
 	const TOmitArray extends Array<keyof TObject>,
 >(
 	initialObject: TObject,
@@ -28,19 +28,22 @@ export const omitKeysWithReduce = <
 ) => {
 	const keysToOmitSet = new Set(keysToOmit);
 
-	const updatedObject = Object.entries(initialObject).reduce<AnyObject>((accumulator, [key, value]) => {
-		if (!keysToOmitSet.has(key)) {
-			accumulator[key] = value;
-		}
+	const updatedObject = Object.entries(initialObject).reduce<UnknownObject>(
+		(accumulator, [key, value]) => {
+			if (!keysToOmitSet.has(key)) {
+				accumulator[key] = value;
+			}
 
-		return accumulator;
-	}, {});
+			return accumulator;
+		},
+		{}
+	);
 
 	return updatedObject as OmitKeys<TOmitArray[number], TObject>;
 };
 
 export const omitKeysWithFilter = <
-	TObject extends AnyObject,
+	TObject extends UnknownObject,
 	const TOmitArray extends Array<keyof TObject>,
 >(
 	initialObject: TObject,
@@ -58,7 +61,7 @@ export const omitKeysWithFilter = <
 };
 
 export const omitKeysWithDelete = <
-	TObject extends AnyObject,
+	TObject extends UnknownObject,
 	const TOmitArray extends Array<keyof TObject>,
 >(
 	initialObject: TObject,

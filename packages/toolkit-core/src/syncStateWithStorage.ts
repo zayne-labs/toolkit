@@ -1,24 +1,33 @@
-import { isArray, isPlainObject } from "@zayne-labs/toolkit-type-helpers";
+import { type ExtractUnion, isArray, isPlainObject } from "@zayne-labs/toolkit-type-helpers";
 import { pickKeys } from "./pickKeys";
 
-type SyncStorageParams =
-	| [key: string, state: Record<string, unknown>, keysToSelect: string[]]
-	| [key: string, state: Record<string, unknown> | unknown[]]
-	| [key: string, state: string];
+// prettier-ignore
+type PossibleSyncStorageParams<
+	TKey = string,
+	TState = string | Record<string, unknown> | unknown[],
+	TPickKeys = string[],
+> = [
+	[key: TKey, state: TState, keysToSelect: TPickKeys],
+	[key: TKey, state: TState]
+];
 
 type SyncStateWithStorage = {
 	<TKey extends string, TCompositeState extends Record<string, unknown> | unknown[]>(
-		...params: [key: TKey, state: TCompositeState]
+		...params: PossibleSyncStorageParams<TKey, TCompositeState>[1]
 	): void;
 
 	<TKey extends string, TObject extends Record<string, unknown>, TPickArray extends Array<keyof TObject>>(
-		...params: [key: TKey, state: TObject, keysToSelect: TPickArray]
+		...params: PossibleSyncStorageParams<TKey, TObject, TPickArray>[0]
 	): void;
 
-	<TKey extends string, TStringState extends string>(...params: [key: TKey, state: TStringState]): void;
+	<TKey extends string, TStringState extends string>(
+		...params: PossibleSyncStorageParams<TKey, TStringState>[1]
+	): void;
 };
 
-const syncStateWithStorage: SyncStateWithStorage = (...params: SyncStorageParams): void => {
+const syncStateWithStorage: SyncStateWithStorage = (
+	...params: ExtractUnion<PossibleSyncStorageParams>
+): void => {
 	const [storageKey, state, keysToOmit] = params;
 
 	switch (true) {

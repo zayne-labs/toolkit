@@ -1,12 +1,12 @@
-import type { AnyObject } from "@zayne-labs/toolkit-type-helpers";
+import type { UnknownObject } from "@zayne-labs/toolkit-type-helpers";
 
-type PickKeys<TKeys extends keyof TObject, TObject extends AnyObject> = Pick<TObject, TKeys>;
+type PickKeys<TKeys extends keyof TObject, TObject extends UnknownObject> = Pick<TObject, TKeys>;
 
-export const pickKeys = <TObject extends AnyObject, const TPickArray extends Array<keyof TObject>>(
+export const pickKeys = <TObject extends UnknownObject, const TPickArray extends Array<keyof TObject>>(
 	initialObject: TObject,
 	keysToPick: TPickArray
 ) => {
-	const updatedObject = {} as AnyObject;
+	const updatedObject = {} as UnknownObject;
 
 	const keysToPickSet = new Set(keysToPick);
 
@@ -20,7 +20,7 @@ export const pickKeys = <TObject extends AnyObject, const TPickArray extends Arr
 };
 
 export const pickKeysWithReduce = <
-	TObject extends AnyObject,
+	TObject extends UnknownObject,
 	const TPickArray extends Array<keyof TObject>,
 >(
 	initialObject: TObject,
@@ -28,19 +28,22 @@ export const pickKeysWithReduce = <
 ) => {
 	const keysToPickSet = new Set(keysToPick);
 
-	const updatedObject = Object.entries(initialObject).reduce<AnyObject>((accumulator, [key, value]) => {
-		if (keysToPickSet.has(key)) {
-			accumulator[key] = value;
-		}
+	const updatedObject = Object.entries(initialObject).reduce<UnknownObject>(
+		(accumulator, [key, value]) => {
+			if (keysToPickSet.has(key)) {
+				accumulator[key] = value;
+			}
 
-		return accumulator;
-	}, {});
+			return accumulator;
+		},
+		{}
+	);
 
 	return updatedObject as PickKeys<TPickArray[number], TObject>;
 };
 
 export const pickKeysWithFilter = <
-	TObject extends AnyObject,
+	TObject extends UnknownObject,
 	const TPickArray extends Array<keyof TObject>,
 >(
 	initialObject: TObject,

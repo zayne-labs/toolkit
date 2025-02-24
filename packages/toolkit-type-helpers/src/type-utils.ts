@@ -12,23 +12,48 @@ export type CallbackFn<in TParams, out TResult = void> = (...params: TParams[]) 
 
 export type SelectorFn<TStore, TResult> = (state: TStore) => TResult;
 
-export type ExtractUnion<TEnum extends Record<string, unknown> | unknown[]> = TEnum extends unknown[]
-	? TEnum[number]
-	: TEnum[keyof TEnum];
+// export type ExtractUnion<TEnum extends Record<string, unknown> | unknown[]> = TEnum extends unknown[]
+// 	? TEnum[number]
+// 	: TEnum[keyof TEnum];
 
-export type WriteableLevel = "deep" | "shallow";
+export type WriteableVariantUnion = "deep" | "shallow";
 
-export type Writeable<TObject, TType extends WriteableLevel = "shallow"> = {
-	-readonly [key in keyof TObject]: TType extends "shallow"
-		? TObject[key]
-		: TType extends "deep"
-			? TObject[key] extends object
-				? Writeable<TObject[key], TType>
-				: TObject[key]
-			: never;
-};
+/**
+ * Makes all properties in an object type writeable (removes readonly modifiers).
+ * Supports both shallow and deep modes, and handles special cases like arrays, tuples, and unions.
+ * @template TObject - The object type to make writeable
+ * @template TVariant - The level of writeable transformation ("shallow" | "deep")
+ */
+export type Writeable<
+	TObject,
+	TVariant extends WriteableVariantUnion = "shallow",
+> = TObject extends readonly [...infer TTupleItems]
+	? TVariant extends "deep"
+		? [
+				...{
+					[Key in keyof TTupleItems]: TTupleItems[Key] extends object
+						? Writeable<TTupleItems[Key], TVariant>
+						: TTupleItems[Key];
+				},
+			]
+		: [...TTupleItems]
+	: TObject extends ReadonlyArray<infer TArrayItem>
+		? TVariant extends "deep"
+			? Array<TArrayItem extends object ? Writeable<TArrayItem, TVariant> : TArrayItem>
+			: TArrayItem[]
+		: TObject extends object
+			? {
+					-readonly [Key in keyof TObject]: TVariant extends "shallow"
+						? TObject[Key]
+						: TVariant extends "deep"
+							? TObject[Key] extends object
+								? Writeable<TObject[Key], TVariant>
+								: TObject[Key]
+							: never;
+				}
+			: TObject;
 
-export type InferEnum<TObject, TVariant extends "keys" | "values" = "values"> = TObject extends
+export type ExtractUnion<TObject, TVariant extends "keys" | "values" = "values"> = TObject extends
 	| Array<infer TUnion>
 	| ReadonlyArray<infer TUnion>
 	| Set<infer TUnion>
@@ -41,7 +66,13 @@ export type InferEnum<TObject, TVariant extends "keys" | "values" = "values"> = 
 
 export type NonEmptyArray<TArrayItem> = [TArrayItem, ...TArrayItem[]];
 
-export type AnyObject = UnmaskType<Record<string, unknown>>;
+/* eslint-disable ts-eslint/no-explicit-any -- Any is needed so one can pass any prop type without type errors */
+export type UnknownObject = UnmaskType<Record<string, unknown>>;
+
+export type UnknownObjectWithAnyKey = UnmaskType<Record<keyof any, unknown>>;
+
+export type AnyObject = UnmaskType<Record<keyof any, any>>;
+/* eslint-enable ts-eslint/no-explicit-any -- Any is needed so one can pass any prop type without type errors */
 
 /* eslint-disable ts-eslint/no-explicit-any -- `Any` is required here so that one can pass custom function type without type errors */
 export type AnyFunction<TResult = any> = UnmaskType<(...args: any[]) => TResult>;

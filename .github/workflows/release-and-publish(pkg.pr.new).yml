@@ -22,7 +22,7 @@ jobs:
          - name: Setup pnpm
            uses: pnpm/action-setup@v4
            with:
-              version: 9.15.4
+              version: 9.15.5
 
          - name: Setup Node.js 20.x
            uses: actions/setup-node@v4
@@ -36,4 +36,4 @@ jobs:
               pnpm build
 
          - name: Deploy and test release via pkg.pr.new
-           run: pnpm test:release
+           run: pnpm release:test

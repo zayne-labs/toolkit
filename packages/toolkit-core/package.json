@@ -2,7 +2,7 @@
 	"name": "@zayne-labs/toolkit-core",
 	"type": "module",
 	"version": "0.8.39",
-	"packageManager": "pnpm@9.15.4",
+	"packageManager": "pnpm@9.15.5",
 	"description": "A collection of utility functions, types and composables used by my other projects. Nothing too fancy but can be useful.",
 	"author": "Ryan Zayne",
 	"license": "MIT",
@@ -37,11 +37,11 @@
 		"build:dev": "cross-env NODE_ENV=development tsup",
 		"build:test": "concurrently --prefix-colors \"yellow.bold,#7da4f8.bold,magenta\" --names PUBLINT,TSUP 'pnpm:lint:publint' 'pnpm:build:dev'",
 		"lint:attw": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
-		"lint:check-types": "tsc --pretty --incremental -p tsconfig.json",
 		"lint:publint": "publint --strict .",
 		"lint:size": "size-limit",
+		"lint:type-check": "tsc --pretty --incremental -p tsconfig.json",
 		"release": "pnpm publish --no-git-checks",
-		"test:release": "pnpx pkg-pr-new publish"
+		"release:test": "pnpx pkg-pr-new publish"
 	},
 	"dependencies": {
 		"@zayne-labs/toolkit-type-helpers": "workspace:*"
@@ -61,7 +61,8 @@
 		"size-limit": "^11.2.0",
 		"terser": "^5.39.0",
 		"tsup": "^8.3.6",
-		"typescript": "5.7.3"
+		"typescript": "5.7.3",
+		"vitest": "^3.0.6"
 	},
 	"publishConfig": {
 		"access": "public",
