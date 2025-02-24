@@ -322,7 +322,7 @@ importers:
         specifier: 5.7.3
         version: 5.7.3
       vitest:
-        specifier: ^3.0.6
+        specifier: 3.0.6
         version: 3.0.6(@types/node@22.13.4)(jiti@2.4.2)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
 
 packages:
