@@ -17,3 +17,4 @@ export { useStorageState } from "./useStorageState";
 export { useStore } from "./useStore";
 export * from "./useThrottle";
 export { useToggle } from "./useToggle";
+export { useResource } from "./useResource";

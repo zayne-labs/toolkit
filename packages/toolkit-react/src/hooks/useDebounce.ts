@@ -1,7 +1,7 @@
 import { debounce } from "@zayne-labs/toolkit-core";
 import type { CallbackFn } from "@zayne-labs/toolkit-type-helpers";
 import { useState } from "react";
-import { useOnUnmountEffect } from "./effects/useOnUnMountEffect";
+import { useUnmountEffect } from "./effects/useUnMountEffect";
 import { useCallbackRef } from "./useCallbackRef";
 import { useConstant } from "./useConstant";
 
@@ -10,7 +10,7 @@ export const useDebouncedFn = <TParams>(callBackFn: CallbackFn<TParams>, delay: 
 
 	const debouncedFn = useConstant(() => debounce(latestCallback, delay));
 
-	useOnUnmountEffect(() => {
+	useUnmountEffect(() => {
 		debouncedFn.cancel();
 		debouncedFn.cancelMaxWait();
 	});
@@ -23,7 +23,7 @@ export const useDebouncedState = <TValue>(defaultValue: TValue, delay: number | 
 
 	const setDebouncedValue = useConstant(() => debounce(setValue, delay));
 
-	useOnUnmountEffect(() => {
+	useUnmountEffect(() => {
 		setDebouncedValue.cancel();
 		setDebouncedValue.cancelMaxWait();
 	});

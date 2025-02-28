@@ -1,10 +1,28 @@
-import { useStorageState } from "@zayne-labs/toolkit/react";
+import { useResource } from "@zayne-labs/toolkit-react";
 
 function AnotherApp() {
-	const [stateTwo] = useStorageState("test");
+	const resource = useResource({
+		fn: () => fetch("https://jsonplaceholder.typicode.com/todos/1").then((res) => res.json()),
+	});
 
-	console.info(stateTwo);
+	console.info(resource);
 
-	return null;
+	return (
+		<>
+			<style>
+				{`
+					.btn {
+						background-color: red;
+						margin-top: 10px;
+					}
+				`}
+			</style>
+			<div>
+				<button className="btn" type="button">
+					Force Render
+				</button>
+			</div>
+		</>
+	);
 }
 export default AnotherApp;

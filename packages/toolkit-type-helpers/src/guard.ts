@@ -4,6 +4,8 @@ export const isString = (value: unknown) => typeof value === "string";
 
 export const isNumber = (value: unknown) => typeof value === "number";
 
+export const isSymbol = (value: unknown) => typeof value === "symbol";
+
 export const isBoolean = (value: unknown) => typeof value === "boolean";
 
 export const isArray = <TArray>(value: unknown): value is TArray[] => Array.isArray(value);
