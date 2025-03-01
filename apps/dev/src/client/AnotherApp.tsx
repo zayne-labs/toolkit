@@ -1,4 +1,4 @@
-import { useScrollObserver } from "@zayne-labs/toolkit-react";
+import { useScrollObserver } from "@zayne-labs/toolkit/react";
 
 function AnotherApp() {
 	const { isScrolled, observedElementRef } = useScrollObserver();

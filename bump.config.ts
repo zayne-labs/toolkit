@@ -1,5 +1,4 @@
 import { defineConfig } from "bumpp";
-// import { globSync } from "tinyglobby";
 
 export default defineConfig({
 	all: true,
