@@ -1,28 +1,37 @@
-import { useResource } from "@zayne-labs/toolkit-react";
+import { useScrollObserver } from "@zayne-labs/toolkit-react";
 
 function AnotherApp() {
-	const resource = useResource({
-		fn: () => fetch("https://jsonplaceholder.typicode.com/todos/1").then((res) => res.json()),
-	});
+	const { isScrolled, observedElementRef } = useScrollObserver();
 
-	console.info(resource);
+	console.info({ isScrolled });
 
 	return (
-		<>
+		<div>
 			<style>
 				{`
-					.btn {
-						background-color: red;
-						margin-top: 10px;
+					@scope {
+						button {
+							background-color: red;
+							margin-top: 10px;
+						}
+
+						header {
+							position: sticky;
+							top: 0;
+							height: 100px;
+							background-color: blue;
+							width: 100%;
+							margin-bottom: 10000px;
+						}
 					}
 				`}
 			</style>
-			<div>
-				<button className="btn" type="button">
-					Force Render
-				</button>
-			</div>
-		</>
+			<header ref={observedElementRef}>Header</header>
+			<div />
+			<button className="btn" type="button">
+				Force Render
+			</button>
+		</div>
 	);
 }
 export default AnotherApp;

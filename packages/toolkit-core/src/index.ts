@@ -4,6 +4,7 @@ export * from "./constants";
 export { copyToClipboard } from "./copyToClipboard";
 export * from "./createExternalStore";
 export * from "./createLocationStore";
+export * from "./createScrollObserver";
 export * from "./createStore";
 export { debounce } from "./debounce";
 export * from "./handleFileValidation";

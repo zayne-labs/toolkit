@@ -1,43 +1,38 @@
-import { isBrowser } from "@zayne-labs/toolkit-core";
+import { type ScrollObserverOptions, createScrollObserver } from "@zayne-labs/toolkit-core";
 import { type RefCallback, useState } from "react";
 import { useCallbackRef } from "./useCallbackRef";
 import { useConstant } from "./useConstant";
 
-const useScrollObserver = <TElement extends HTMLElement>(options: IntersectionObserverInit = {}) => {
-	const { rootMargin = "10px 0px 0px 0px", ...restOfOptions } = options;
+const useScrollObserver = <TElement extends HTMLElement>(options: ScrollObserverOptions = {}) => {
+	const { onIntersection, rootMargin = "10px 0px 0px 0px", ...restOfOptions } = options;
 
 	const [isScrolled, setIsScrolled] = useState(false);
 
-	const elementObserver = useConstant(() => {
-		if (!isBrowser()) return;
+	const savedOnIntersection = useCallbackRef(onIntersection);
 
-		return new IntersectionObserver(
-			([entry]) => {
-				if (!entry) return;
-				setIsScrolled(!entry.isIntersecting);
+	const { handleObservation } = useConstant(() => {
+		return createScrollObserver({
+			onIntersection: (entry, observer) => {
+				const newIsScrolledState = !entry.isIntersecting;
+
+				setIsScrolled(newIsScrolledState);
+
+				// eslint-disable-next-line no-param-reassign -- Mutation is fine here
+				(entry.target as HTMLElement).dataset.scrolled = String(newIsScrolledState);
+
+				savedOnIntersection(entry, observer);
 			},
-			{ rootMargin, ...restOfOptions }
-		);
+			rootMargin,
+			...restOfOptions,
+		});
 	});
 
 	const observedElementRef: RefCallback<TElement> = useCallbackRef((element) => {
-		const scrollWatcher = document.createElement("span");
-		scrollWatcher.dataset.scrollWatcher = "";
+		const cleanupFn = handleObservation(element);
 
-		element?.before(scrollWatcher);
-
-		if (!elementObserver) return;
-
-		elementObserver.observe(scrollWatcher);
-
-		const cleanupFn = () => {
-			scrollWatcher.remove();
-			elementObserver.disconnect();
-		};
-
-		// React 18 may not call the cleanup function so we need to call it manually on element unmount
+		// == React 18 may not call the cleanup function so we need to call it manually on element unmount
 		if (!element) {
-			cleanupFn();
+			cleanupFn?.();
 			return;
 		}
 
