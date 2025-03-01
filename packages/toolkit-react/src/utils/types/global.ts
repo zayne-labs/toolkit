@@ -10,8 +10,9 @@ export type InferProps<TComponent extends HTMLElement | React.ElementType> =
 
 export type StateSetter<TSetter = unknown> = React.Dispatch<React.SetStateAction<TSetter>>;
 
-export type MyCustomCss<TExtra extends Record<string, string> = NonNullable<unknown>> =
-	React.CSSProperties & Record<`--${string}`, string> & TExtra; // Allows Ts support for inline css variables
+export type MyCustomCss<TExtra extends Record<string, string> = NonNullable<unknown>> = React.CSSProperties
+	& Record<`--${string}`, string>
+	& TExtra; // Allows Ts support for inline css variables
 
 /**
  * @description Represents a set of props that can be used to render a component conditionally based on a discriminated union type.
