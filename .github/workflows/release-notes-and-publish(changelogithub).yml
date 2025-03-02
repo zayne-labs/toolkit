@@ -11,7 +11,7 @@ jobs:
          contents: write
          id-token: write
 
-      runs-on: ubuntu-latest
+      runs-on: blacksmith-4vcpu-ubuntu-2204
 
       timeout-minutes: 15
 
@@ -31,7 +31,7 @@ jobs:
               version: 9.15.4
 
          - name: Setup Node.js
-           uses: actions/setup-node@v4
+           uses: useblacksmith/setup-node@v5
            with:
               registry-url: https://registry.npmjs.org/
               node-version: ${{ matrix.node-version }}
