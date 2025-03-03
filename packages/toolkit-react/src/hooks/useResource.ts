@@ -1,5 +1,5 @@
 import { type UnknownObject, isFunction, isPlainObject } from "@zayne-labs/toolkit-type-helpers";
-import { use, useEffect } from "react";
+import { use } from "react";
 
 const replacer = (_: unknown, value: unknown) => {
 	if (!isPlainObject(value)) {
@@ -73,10 +73,6 @@ const useResource = <TResource>(options: ResourceOptions<TResource>) => {
 	const cachedPromise = $PromiseCache.get(hashedKey)!;
 
 	const result = use(cachedPromise);
-
-	useEffect(() => {
-		$PromiseCache.delete(hashedKey);
-	}, [hashedKey]);
 
 	return { data: result as TResource, refetch: fetchResourceAndSetCache };
 };
