@@ -1,4 +1,9 @@
-import type { AnyAsyncFunction, AnyFunction, UnknownObject, UnknownObjectWithAnyKey } from "./type-utils";
+import type {
+	AnyAsyncFunction,
+	AnyFunction,
+	UnknownObject,
+	UnknownObjectWithAnyKey,
+} from "./type-utils/common";
 
 export const isString = (value: unknown) => typeof value === "string";
 

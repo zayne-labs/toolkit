@@ -20,9 +20,7 @@
 		"hooks"
 	],
 	"sideEffects": false,
-	"exports": {
-		".": "./dist/esm/index.js"
-	},
+	"exports": "./dist/esm/index.js",
 	"main": "./dist/esm/index.js",
 	"module": "./dist/esm/index.js",
 	"types": "./dist/esm/index.d.ts",
@@ -40,7 +38,7 @@
 		"lint:attw": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
 		"lint:publint": "publint --strict .",
 		"lint:size": "size-limit",
-		"lint:type-check": "tsc --pretty --incremental -p tsconfig.json",
+		"lint:type-check": "tsc --pretty  -p tsconfig.json",
 		"release": "pnpm publish --no-git-checks",
 		"release:test": "pnpx pkg-pr-new publish"
 	},
