@@ -31,7 +31,7 @@ const createZustandContext = <
 		return createElement(Provider, { value: useZustandStore }, children);
 	}
 
-	const useBoundStore = <TResult = TState>(selector?: SelectorFn<TState, TResult>) => {
+	const useBoundStore = <TResult = TState>(selector?: SelectorFn<TState, TResult>): TResult => {
 		const useZustandStore = useCustomContext();
 
 		return useZustandStore(selector as never);
