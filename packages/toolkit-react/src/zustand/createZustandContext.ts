@@ -31,7 +31,11 @@ const createZustandContext = <
 		return createElement(Provider, { value: useZustandStore }, children);
 	}
 
-	const useBoundStore = <TResult>(selector: SelectorFn<TState, TResult>) => useCustomContext()(selector);
+	const useBoundStore = <TResult = TState>(selector?: SelectorFn<TState, TResult>) => {
+		const useZustandStore = useCustomContext();
+
+		return useZustandStore(selector as never);
+	};
 
 	return [ZustandProvider, useBoundStore] as [
 		ZustandProvider: typeof ZustandProvider,
