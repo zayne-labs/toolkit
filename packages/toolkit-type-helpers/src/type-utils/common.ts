@@ -4,6 +4,8 @@ export type Prettify<TObject> = NonNullable<unknown> & { [Key in keyof TObject]:
 // == Using this Immediately Indexed Mapped type helper to help show computed type of anything passed to it instead of just the vague type name
 export type UnmaskType<TType> = { _: TType }["_"];
 
+export type NonFalsy<TType> = TType extends "" | 0 | 0n | false | null | undefined ? never : TType;
+
 export type PrettyOmit<TObject, Key extends keyof TObject> = Prettify<Omit<TObject, Key>>;
 
 export type PrettyPick<TObject, Key extends keyof TObject> = Prettify<Pick<TObject, Key>>;
