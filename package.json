@@ -9,7 +9,6 @@
 		"build:dev": "pnpm --filter \"./packages/*\" build:dev",
 		"build:test": "pnpm --filter \"./packages/*\" build:test",
 		"bump": "bumpp",
-		"dev": "pnpm --filter \"./packages/*\" dev",
 		"inspect:eslint-config": "pnpx @eslint/config-inspector@latest",
 		"lint:attw": "pnpm --filter \"./packages/*\" lint:attw",
 		"lint:eslint": "eslint . --max-warnings 0 --report-unused-disable-directives",
