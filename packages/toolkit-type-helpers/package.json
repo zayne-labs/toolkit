@@ -21,7 +21,8 @@
 	],
 	"sideEffects": false,
 	"exports": {
-		".": "./dist/esm/index.js"
+		".": "./dist/esm/index.js",
+		"./resets": "./dist/esm/resets/index.js"
 	},
 	"main": "./dist/esm/index.js",
 	"module": "./dist/esm/index.js",

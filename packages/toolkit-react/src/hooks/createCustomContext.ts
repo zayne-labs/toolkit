@@ -1,4 +1,3 @@
-import type { AnyFunction } from "@zayne-labs/toolkit-type-helpers";
 import { createContext, use } from "react";
 
 export class ContextError extends Error {
@@ -15,10 +14,10 @@ export const getErrorMessage = (hook: string, provider: string) => {
 	return `${hook} returned "null". Did you forget to wrap the necessary components within ${provider}?`;
 };
 
-export type CustomContextOptions<TDefaultContextValue, TStrict extends boolean> = {
-	defaultValue?: TDefaultContextValue | null;
+export type CustomContextOptions<TContextValue, TStrict extends boolean> = {
+	defaultValue?: TContextValue | null;
 	errorMessage?: string;
-	extension?: AnyFunction<TDefaultContextValue>;
+	extension?: (contextValue: NoInfer<TContextValue> | null) => TContextValue | null;
 	hookName?: string;
 	name?: string;
 	providerName?: string;
@@ -49,15 +48,13 @@ const createCustomContext = <TContextValue, TStrict extends boolean = true>(
 	const useCustomContext = (): UseCustomContextResult<TContextValue, TStrict> => {
 		const contextValue = use(Context);
 
-		const extendedContextValue = extension?.();
+		const extendedContextValue = extension?.(contextValue) ?? contextValue;
 
-		if (strict && contextValue === null) {
+		if (strict && extendedContextValue === null) {
 			throw new ContextError(errorMessage ?? getErrorMessage(hookName, providerName));
 		}
 
-		return (
-			extendedContextValue ? { ...contextValue, extendedContextValue } : contextValue
-		) as UseCustomContextResult<TContextValue, TStrict>;
+		return extendedContextValue as NonNullable<typeof extendedContextValue>;
 	};
 
 	return [Context.Provider, useCustomContext] as const;
