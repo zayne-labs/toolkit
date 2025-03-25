@@ -1,7 +1,7 @@
 {
 	"name": "@zayne-labs/toolkit-type-helpers",
 	"type": "module",
-	"version": "0.8.54",
+	"version": "0.8.55",
 	"packageManager": "pnpm@9.15.4",
 	"description": "A collection of utility functions, types and composables used by my other projects. Nothing too fancy but can be useful.",
 	"author": "Ryan Zayne",
