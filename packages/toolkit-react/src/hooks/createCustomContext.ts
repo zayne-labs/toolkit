@@ -35,9 +35,9 @@ const createCustomContext = <TContextValue, TStrict extends boolean = true>(
 		defaultValue = null,
 		errorMessage,
 		extension,
-		hookName = "Unnamed Context hook",
-		name = "Unnamed Context",
-		providerName = "Unnamed Provider",
+		hookName = "UnnamedContextHook",
+		name = "UnnamedContext",
+		providerName = "UnnamedContextProvider",
 		strict = true,
 	} = options;
 
