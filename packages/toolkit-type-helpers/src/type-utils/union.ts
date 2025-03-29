@@ -1,5 +1,9 @@
-import type { Prettify } from "./common";
+import type { AnyString, Prettify } from "./common";
 import type { Writeable } from "./writeable";
+
+type ErrorMessages<TType extends number | string | symbol = never> = Partial<
+	Record<number | symbol | (AnyString | TType), unknown>
+>;
 
 /**
  * Type utility that takes two types and allows only the properties of the first type. The properties of the second will be disallowed (typed as `never` by default or a custom message).
@@ -8,11 +12,7 @@ import type { Writeable } from "./writeable";
  * @template TSecondType The second type. Properties of this type will be disallowed.
  * @template TErrorMessages An object of custom messages to display on the properties of the second type that are disallowed.
  */
-type AllowOnlyFirst<
-	TFirstType,
-	TSecondType,
-	TErrorMessages extends Record<string, unknown> = never,
-> = Prettify<
+type AllowOnlyFirst<TFirstType, TSecondType, TErrorMessages extends ErrorMessages = never> = Prettify<
 	TFirstType & {
 		[Key in keyof Omit<TSecondType, keyof TFirstType>]?: Key extends keyof TErrorMessages
 			? TErrorMessages[Key]
@@ -45,7 +45,7 @@ type MergeTypes<
 
 export type UnionDiscriminator<
 	TArrayOfTypes extends unknown[],
-	TErrorMessages extends Record<string, unknown> = never,
+	TErrorMessages extends ErrorMessages<keyof MergeTypes<TArrayOfTypes>> = never,
 	TAccumulator = never,
 	TMergedProperties = MergeTypes<TArrayOfTypes>,
 > = TArrayOfTypes extends [infer TFirstType, ...infer TRest]
