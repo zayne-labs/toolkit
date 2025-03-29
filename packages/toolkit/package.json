@@ -43,6 +43,7 @@
 		"dev": "pnpm build:dev --watch",
 		"lint:attw": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
 		"lint:eslint": "eslint . --max-warnings 0",
+		"lint:eslint:interactive": "pnpx eslint-interactive@latest . --max-warnings 0 --fix",
 		"lint:format": "prettier --write .",
 		"lint:publint": "publint --strict .",
 		"lint:type-check": "tsc --pretty  -p tsconfig.json",
