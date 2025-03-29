@@ -1,3 +1,4 @@
+import { defineEnum } from "@zayne-labs/toolkit-type-helpers";
 import { createContext, use } from "react";
 
 export class ContextError extends Error {
@@ -57,7 +58,7 @@ const createCustomContext = <TContextValue, TStrict extends boolean = true>(
 		return extendedContextValue as NonNullable<typeof extendedContextValue>;
 	};
 
-	return [Context.Provider, useCustomContext] as const;
+	return defineEnum([Context.Provider, useCustomContext]);
 };
 
 export { createCustomContext };

@@ -4,11 +4,8 @@ const isDevMode = process.env.NODE_ENV === "development";
 
 const sharedOptions = {
 	clean: true, // clean up dist folder,
-	dts: true, // generate d.ts
-	entry: ["src/index.ts", "src/resets/index.ts"],
 	format: ["esm"],
 	platform: "browser",
-	sourcemap: !isDevMode,
 	splitting: true,
 	target: "esnext",
 	treeshake: true,
@@ -18,8 +15,24 @@ const sharedOptions = {
 const config = defineConfig([
 	{
 		...sharedOptions,
+		dts: true,
+		entry: ["src/index.ts"],
 		name: "ESM",
 		outDir: "./dist/esm",
+		sourcemap: !isDevMode,
+	},
+
+	{
+		...sharedOptions,
+		clean: true,
+		entry: ["src/resets/index.js"],
+		name: "Resets",
+		async onSuccess() {
+			const { cp: copyDirectory } = await import("node:fs/promises");
+
+			return copyDirectory("src/resets", "dist/resets", { recursive: true });
+		},
+		outDir: "./dist/resets",
 	},
 ]);
 

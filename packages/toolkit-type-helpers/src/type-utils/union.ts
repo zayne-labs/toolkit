@@ -2,8 +2,8 @@ import type { AnyString, Prettify } from "./common";
 import type { Writeable } from "./writeable";
 
 type ErrorMessages<TType extends number | string | symbol = never> = Partial<
-	Record<number | symbol | (AnyString | TType), unknown>
->;
+	Record<"$all" | number | symbol | (AnyString | TType), unknown>
+> | null;
 
 /**
  * Type utility that takes two types and allows only the properties of the first type. The properties of the second will be disallowed (typed as `never` by default or a custom message).
@@ -16,7 +16,11 @@ type AllowOnlyFirst<TFirstType, TSecondType, TErrorMessages extends ErrorMessage
 	TFirstType & {
 		[Key in keyof Omit<TSecondType, keyof TFirstType>]?: Key extends keyof TErrorMessages
 			? TErrorMessages[Key]
-			: never;
+			: "$all" extends keyof TErrorMessages
+				? TErrorMessages["$all"]
+				: TErrorMessages extends null
+					? TErrorMessages
+					: never;
 	}
 >;
 

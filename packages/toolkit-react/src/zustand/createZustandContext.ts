@@ -1,32 +1,42 @@
-import type { SelectorFn } from "@zayne-labs/toolkit-type-helpers";
+import type { SelectorFn, UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
 import { createElement } from "react";
-import type { StoreApi, UseBoundStore } from "zustand";
+import { type StoreApi, type UseBoundStore, useStore } from "zustand";
 import { type CustomContextOptions, createCustomContext, useConstant } from "../hooks";
 
 const createZustandContext = <
 	TState extends Record<string, unknown>,
 	TUseBoundStore extends UseBoundStore<StoreApi<TState>> = UseBoundStore<StoreApi<TState>>,
+	TStore extends StoreApi<TState> = StoreApi<TState>,
 >(
 	options?: CustomContextOptions<TUseBoundStore, true>
 ) => {
 	const [Provider, useCustomContext] = createCustomContext(options);
 
-	type ZustandProviderProps =
-		| {
-				children: React.ReactNode;
-				storeCreator: () => TUseBoundStore;
-		  }
-		| {
-				children: React.ReactNode;
-				value: TUseBoundStore;
-		  };
+	type ZustandProviderProps = UnionDiscriminator<
+		[{ store: TStore }, { storeCreator: () => TUseBoundStore }, { value: TUseBoundStore }]
+	> & { children: React.ReactNode };
 
 	function ZustandProvider(props: ZustandProviderProps) {
-		const { children, ...restOfProps } = props;
+		const { children, store, storeCreator, value } = props;
 
-		const useZustandStore = useConstant(() =>
-			"storeCreator" in restOfProps ? restOfProps.storeCreator() : restOfProps.value
-		);
+		const useZustandStore = useConstant(() => {
+			switch (true) {
+				case Boolean(storeCreator): {
+					return storeCreator();
+				}
+				case Boolean(value): {
+					return value;
+				}
+				case Boolean(store): {
+					const useBoundStore = (selector: SelectorFn<TState, unknown>) => useStore(store, selector);
+					Object.assign(useBoundStore, store);
+					return useBoundStore as TUseBoundStore;
+				}
+				default: {
+					throw new Error("No store provided");
+				}
+			}
+		});
 
 		return createElement(Provider, { value: useZustandStore }, children);
 	}
