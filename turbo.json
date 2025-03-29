@@ -7,18 +7,13 @@
 		},
 		"build": {
 			"dependsOn": ["^build"],
-			"outputs": ["dist/**", ".next/*"]
+			"outputs": ["dist/**"]
 		},
 		"lint:format": {},
 		"lint:size": {},
 		"lint:publint": {},
 		"lint:eslint": {},
-		"knip": {
-			"cache": true
-		},
-		"lint:type-check": {
-			"outputs": [],
-			"cache": true
-		}
+		"knip": {},
+		"lint:type-check": {}
 	}
 }
