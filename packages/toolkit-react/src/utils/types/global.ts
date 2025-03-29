@@ -17,8 +17,8 @@ export type MyCustomCss<TExtra extends Record<string, string> = NonNullable<unkn
 	& TExtra; // Allows Ts support for inline css variables
 
 type DefaultPossibleMessages = {
-	children: "Hey, Sorry but since you're currently using the render prop, the children prop is therefore redundant";
-	render: "Hey, Sorry but since you're currently using the children prop, the render prop is therefore redundant";
+	children: "Hey, Sorry but the children prop is redundant since you're currently using the render prop";
+	render: "Hey, Sorry but the render prop is redundant since you're currently using the children prop";
 };
 /**
  * @description Represents a set of props that can be used to render a component conditionally based on a discriminated union type.
