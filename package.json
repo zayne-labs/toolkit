@@ -5,24 +5,23 @@
 	"packageManager": "pnpm@9.15.4",
 	"author": "Ryan Zayne",
 	"scripts": {
-		"build": "pnpm --filter \"./packages/*\" build",
-		"build:dev": "pnpm --filter \"./packages/*\" build:dev",
-		"build:test": "pnpm --filter \"./packages/*\" build:test",
+		"build": "turbo --filter \"./packages/*\" build",
+		"build:dev": "turbo --filter \"./packages/*\" build:dev",
+		"build:test": "turbo --filter \"./packages/*\" build:test",
 		"bump": "bumpp",
 		"inspect:eslint-config": "pnpx @eslint/config-inspector@latest",
-		"lint:attw": "pnpm --filter \"./packages/*\" lint:attw",
-		"lint:eslint": "eslint . --max-warnings 0 --report-unused-disable-directives",
-		"lint:eslint:interactive": "pnpx eslint-interactive@latest . --fix --max-warnings 0 --report-unused-disable-directives",
-		"lint:format": "prettier --write .",
-		"lint:publint": "pnpm --filter \"./packages/*\" lint:publint",
-		"lint:size": "pnpm --filter \"./packages/*\" lint:size",
-		"lint:type-check": "pnpm --filter \"./packages/*\" lint:type-check",
+		"lint:attw": "turbo --filter \"./packages/*\" lint:attw",
+		"lint:eslint": "turbo --filter \"./packages/*\" lint:eslint",
+		"lint:eslint:interactive": "pnpx eslint-interactive@latest . --fix --max-warnings 0",
+		"lint:format": "turbo --filter \"./packages/*\" lint:format",
+		"lint:publint": "turbo --filter \"./packages/*\" lint:publint",
+		"lint:size": "turbo --filter \"./packages/*\" lint:size",
+		"lint:type-check": "turbo --filter \"./packages/*\" lint:type-check",
 		"prepare": "husky",
-		"release": "pnpm --filter \"./packages/*\" release",
+		"release": "turbo --filter \"./packages/*\" release",
 		"release:test": "pnpx pkg-pr-new publish \"./packages/*\" --compact",
-		"test": "pnpm --filter \"./packages/*\" test",
-		"test:dev": "pnpm --filter \"./packages/*\" test:dev",
-		"version-package": "changeset version"
+		"test": "turbo --filter \"./packages/*\" test",
+		"test:dev": "turbo --filter \"./packages/*\" test:dev"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.28.1",
@@ -38,6 +37,7 @@
 		"husky": "^9.1.7",
 		"lint-staged": "^15.5.0",
 		"prettier": "^3.5.3",
+		"turbo": "^2.4.4",
 		"typescript": "5.8.2"
 	}
 }

@@ -37,19 +37,19 @@ yarn add @zayne-labs/toolkit
 
 ```typescript
 // Core utilities
-import { someUtil } from '@zayne-labs/toolkit/core'
+import { someUtil } from "@zayne-labs/toolkit/core";
 
 // React hooks
-import { useToggle } from '@zayne-labs/toolkit/react'
+import { useToggle } from "@zayne-labs/toolkit/react";
 
 // React utilities
-import { cn } from '@zayne-labs/toolkit/react/utils'
+import { cn } from "@zayne-labs/toolkit/react/utils";
 
 // Zustand utilities
-import { createStore } from '@zayne-labs/toolkit/react/zustand'
+import { createStore } from "@zayne-labs/toolkit/react/zustand";
 
 // Type helpers
-import type { Prettify } from '@zayne-labs/toolkit/type-helpers'
+import type { Prettify } from "@zayne-labs/toolkit/type-helpers";
 ```
 
 ## 🛠️ Development

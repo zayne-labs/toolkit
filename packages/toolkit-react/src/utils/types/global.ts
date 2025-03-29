@@ -1,3 +1,5 @@
+import type { UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
+
 export type ForwardedRefType<TComponent extends HTMLElement | React.ElementType> =
 	TComponent extends React.ElementType
 		? React.ForwardedRef<React.Ref<TComponent>>
@@ -14,22 +16,17 @@ export type MyCustomCss<TExtra extends Record<string, string> = NonNullable<unkn
 	& Record<`--${string}`, string>
 	& TExtra; // Allows Ts support for inline css variables
 
+type DefaultPossibleMessages = {
+	children: "Hey, Sorry but since you're currently using the render prop, the children prop is therefore redundant";
+	render: "Hey, Sorry but since you're currently using the children prop, the render prop is therefore redundant";
+};
 /**
  * @description Represents a set of props that can be used to render a component conditionally based on a discriminated union type.
  * This type allows for the use of either a render prop or children prop, but not both at the same time.
  * If both are provided, a TypeScript error will be thrown.
- * @template TMessage A message to display when the render prop is not used and the children prop is instead used.
+ * @template TErrorMessages An object of custom messages to display on the disallowed property.
  */
 export type DiscriminatedRenderProps<
 	TRenderPropType,
-	TMessage extends
-		string = "Hey, Sorry but since you're currently using the children prop, the render prop is therefore redundant",
-> =
-	| {
-			children: TRenderPropType;
-			render?: TMessage;
-	  }
-	| {
-			children?: TMessage;
-			render: TRenderPropType;
-	  };
+	TErrorMessages extends Record<"children" | "render", string> = DefaultPossibleMessages,
+> = UnionDiscriminator<[{ children: TRenderPropType }, { render: TRenderPropType }], TErrorMessages>;
