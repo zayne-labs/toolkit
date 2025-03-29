@@ -20,7 +20,7 @@
 		"lint:size": "turbo --filter \"./packages/*\" lint:size",
 		"lint:type-check": "turbo --filter \"./packages/*\" lint:type-check",
 		"prepare": "husky",
-		"release": "turbo --filter \"./packages/*\" release",
+		"release": "pnpm --filter \"./packages/*\" release",
 		"release:test": "pnpx pkg-pr-new publish \"./packages/*\" --compact",
 		"test": "turbo --filter \"./packages/*\" test",
 		"test:dev": "turbo --filter \"./packages/*\" test:dev"
