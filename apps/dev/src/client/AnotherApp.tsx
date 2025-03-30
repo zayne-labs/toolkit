@@ -43,17 +43,17 @@ function AnotherApp() {
 	);
 }
 
-type SlotsProps =
+type SlotProps =
 	| GetSlotComponentProps<"content">
 	| GetSlotComponentProps<"footer">
 	| GetSlotComponentProps<"header">;
 
-const Slot = SlotComponent<SlotsProps>;
+const Slot = SlotComponent<SlotProps>;
 
 function Section(props: { children: React.ReactNode }) {
 	const { children } = props;
 
-	const slots = getSlotMap<SlotsProps>(children);
+	const slots = getSlotMap<SlotProps>(children);
 
 	console.info({ slots });
 
