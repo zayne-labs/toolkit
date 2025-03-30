@@ -54,7 +54,7 @@ export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
 	children: React.ReactNode,
 	options: GetSlotMapOptions = {}
 ) => {
-	const { onlyAllowNamePropFromSlotComponent = false } = options;
+	const { onlyAllowNamePropFromSlotComponent = true } = options;
 
 	const childrenArray = toArray<React.ReactNode>(children);
 
