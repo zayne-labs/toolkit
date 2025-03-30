@@ -72,3 +72,9 @@ export type ExtractUnion<TObject, TVariant extends "keys" | "values" = "values">
 			? TKeys
 			: Prettify<Writeable<TValues, "deep">>
 		: never;
+
+export type UnionToIntersection<TUnion> = (
+	TUnion extends unknown ? (param: TUnion) => void : never
+) extends (param: infer TParam) => void
+	? TParam
+	: never;

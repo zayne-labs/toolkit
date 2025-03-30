@@ -2,9 +2,6 @@ import { toArray } from "@zayne-labs/toolkit-core";
 import { type AnyFunction, AssertionError, isArray } from "@zayne-labs/toolkit-type-helpers";
 import { isValidElement } from "react";
 
-type Noop = () => void;
-type WithSlot = { slot?: string };
-
 type FunctionalComponent<TProps> = (
 	props: TProps
 	// eslint-disable-next-line perfectionist/sort-union-types -- Lets keep the first one first
@@ -13,25 +10,27 @@ type FunctionalComponent<TProps> = (
 // TODO - Add support for thing like <div slot="foo"> OR <Slot name="foo">
 export const isSlotElement = <TProps>(
 	child: React.ReactNode,
-	SlotWrapper: FunctionalComponent<TProps>
+	SlotComponent: FunctionalComponent<TProps>
 ) => {
 	if (!isValidElement(child)) {
 		return false;
 	}
 
-	if ((child.type as WithSlot).slot === (SlotWrapper as WithSlot).slot) {
+	type WithSlot = { slot?: string };
+
+	if ((child.type as WithSlot).slot === (SlotComponent as WithSlot).slot) {
 		return true;
 	}
 
-	if ((child.type as Noop).name === (SlotWrapper as Noop).name) {
+	if (child.type === SlotComponent) {
 		return true;
 	}
 
-	if (child.type === SlotWrapper) {
+	if (child.type.toString() === SlotComponent.toString()) {
 		return true;
 	}
 
-	return child.type.toString() === SlotWrapper.toString();
+	return (child.type as FunctionalComponent<TProps>).name === SlotComponent.name;
 };
 
 type SlotOptions = {
@@ -40,13 +39,13 @@ type SlotOptions = {
 };
 
 /**
- * @description Retrieves a single slot element from a collection of React children that matches the provided SlotWrapper component.
+ * @description Retrieves a single slot element from a collection of React children that matches the provided SlotComponent component.
  *
  * @throws {AssertionError} When throwOnMultipleSlotMatch is true and multiple slots are found
  */
 export const getSlotElement = <TProps = Record<string, unknown>>(
 	children: React.ReactNode,
-	SlotWrapper: FunctionalComponent<TProps>,
+	SlotComponent: FunctionalComponent<TProps>,
 	options: SlotOptions = {}
 ) => {
 	const {
@@ -56,7 +55,7 @@ export const getSlotElement = <TProps = Record<string, unknown>>(
 
 	const childrenArray = toArray<React.ReactNode>(children);
 
-	const Slot = childrenArray.filter((child) => isSlotElement(child, SlotWrapper));
+	const Slot = childrenArray.filter((child) => isSlotElement(child, SlotComponent));
 
 	if (throwOnMultipleSlotMatch && Slot.length > 1) {
 		throw new AssertionError(errorMessage);
@@ -67,22 +66,22 @@ export const getSlotElement = <TProps = Record<string, unknown>>(
 
 const isSlotElementMultiple = <TProps>(
 	child: React.ReactNode,
-	SlotWrapperArray: Array<FunctionalComponent<TProps>>
-) => SlotWrapperArray.some((slotWrapper) => isSlotElement(child, slotWrapper));
+	SlotComponentArray: Array<FunctionalComponent<TProps>>
+) => SlotComponentArray.some((slotComponent) => isSlotElement(child, slotComponent));
 
-// Check if the child is a Slot element by matching any in the SlotWrapperArray
+// Check if the child is a Slot element by matching any in the SlotComponentArray
 export const getOtherChildren = <
 	TProps = Record<string, unknown>,
 	TChildren extends React.ReactNode = React.ReactNode,
 >(
 	children: TChildren,
-	SlotWrapperOrWrappers: Array<FunctionalComponent<TProps>> | FunctionalComponent<TProps>
+	SlotComponentOrComponents: Array<FunctionalComponent<TProps>> | FunctionalComponent<TProps>
 ) => {
 	const childrenArray = toArray<TChildren>(children);
 
-	const otherChildren = isArray(SlotWrapperOrWrappers)
-		? childrenArray.filter((child) => !isSlotElementMultiple(child, SlotWrapperOrWrappers))
-		: childrenArray.filter((child) => !isSlotElement(child, SlotWrapperOrWrappers));
+	const otherChildren = isArray(SlotComponentOrComponents)
+		? childrenArray.filter((child) => !isSlotElementMultiple(child, SlotComponentOrComponents))
+		: childrenArray.filter((child) => !isSlotElement(child, SlotComponentOrComponents));
 
 	return otherChildren as TChildren extends unknown[] ? TChildren : TChildren[];
 };

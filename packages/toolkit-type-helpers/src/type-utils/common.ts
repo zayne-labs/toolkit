@@ -1,4 +1,4 @@
-// == The intersection with "{}" or "unknown" or "NonNullable<unknown>" is necessary to make it work as expected based on quirks in the TS compiler
+// == The intersection with "{}" or "unknown" or "NonNullable<unknown>" is necessary to make it work as expected based on quirks !!in the TS compiler
 export type Prettify<TObject> = NonNullable<unknown> & { [Key in keyof TObject]: TObject[Key] };
 
 // == Using this Immediately Indexed Mapped type helper to help show computed type of anything passed to it instead of just the vague type name

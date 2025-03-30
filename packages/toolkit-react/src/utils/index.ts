@@ -1,5 +1,6 @@
 export * from "./composeRefs";
 export * from "./getSlotElement";
-export { mergeTwoProps } from "./mergeTwoProps";
+export * from "./getSlotMap";
 export { mergeProps } from "./mergeProps";
+export { mergeTwoProps } from "./mergeTwoProps";
 export * from "./types";

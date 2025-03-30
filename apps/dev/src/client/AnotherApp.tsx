@@ -1,10 +1,6 @@
-import { useScrollObserver } from "@zayne-labs/toolkit/react";
+import { type GetSlotComponentProps, SlotComponent, getSlotMap } from "@zayne-labs/toolkit/react/utils";
 
 function AnotherApp() {
-	const { isScrolled, observedElementRef } = useScrollObserver();
-
-	console.info({ isScrolled });
-
 	return (
 		<div>
 			<style>
@@ -26,12 +22,42 @@ function AnotherApp() {
 					}
 				`}
 			</style>
-			<header ref={observedElementRef}>Header</header>
-			<div />
+
+			<Section>
+				<Slot name="header">
+					<p>Header</p>
+				</Slot>
+				<Slot name="content">
+					<p>Content</p>
+				</Slot>
+				<Slot name="footer">
+					<p>Footer</p>
+				</Slot>
+				Random Text
+			</Section>
+
 			<button className="btn" type="button">
 				Force Render
 			</button>
 		</div>
 	);
 }
+
+type SlotsProps =
+	| GetSlotComponentProps<"content">
+	| GetSlotComponentProps<"footer">
+	| GetSlotComponentProps<"header">;
+
+const Slot = SlotComponent<SlotsProps>;
+
+function Section(props: { children: React.ReactNode }) {
+	const { children } = props;
+
+	const slots = getSlotMap<SlotsProps>(children);
+
+	console.info({ slots });
+
+	return <section>{slots.default}</section>;
+}
+
 export default AnotherApp;
