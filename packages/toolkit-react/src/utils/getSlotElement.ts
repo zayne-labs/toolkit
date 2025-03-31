@@ -2,7 +2,7 @@ import { toArray } from "@zayne-labs/toolkit-core";
 import { AssertionError, type UnknownObject } from "@zayne-labs/toolkit-type-helpers";
 import { isValidElement } from "react";
 
-type FunctionalComponent<TProps extends UnknownObject = never> = React.FunctionComponent<TProps>;
+export type FunctionalComponent<TProps extends UnknownObject = never> = React.FunctionComponent<TProps>;
 
 /**
  * @description Checks if a react child (within the children array) matches the provided SlotComponent using multiple matching strategies:
@@ -116,12 +116,15 @@ export const getMultipleSlots = <const TSlotComponents extends FunctionalCompone
 /**
  * @description Returns all children that are not slot elements (i.e., don't match any of the provided slot components)
  */
-export const getRegularChildren = (children: React.ReactNode, SlotComponents: FunctionalComponent[]) => {
+export const getRegularChildren = <TChildren extends React.ReactNode>(
+	children: TChildren,
+	SlotComponentOrComponents: FunctionalComponent | FunctionalComponent[]
+) => {
 	const childrenArray = toArray<React.ReactNode>(children);
 
 	const regularChildren = childrenArray.filter(
-		(child) => !matchesAnySlotComponent(child, SlotComponents)
+		(child) => !matchesAnySlotComponent(child, toArray(SlotComponentOrComponents))
 	);
 
-	return regularChildren;
+	return regularChildren as TChildren extends unknown[] ? TChildren : TChildren[];
 };
