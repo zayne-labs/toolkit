@@ -1,4 +1,8 @@
-import { type GetSlotComponentProps, SlotComponent, getSlotMap } from "@zayne-labs/toolkit/react/utils";
+import {
+	type GetSlotComponentProps,
+	createSlotComponent,
+	getSlotMap,
+} from "@zayne-labs/toolkit/react/utils";
 
 function AnotherApp() {
 	return (
@@ -43,17 +47,17 @@ function AnotherApp() {
 	);
 }
 
-type SlotProps =
+type SlotComponentProps =
 	| GetSlotComponentProps<"content">
 	| GetSlotComponentProps<"footer">
 	| GetSlotComponentProps<"header">;
 
-const Slot = SlotComponent<SlotProps>;
+const Slot = createSlotComponent<SlotComponentProps>();
 
 function Section(props: { children: React.ReactNode }) {
 	const { children } = props;
 
-	const slots = getSlotMap<SlotProps>(children);
+	const slots = getSlotMap<SlotComponentProps>(children);
 
 	console.info({ slots });
 
