@@ -1,40 +1,45 @@
 import { toArray } from "@zayne-labs/toolkit-core";
-import { type AnyFunction, AssertionError, type EmptyObject } from "@zayne-labs/toolkit-type-helpers";
+import { AssertionError, type UnknownObject } from "@zayne-labs/toolkit-type-helpers";
 import { isValidElement } from "react";
 
-type FunctionalComponent<TProps = EmptyObject> = (
-	props: TProps
-	// eslint-disable-next-line perfectionist/sort-union-types -- Lets keep the first one first
-) => ReturnType<React.FunctionComponent<TProps>> | AnyFunction<React.ReactNode>;
+type FunctionalComponent<TProps extends UnknownObject = never> = React.FunctionComponent<TProps>;
 
-// TODO - Add support for thing like <div slot="foo"> OR <Slot name="foo">
 /**
- * @description Checks if a React node is a slot component using multiple matching strategies:
- * 1. Matches by slot symbol property
- * 2. Matches by direct component reference
+ * @description Checks if a react child (within the children array) matches the provided SlotComponent using multiple matching strategies:
+ * 1. Matches by direct component reference
+ * 2. Matches by slot symbol property
  * 3. Matches by stringified component
  * 4. Matches by component name
  */
-export const isSlot = <TProps>(child: React.ReactNode, SlotComponent: FunctionalComponent<TProps>) => {
+export const matchesSlotComponent = (child: React.ReactNode, SlotComponent: FunctionalComponent) => {
 	if (!isValidElement(child)) {
 		return false;
-	}
-
-	type WithSlot = { slot?: string };
-
-	if ((child.type as WithSlot).slot === (SlotComponent as WithSlot).slot) {
-		return true;
 	}
 
 	if (child.type === SlotComponent) {
 		return true;
 	}
 
-	if (child.type.toString() === SlotComponent.toString()) {
+	type WithSlot = { readonly slotSymbol?: unique symbol };
+
+	if ((child.type as WithSlot).slotSymbol === (SlotComponent as WithSlot).slotSymbol) {
 		return true;
 	}
 
-	return (child.type as FunctionalComponent<TProps>).name === SlotComponent.name;
+	if ((child.type as FunctionalComponent).name === SlotComponent.name) {
+		return true;
+	}
+
+	return child.type.toString() === SlotComponent.toString();
+};
+
+/**
+ * @description Checks if a react child (within the children array) matches any of the provided SlotComponents.
+ */
+export const matchesAnySlotComponent = (child: React.ReactNode, SlotComponents: FunctionalComponent[]) => {
+	const matchesSlot = SlotComponents.some((SlotComponent) => matchesSlotComponent(child, SlotComponent));
+
+	return matchesSlot;
 };
 
 type SlotOptions = {
@@ -53,7 +58,7 @@ const calculateSlotOccurrences = (
 	let count = 0;
 
 	for (const child of childrenArray) {
-		if (!isSlot(child, SlotComponent)) continue;
+		if (!matchesSlotComponent(child, SlotComponent)) continue;
 
 		count += 1;
 	}
@@ -85,7 +90,7 @@ export const getSingleSlot = (
 		throw new AssertionError(errorMessage);
 	}
 
-	const slotElement = childrenArray.find((child) => isSlot(child, SlotComponent));
+	const slotElement = childrenArray.find((child) => matchesSlotComponent(child, SlotComponent));
 
 	return slotElement;
 };
@@ -103,20 +108,20 @@ export const getMultipleSlots = <const TSlotComponents extends FunctionalCompone
 		getSingleSlot(children, SlotComponent, options)
 	) as SlotsType;
 
-	const otherChildren = getOtherChildren(children, SlotComponents);
+	const regularChildren = getRegularChildren(children, SlotComponents);
 
-	return { otherChildren, slots };
+	return { regularChildren, slots };
 };
 
 /**
  * @description Returns all children that are not slot elements (i.e., don't match any of the provided slot components)
  */
-export const getOtherChildren = (children: React.ReactNode, SlotComponents: FunctionalComponent[]) => {
+export const getRegularChildren = (children: React.ReactNode, SlotComponents: FunctionalComponent[]) => {
 	const childrenArray = toArray<React.ReactNode>(children);
 
-	const otherChildren = childrenArray.filter(
-		(child) => !SlotComponents.some((SlotComponent) => isSlot(child, SlotComponent))
+	const regularChildren = childrenArray.filter(
+		(child) => !matchesAnySlotComponent(child, SlotComponents)
 	);
 
-	return otherChildren;
+	return regularChildren;
 };
