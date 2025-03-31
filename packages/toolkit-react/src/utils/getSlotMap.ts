@@ -13,7 +13,7 @@ type PossibleSlotChildrenType =
 /**
  * Maps slot names to their corresponding children types
  */
-type GetSlotMap<TSlotComponentProps extends GetSlotComponentProps> = UnionToIntersection<{
+type GetSlotMapResult<TSlotComponentProps extends GetSlotComponentProps> = UnionToIntersection<{
 	[TName in keyof TSlotComponentProps as TSlotComponentProps["name"]]: TSlotComponentProps["children"];
 }>;
 
@@ -22,22 +22,17 @@ type GetSlotMap<TSlotComponentProps extends GetSlotComponentProps> = UnionToInte
  */
 export const slotComponentSymbol = Symbol("SlotComponent");
 
-type GetSlotMapOptions = {
-	/**
-	 * @description When true, only accepts slots from components with the SlotComponent symbol
-	 */
-	onlyAllowNamePropFromSlotComponent?: boolean;
-};
-
 /**
  * @description Creates a map of named slots from React children. Returns an object mapping slot names to their children,
  * with a default slot for unmatched children.
  *
  * @example
  * ```tsx
+ * import { type GetSlotComponentProps, SlotComponent } from "@zayne-labs/toolkit-react/utils"
+ *
  * type SlotProps = GetSlotComponentProps<"header" | "footer">;
  *
- * function ParentComponent({ children }: { children: React.ReactNode }) {
+ * function Parent({ children }: { children: React.ReactNode }) {
  *   const slots = getSlotMap<SlotProps>(children);
  *
  *   return (
@@ -49,36 +44,52 @@ type GetSlotMapOptions = {
  *   );
  * }
  * ```
+ *
+ * Usage:
+ * ```tsx
+ * <Parent>
+ *   <SlotComponent name="header">Header Content</SlotComponent>
+ *   <div>Random stuff</div>
+ *   <SlotComponent name="footer">Footer Content</SlotComponent>
+ * </Parent>
+ * ```
  */
 export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
-	children: React.ReactNode,
-	options: GetSlotMapOptions = {}
+	children: React.ReactNode
 ) => {
-	const { onlyAllowNamePropFromSlotComponent = true } = options;
-
 	const childrenArray = toArray<React.ReactNode>(children);
 
 	const slots: Record<string, PossibleSlotChildrenType> & { default: React.ReactNode[] } = {
 		default: [],
 	};
 
-	type WithSlot = { slot?: typeof slotComponentSymbol };
-
 	for (const child of childrenArray) {
-		const shouldPushToDefault =
-			!isValidElement<TSlotComponentProps>(child)
-			|| !child.props.name
-			|| (onlyAllowNamePropFromSlotComponent && (child.type as WithSlot).slot !== slotComponentSymbol);
+		type SlotElementProps = TSlotComponentProps & { "data-slot-name": never };
 
-		if (shouldPushToDefault) {
+		type RegularElementProps = Pick<TSlotComponentProps, "children"> & {
+			"data-slot-name": string;
+			name: never;
+		};
+
+		const isSlotElementWithName =
+			isValidElement<SlotElementProps>(child)
+			&& (child.type as typeof SlotComponent).id === slotComponentSymbol
+			&& child.props.name;
+
+		const isRegularElementWithSlotName =
+			isValidElement<RegularElementProps>(child) && child.props["data-slot-name"];
+
+		if (!isSlotElementWithName && !isRegularElementWithSlotName) {
 			slots.default.push(child);
 			continue;
 		}
 
-		slots[child.props.name] = child.props.children;
+		const slotName = isSlotElementWithName ? child.props.name : child.props["data-slot-name"];
+
+		slots[slotName] = child.props.children;
 	}
 
-	return slots as GetSlotMap<TSlotComponentProps> & { default: React.ReactNode[] };
+	return slots as GetSlotMapResult<TSlotComponentProps> & { default: React.ReactNode[] };
 };
 
 /**
@@ -100,7 +111,9 @@ export type GetSlotComponentProps<
  *
  * @example
  * ```tsx
- * const SlotProps = GetSlotComponentProps<"header" | "footer">;
+ * import { type GetSlotComponentProps, createSlotComponent, SlotComponent } from "@zayne-labs/toolkit-react/utils"
+ *
+ * type SlotProps = GetSlotComponentProps<"header" | "footer">;
  *
  * function Parent({ children }: { children: React.ReactNode }) {
  *   const slots = getSlotMap<SlotProps>(children);
@@ -115,7 +128,14 @@ export type GetSlotComponentProps<
  * }
  *
  * Parent.Slot = createSlotComponent<SlotProps>();
+ * // OR
+ * Parent.Slot = SlotComponent<SlotProps>
+ * ```
  *
+ *
+ * @example
+ * Usage:
+	```tsx
  * function App() {
  *   return (
  *     <Parent>
@@ -136,7 +156,7 @@ export const createSlotComponent = <TBaseSlotComponentProps extends GetSlotCompo
 		return null as React.ReactNode;
 	}
 
-	SlotComponent.slot = slotComponentSymbol;
+	SlotComponent.id = slotComponentSymbol;
 
 	return SlotComponent;
 };

@@ -20,9 +20,11 @@ export type SelectorFn<TStore, TResult> = (state: TStore) => TResult;
 
 export type NonEmptyArray<TArrayItem> = [TArrayItem, ...TArrayItem[]];
 
-/* eslint-disable ts-eslint/no-explicit-any -- Any is needed so one can pass any prop type without type errors */
 export type UnknownObject = UnmaskType<Record<string, unknown>>;
 
+export type EmptyObject = NonNullable<unknown>;
+
+/* eslint-disable ts-eslint/no-explicit-any -- Any is needed so one can pass any prop type without type errors */
 export type UnknownObjectWithAnyKey = UnmaskType<Record<keyof any, unknown>>;
 
 export type AnyObject = UnmaskType<Record<keyof any, any>>;
