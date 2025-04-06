@@ -2,52 +2,59 @@ import { isFile } from "@zayne-labs/toolkit-type-helpers";
 
 export type ImagePreviewOptions = {
 	file: File | undefined;
-	onError?: (ctx: { error: DOMException | null }) => void;
+	onError?: (ctx: { error: DOMException | TypeError | null }) => void;
 	onSuccess?: (ctx: { result: string }) => void;
 	resultType?: "base64" | "objectURL";
 };
 
 function handleImagePreview(options: {
 	file: File | undefined;
-	onSuccess?: (ctx: { result: string }) => void;
-	resultType?: "objectURL";
-}): string;
+	onError?: (ctx: { error: DOMException | TypeError | null }) => void;
+	onSuccess: (ctx: { result: string }) => void;
+	resultType: "base64";
+}): null;
 
 function handleImagePreview(options: {
 	file: File | undefined;
-	onError?: (ctx: { error: DOMException | null }) => void;
-	onSuccess: (ctx: { result: string }) => void;
-	resultType: "base64";
-}): void;
+	onError?: (ctx: { error: TypeError | null }) => void;
+	onSuccess?: (ctx: { result: string }) => void;
+	resultType?: "objectURL";
+}): string | null;
 
 function handleImagePreview(options: ImagePreviewOptions) {
 	const { file, onError, onSuccess, resultType = "objectURL" } = options;
 
 	if (!isFile(file)) return;
 
-	if (resultType === "base64") {
-		const reader = new FileReader();
+	if (resultType === "objectURL") {
+		let result: string | null = null;
 
-		reader.addEventListener("load", () => {
-			if (!reader.result) return;
+		try {
+			result = URL.createObjectURL(file);
 
-			onSuccess?.({ result: reader.result as string });
-		});
+			onSuccess?.({ result });
+		} catch (error) {
+			onError?.({ error: error as TypeError });
+		}
 
-		reader.addEventListener("error", () => {
-			onError?.({ error: reader.error });
-		});
-
-		reader.readAsDataURL(file);
-
-		return;
+		return result;
 	}
 
-	const result = URL.createObjectURL(file);
+	const reader = new FileReader();
 
-	onSuccess?.({ result });
+	reader.addEventListener("load", () => {
+		if (!reader.result) return;
 
-	return result;
+		onSuccess?.({ result: reader.result as string });
+	});
+
+	reader.addEventListener("error", () => {
+		onError?.({ error: reader.error });
+	});
+
+	reader.readAsDataURL(file);
+
+	return null;
 }
 
 export { handleImagePreview };
