@@ -4,7 +4,6 @@ A powerful collection of utility functions, types, and composables designed to a
 
 ## 📦 Packages
 
-- `@zayne-labs/toolkit` - Umbrella package that includes all toolkit packages
 - `@zayne-labs/toolkit-core` - Core utility functions and helpers
 - `@zayne-labs/toolkit-type-helpers` - Advanced TypeScript type utilities and helpers
 - `@zayne-labs/toolkit-react` - React-specific hooks, utilities, and Zustand integrations
