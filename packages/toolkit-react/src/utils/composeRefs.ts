@@ -22,7 +22,9 @@ export const setRef = <TRef>(ref: PossibleRef<TRef>, node: TRef): ReturnType<Ref
 /**
  * @description A utility to combine refs. Accepts callback refs and RefObject(s)
  */
-export const composeRefs = <TRef>(refs: Array<PossibleRef<TRef>>): RefCallback<TRef> => {
+export const composeRefs = <TRef extends HTMLElement>(
+	refs: Array<PossibleRef<TRef>>
+): RefCallback<TRef> => {
 	const refCallBack: RefCallback<TRef> = (node) => {
 		const cleanupFnArray = refs.map((ref) => setRef(ref, node));
 

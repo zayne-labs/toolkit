@@ -3,7 +3,7 @@ import {
 	createSlotComponent,
 	getSingleSlot,
 	getSlotMap,
-} from "@zayne-labs/toolkit/react/utils";
+} from "@zayne-labs/toolkit-react/utils";
 
 function AnotherApp() {
 	return (

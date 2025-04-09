@@ -16,6 +16,7 @@
 		"lint:eslint:root": "eslint . --max-warnings 0",
 		"lint:eslint:root:interactive": "pnpx eslint-interactive@latest . --max-warnings 0 --fix",
 		"lint:format": "turbo --filter \"./packages/*\" lint:format",
+		"lint:format:root": "prettier --write .",
 		"lint:publint": "turbo --filter \"./packages/*\" lint:publint",
 		"lint:size": "turbo --filter \"./packages/*\" lint:size",
 		"lint:type-check": "turbo --filter \"./packages/*\" lint:type-check",

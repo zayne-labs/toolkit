@@ -1,4 +1,4 @@
-import { useSearchParamsObject } from "@zayne-labs/toolkit/react";
+import { useSearchParamsObject } from "@zayne-labs/toolkit-react";
 
 function App() {
 	const [searchParams, setSearchParams] = useSearchParamsObject();

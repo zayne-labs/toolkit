@@ -14,9 +14,7 @@ const setAnimationInterval = (
 	const smoothAnimation = (timeStamp: DOMHighResTimeStamp) => {
 		if (!intervalDuration) return;
 
-		if (startTimeStamp === null) {
-			startTimeStamp = Math.floor(timeStamp);
-		}
+		startTimeStamp ??= Math.floor(timeStamp);
 
 		const elapsedTime = Math.floor(timeStamp - startTimeStamp);
 
