@@ -1,8 +1,15 @@
 import { isArray, isString } from "@zayne-labs/toolkit-type-helpers";
-import type { ElementOrSelectorArray, PossibleNodes, RegisterConfig } from "./types";
+import type { ElementOrSelector, ElementOrSelectorArray, RegisterConfig } from "./types";
 
-const registerSingleElement = (element: PossibleNodes, config: RegisterConfig) => {
-	const { event, listener, options, type } = config;
+const registerSingleElement = (element: ElementOrSelector, config: RegisterConfig) => {
+	const {
+		event,
+		listener,
+		options,
+		queryScope = document,
+		queryType = "querySelectorAll",
+		type,
+	} = config;
 
 	const actionType = type === "add" ? "addEventListener" : "removeEventListener";
 
@@ -12,9 +19,18 @@ const registerSingleElement = (element: PossibleNodes, config: RegisterConfig) =
 	}
 
 	if (isString(element)) {
-		const nodeList = document.querySelectorAll<HTMLElement>(element);
+		const nodeOrNodeList = queryScope[queryType as "querySelector"](element);
 
-		nodeList.forEach((node) => node[actionType](event, listener as EventListener, options));
+		if (nodeOrNodeList instanceof NodeList) {
+			nodeOrNodeList.forEach((node) => node[actionType](event, listener as EventListener, options));
+		}
+
+		if (nodeOrNodeList === null) {
+			console.error("Element is either undefined or null");
+			return;
+		}
+
+		nodeOrNodeList[actionType](event, listener as EventListener, options);
 
 		return;
 	}
@@ -23,17 +39,15 @@ const registerSingleElement = (element: PossibleNodes, config: RegisterConfig) =
 };
 
 const registerMultipleElements = (elementArray: ElementOrSelectorArray, config: RegisterConfig) => {
-	if (elementArray.length === 0) {
-		console.error("ElementArray is empty!");
-		return;
-	}
-
 	for (const element of elementArray) {
 		registerSingleElement(element, config);
 	}
 };
 
-export const registerEvent = (element: ElementOrSelectorArray | PossibleNodes, config: RegisterConfig) => {
+export const registerEvent = (
+	element: ElementOrSelector | ElementOrSelectorArray,
+	config: RegisterConfig
+) => {
 	if (isArray(element)) {
 		registerMultipleElements(element, config);
 
