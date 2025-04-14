@@ -20,9 +20,9 @@ const useClickOutside = <TElement extends HTMLElement>(
 
 		const controller = new AbortController();
 
-		const refArray = toArray(refOrRefArray).map((ref) => ref.current);
+		const elementArray = toArray(refOrRefArray).map((ref) => ref.current);
 
-		onClickOutside(refArray, savedCallback, { signal: controller.signal });
+		onClickOutside(elementArray, savedCallback, { signal: controller.signal });
 
 		return () => {
 			controller.abort();
