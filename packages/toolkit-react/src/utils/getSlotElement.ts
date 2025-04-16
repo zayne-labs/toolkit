@@ -1,5 +1,5 @@
 import { toArray } from "@zayne-labs/toolkit-core";
-import { AssertionError, type UnknownObject } from "@zayne-labs/toolkit-type-helpers";
+import { AssertionError, type UnknownObject, isArray } from "@zayne-labs/toolkit-type-helpers";
 import { isValidElement } from "react";
 
 export type FunctionalComponent<TProps extends UnknownObject = never> = React.FunctionComponent<TProps>;
@@ -97,15 +97,29 @@ export const getSingleSlot = (
 
 // NOTE -  You can imitate const type parameter by extending readonly[] | []
 
+type GetMultipleSlotsOptions = Omit<SlotOptions, "errorMessage"> & {
+	errorMessage?: string | string[];
+};
+
+/**
+ * @description Retrieves multiple slot elements from a collection of React children that match the provided SlotComponents components.
+ *
+ * @throws { AssertionError } when throwOnMultipleSlotMatch is true and multiple slots are found
+ */
 export const getMultipleSlots = <const TSlotComponents extends FunctionalComponent[]>(
 	children: React.ReactNode,
 	SlotComponents: TSlotComponents,
-	options?: SlotOptions
+	options?: GetMultipleSlotsOptions
 ) => {
 	type SlotsType = { [Key in keyof TSlotComponents]: ReturnType<TSlotComponents[Key]> };
 
-	const slots = SlotComponents.map((SlotComponent) =>
-		getSingleSlot(children, SlotComponent, options)
+	const { errorMessage, ...restOptions } = options ?? {};
+
+	const slots = SlotComponents.map((SlotComponent, index) =>
+		getSingleSlot(children, SlotComponent, {
+			...restOptions,
+			errorMessage: isArray(errorMessage) ? errorMessage[index] : errorMessage,
+		})
 	) as SlotsType;
 
 	const regularChildren = getRegularChildren(children, SlotComponents);
