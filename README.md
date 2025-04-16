@@ -80,7 +80,6 @@ pnpm lint:format
 ```
 toolkit/
 ├── packages/
-│   ├── toolkit/          # Main package that exports all utilities
 │   ├── toolkit-core/     # Core JavaScript/TypeScript utilities
 │   ├── toolkit-react/    # React-specific hooks and utilities
 │   └── toolkit-type-helpers/  # TypeScript type utilities
