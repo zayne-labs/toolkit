@@ -43,7 +43,13 @@ export const matchesAnySlotComponent = (child: React.ReactNode, SlotComponents: 
 };
 
 type SlotOptions = {
+	/**
+	 * @description The error message to throw when multiple slots are found for a given slot component
+	 */
 	errorMessage?: string;
+	/**
+	 * @description When true, an AssertionError will be thrown if multiple slots are found for a given slot component
+	 */
 	throwOnMultipleSlotMatch?: boolean;
 };
 
@@ -97,8 +103,19 @@ export const getSingleSlot = (
 
 // NOTE -  You can imitate const type parameter by extending readonly[] | []
 
-type GetMultipleSlotsOptions = Omit<SlotOptions, "errorMessage"> & {
+type MultipleSlotsOptions = {
+	/**
+	 * @description The error message to throw when multiple slots are found for a given slot component
+	 * If a string is provided, the same message will be used for all slot components
+	 * If an array is provided, each string in the array will be used as the errorMessage for the corresponding slot component
+	 */
 	errorMessage?: string | string[];
+	/**
+	 * @description When true, an AssertionError will be thrown if multiple slots are found for a given slot component
+	 * If a boolean is provided, the same value will be used for all slot components
+	 * If an array is provided, each boolean in the array will be used as the throwOnMultipleSlotMatch value for the corresponding slot component
+	 */
+	throwOnMultipleSlotMatch?: boolean | boolean[];
 };
 
 /**
@@ -107,16 +124,18 @@ type GetMultipleSlotsOptions = Omit<SlotOptions, "errorMessage"> & {
 export const getMultipleSlots = <const TSlotComponents extends FunctionalComponent[]>(
 	children: React.ReactNode,
 	SlotComponents: TSlotComponents,
-	options?: GetMultipleSlotsOptions
+	options?: MultipleSlotsOptions
 ) => {
 	type SlotsType = { [Key in keyof TSlotComponents]: ReturnType<TSlotComponents[Key]> };
 
-	const { errorMessage, ...restOptions } = options ?? {};
+	const { errorMessage, throwOnMultipleSlotMatch } = options ?? {};
 
 	const slots = SlotComponents.map((SlotComponent, index) =>
 		getSingleSlot(children, SlotComponent, {
-			...restOptions,
 			errorMessage: isArray(errorMessage) ? errorMessage[index] : errorMessage,
+			throwOnMultipleSlotMatch: isArray(throwOnMultipleSlotMatch)
+				? throwOnMultipleSlotMatch[index]
+				: throwOnMultipleSlotMatch,
 		})
 	) as SlotsType;
 
