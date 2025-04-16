@@ -22,7 +22,7 @@ export const matchesSlotComponent = (child: React.ReactNode, SlotComponent: Func
 
 	type WithSlot = { readonly slotSymbol?: unique symbol };
 
-	if ((child.type as WithSlot).slotSymbol === (SlotComponent as WithSlot).slotSymbol) {
+	if ((child.type as WithSlot | undefined)?.slotSymbol === (SlotComponent as WithSlot).slotSymbol) {
 		return true;
 	}
 
