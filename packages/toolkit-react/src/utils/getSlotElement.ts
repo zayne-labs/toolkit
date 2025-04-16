@@ -102,9 +102,7 @@ type GetMultipleSlotsOptions = Omit<SlotOptions, "errorMessage"> & {
 };
 
 /**
- * @description Retrieves multiple slot elements from a collection of React children that match the provided SlotComponents components.
- *
- * @throws { AssertionError } when throwOnMultipleSlotMatch is true and multiple slots are found
+ * @description The same as getSingleSlot, but for multiple slot components
  */
 export const getMultipleSlots = <const TSlotComponents extends FunctionalComponent[]>(
 	children: React.ReactNode,
