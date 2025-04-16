@@ -25,7 +25,7 @@ export const setRef = <TRef>(ref: PossibleRef<TRef>, node: TRef): ReturnType<Ref
 export const composeRefs = <TRef extends HTMLElement>(
 	refs: Array<PossibleRef<TRef>>
 ): RefCallback<TRef> => {
-	const refCallBack: RefCallback<TRef> = (node) => {
+	const mergedRefCallBack: RefCallback<TRef> = (node) => {
 		const cleanupFnArray = refs.map((ref) => setRef(ref, node));
 
 		const cleanupFn = () => cleanupFnArray.forEach((cleanup) => cleanup?.());
@@ -39,5 +39,5 @@ export const composeRefs = <TRef extends HTMLElement>(
 		return cleanupFn;
 	};
 
-	return refCallBack;
+	return mergedRefCallBack;
 };
