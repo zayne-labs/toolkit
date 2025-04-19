@@ -1,7 +1,7 @@
 type ValidationSettings = {
 	allowedFileTypes?: string[];
 	disallowDuplicates?: boolean;
-	fileLimit?: number;
+	maxFileCount?: number;
 	maxFileSize?: number;
 };
 
@@ -39,7 +39,7 @@ const handleFileValidation = (options: FileValidationOptions) => {
 		validator,
 	} = options;
 
-	const { allowedFileTypes, disallowDuplicates, fileLimit, maxFileSize } = validationSettings;
+	const { allowedFileTypes, disallowDuplicates, maxFileCount, maxFileSize } = validationSettings;
 
 	const validFilesArray: File[] = [];
 
@@ -53,10 +53,10 @@ const handleFileValidation = (options: FileValidationOptions) => {
 
 	//	== Loop through fileList and validate each file
 	for (const file of newFileList) {
-		if (fileLimit && isFileLimitReached(fileLimit)) {
-			const message = `Maximum file limit of ${fileLimit} files has been reached`;
+		if (maxFileCount && isFileLimitReached(maxFileCount)) {
+			const message = `Maximum file count of ${maxFileCount} files has been reached`;
 
-			onError?.({ cause: { file, setting: "fileLimit" }, message });
+			onError?.({ cause: { file, setting: "maxFileCount" }, message });
 
 			break;
 		}
