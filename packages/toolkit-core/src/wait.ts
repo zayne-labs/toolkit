@@ -1,19 +1,12 @@
-import { PromiseWithResolvers } from "./promiseWithResolvers";
+import type { UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
+import { createPromiseWithResolvers } from "./promise";
 
-type Delay =
-	| {
-			milliseconds: number;
-			seconds?: never;
-	  }
-	| {
-			milliseconds?: never;
-			seconds: number;
-	  };
+type Delay = UnionDiscriminator<[{ milliseconds: number }, { seconds: number }]>;
 
 export const waitUntil = (delay: number | Delay) => {
 	if (typeof delay === "number" || delay.seconds === 0 || delay.milliseconds === 0) return;
 
-	const { promise, resolve } = PromiseWithResolvers();
+	const { promise, resolve } = createPromiseWithResolvers();
 
 	const delayInMs =
 		typeof delay === "number"

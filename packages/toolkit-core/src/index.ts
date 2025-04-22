@@ -15,7 +15,7 @@ export * from "./omitKeys";
 export * from "./on";
 export { parseJSON } from "./parseJSON";
 export * from "./pickKeys";
-export { PromiseWithResolvers } from "./promiseWithResolvers";
+export * from "./promise";
 export * from "./setAnimationInterval";
 export { syncStateWithStorage } from "./syncStateWithStorage";
 export * from "./throttle";
