@@ -1,12 +1,7 @@
 import { toArray } from "@zayne-labs/toolkit-core";
-import type { UnionToIntersection } from "@zayne-labs/toolkit-type-helpers";
+import type { UnionToIntersection, UnknownObject } from "@zayne-labs/toolkit-type-helpers";
 import { Fragment as ReactFragment, isValidElement } from "react";
 import type { InferProps } from "./types";
-
-/**
- * Possible children types that can be passed to a slot
- */
-type PossibleSlotChildrenType = React.ReactNode | React.ReactNode[];
 
 /**
  * Maps slot names to their corresponding children types
@@ -62,9 +57,7 @@ export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
 
 	const childrenArray = toArray<React.ReactNode>(actualChildren);
 
-	const slots: Record<string, PossibleSlotChildrenType> & { default: React.ReactNode[] } = {
-		default: [],
-	};
+	const slots: Record<string, React.ReactNode> & { default: React.ReactNode[] } = { default: [] };
 
 	for (const child of childrenArray) {
 		type SlotElementProps = TSlotComponentProps & { "data-slot-name": never };
@@ -76,8 +69,8 @@ export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
 
 		const isSlotElementWithName =
 			isValidElement<SlotElementProps>(child)
-			&& (child.type as typeof SlotComponent).slotSymbol === slotComponentSymbol
-			&& Boolean(child.props.name || (child.type as typeof SlotComponent).slotName);
+			&& (child.type as SlotComponentType).slotSymbol === slotComponentSymbol
+			&& Boolean((child.type as WithSlotSymbolAndName).slotName ?? child.props.name);
 
 		const isRegularElementWithSlotName =
 			isValidElement<RegularElementProps>(child) && Boolean(child.props["data-slot-name"]);
@@ -88,7 +81,7 @@ export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
 		}
 
 		const slotName = isSlotElementWithName
-			? child.props.name || (child.type as typeof SlotComponent).slotName
+			? ((child.type as WithSlotSymbolAndName).slotName ?? child.props.name)
 			: child.props["data-slot-name"];
 
 		slots[slotName] = child.props.children;
@@ -102,7 +95,7 @@ export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
  */
 export type GetSlotComponentProps<
 	TName extends string = string,
-	TChildren extends PossibleSlotChildrenType = PossibleSlotChildrenType,
+	TChildren extends React.ReactNode = React.ReactNode,
 > = {
 	/** Content to render in the slot */
 	children: TChildren;
@@ -111,62 +104,39 @@ export type GetSlotComponentProps<
 };
 
 /**
- * @description Function used to create a slot component that defines named slots in a parent component. This component created doesn't render anything,
- * it's used purely for slot definition.
- *
- * @example
- * ```tsx
- * import { type GetSlotComponentProps, createSlotComponent, SlotComponent } from "@zayne-labs/toolkit-react/utils"
- *
- * type SlotProps = GetSlotComponentProps<"header" | "footer">;
- *
- * function Parent({ children }: { children: React.ReactNode }) {
- *   const slots = getSlotMap<SlotProps>(children);
- *
- *   return (
- *     <div>
- *       <header>{slots.header}</header>
- *       <main>{slots.default}</main>
- *       <footer>{slots.footer}</footer>
- *     </div>
- *   );
- * }
- *
- * Parent.Slot = createSlotComponent<SlotProps>();
- * // OR
- * Parent.Slot = SlotComponent<SlotProps>
- * ```
- *
- *
- * @example
- * Usage:
-	```tsx
- * function App() {
- *   return (
- *     <Parent>
- *       <Parent.Slot name="header">Header Content</Parent.Slot>
- *       <div>Default Content</div>
- *       <Parent.Slot name="footer">Footer Content</Parent.Slot>
- *     </Parent>
- *   );
- * }
- * ```
+ * @description Slot component created by createSlotComponent
  */
 
-export const createSlotComponent = <TBaseSlotComponentProps extends GetSlotComponentProps>() => {
-	function SlotComponent<TSlotComponentProps extends TBaseSlotComponentProps>(
-		props: TSlotComponentProps
-	): React.ReactNode {
-		return props as unknown as React.ReactNode;
-	}
+export const createSlotComponent = <TSlotComponentProps extends GetSlotComponentProps>() => {
+	const SlotComponent = (props: TSlotComponentProps) => props.children;
 
 	SlotComponent.slotSymbol = slotComponentSymbol;
-	SlotComponent.slotName = "";
 
 	return SlotComponent;
 };
 
-/**
- * @description Slot component created by createSlotComponent
- */
-export const SlotComponent = createSlotComponent();
+type SlotComponentType = ReturnType<typeof createSlotComponent>;
+
+type WithSlotSymbolAndName<
+	TSlotComponentProps extends Pick<GetSlotComponentProps, "name"> = Pick<GetSlotComponentProps, "name">,
+	TActualProps extends UnknownObject = UnknownObject,
+> = {
+	(props: Pick<GetSlotComponentProps, "children"> & TActualProps): React.ReactNode;
+	slotName?: TSlotComponentProps["name"];
+	slotSymbol?: typeof slotComponentSymbol;
+};
+
+export const withSlotSymbolAndName = <
+	TSlotComponentProps extends Pick<GetSlotComponentProps, "name">,
+	TActualProps extends UnknownObject = UnknownObject,
+>(
+	name: TSlotComponentProps["name"],
+	SlotComponent: WithSlotSymbolAndName<TSlotComponentProps, TActualProps>
+) => {
+	/* eslint-disable no-param-reassign -- This is necessary */
+	SlotComponent.slotSymbol = slotComponentSymbol;
+	SlotComponent.slotName = name;
+	/* eslint-enable no-param-reassign -- This is necessary */
+
+	return SlotComponent;
+};
