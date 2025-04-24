@@ -8,7 +8,7 @@ export * from "./createScrollObserver";
 export * from "./createStore";
 export { debounce } from "./debounce";
 export * from "./handleFileValidation";
-export * from "./handleImagePreview";
+export * from "./createImagePreview";
 export { lockScroll } from "./lockScroll";
 export * from "./navigation";
 export * from "./omitKeys";

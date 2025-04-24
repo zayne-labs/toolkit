@@ -6,23 +6,22 @@ export type FunctionalComponent<TProps extends UnknownObject = never> = React.Fu
 
 /**
  * @description Checks if a react child (within the children array) matches the provided SlotComponent using multiple matching strategies:
- * 1. Matches by direct component reference
- * 2. Matches by slot symbol property
- * 3. Matches by stringified component
- * 4. Matches by component name
+ * 1. Matches by slot symbol property
+ * 2. Matches by component name
  */
+
 export const matchesSlotComponent = (child: React.ReactNode, SlotComponent: FunctionalComponent) => {
 	if (!isValidElement(child)) {
 		return false;
 	}
 
-	if (child.type === SlotComponent) {
-		return true;
-	}
+	type WithSlot = { readonly slotSymbol?: unique symbol } | undefined;
 
-	type WithSlot = { readonly slotSymbol?: unique symbol };
-
-	if ((child.type as WithSlot | undefined)?.slotSymbol === (SlotComponent as WithSlot).slotSymbol) {
+	if (
+		(child.type as WithSlot)?.slotSymbol
+		&& (SlotComponent as WithSlot)?.slotSymbol
+		&& Object.is((child.type as WithSlot)?.slotSymbol, (SlotComponent as WithSlot)?.slotSymbol)
+	) {
 		return true;
 	}
 
@@ -30,7 +29,7 @@ export const matchesSlotComponent = (child: React.ReactNode, SlotComponent: Func
 		return true;
 	}
 
-	return child.type.toString() === SlotComponent.toString();
+	return false;
 };
 
 /**

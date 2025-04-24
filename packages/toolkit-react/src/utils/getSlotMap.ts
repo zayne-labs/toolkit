@@ -1,14 +1,11 @@
 import { toArray } from "@zayne-labs/toolkit-core";
-import type { AnyFunction, UnionToIntersection } from "@zayne-labs/toolkit-type-helpers";
+import type { UnionToIntersection } from "@zayne-labs/toolkit-type-helpers";
 import { isValidElement } from "react";
 
 /**
  * Possible children types that can be passed to a slot
  */
-type PossibleSlotChildrenType =
-	| AnyFunction<React.ReactNode | React.ReactNode[]>
-	| React.ReactNode
-	| React.ReactNode[];
+type PossibleSlotChildrenType = React.ReactNode | React.ReactNode[];
 
 /**
  * Maps slot names to their corresponding children types
@@ -20,7 +17,7 @@ type GetSlotMapResult<TSlotComponentProps extends GetSlotComponentProps> = Union
 /**
  * Symbol used to identify SlotComponent instances
  */
-export const slotComponentSymbol = Symbol("SlotComponent");
+export const slotComponentSymbol = Symbol("slot-component");
 
 /**
  * @description Creates a map of named slots from React children. Returns an object mapping slot names to their children,
@@ -73,7 +70,7 @@ export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
 
 		const isSlotElementWithName =
 			isValidElement<SlotElementProps>(child)
-			&& (child.type as typeof SlotComponent).id === slotComponentSymbol
+			&& (child.type as typeof SlotComponent).slotSymbol === slotComponentSymbol
 			&& child.props.name;
 
 		const isRegularElementWithSlotName =
@@ -150,13 +147,12 @@ export type GetSlotComponentProps<
 
 export const createSlotComponent = <TBaseSlotComponentProps extends GetSlotComponentProps>() => {
 	function SlotComponent<TSlotComponentProps extends TBaseSlotComponentProps>(
-		// eslint-disable-next-line ts-eslint/no-unused-vars -- The props here are just for type definition really, as this component doesn't need to render anything
 		props: TSlotComponentProps
-	) {
-		return null as React.ReactNode;
+	): React.ReactNode {
+		return props as unknown as React.ReactNode;
 	}
 
-	SlotComponent.id = slotComponentSymbol;
+	SlotComponent.slotSymbol = slotComponentSymbol;
 
 	return SlotComponent;
 };

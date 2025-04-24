@@ -59,7 +59,7 @@ function Parent(props: { children: React.ReactNode }) {
 
 	const slots = getSlotMap<SlotComponentProps>(children);
 
-	// console.info({ slots });
+	console.info({ slots });
 
 	return <section>{slots.default}</section>;
 }
@@ -70,8 +70,6 @@ function ParentTwo(props: { children: React.ReactNode }) {
 	const { children } = props;
 
 	const headerSlot = getSingleSlot(children, ParentTwo.Header);
-
-	console.info({ headerSlot });
 
 	return <section>{headerSlot}</section>;
 }

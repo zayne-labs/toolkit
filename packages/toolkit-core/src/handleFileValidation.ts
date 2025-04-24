@@ -1,88 +1,180 @@
-type ValidationSettings = {
+export type FileMeta = {
+	id: string;
+	name: string;
+	size: number;
+	type: string;
+	url: string;
+};
+
+export type ValidationSettings = {
+	/**
+	 * Array of allowed file types
+	 */
 	allowedFileTypes?: string[];
+	/**
+	 * Prevent duplicate files from being uploaded
+	 */
 	disallowDuplicates?: boolean;
+	/**
+	 * Maximum number of files that can be uploaded.
+	 */
 	maxFileCount?: number;
+	/**
+	 * Maximum file size in MB
+	 */
 	maxFileSize?: number;
 };
 
-type FileValidationErrorContext = {
-	cause: {
-		file: File;
-		setting: keyof ValidationSettings;
-	};
+export type FileValidationErrorContext = {
+	/**
+	 * Name of the validation setting that caused the error
+	 */
+	code: keyof ValidationSettings;
+	/**
+	 * File that caused the validation error
+	 */
+	errorFile: File;
+	/**
+	 * Error message
+	 */
 	message: string;
 };
 
-type FileValidationSuccessContext = {
-	acceptedFiles: File[];
+export type FileValidationSuccessContext = {
+	/**
+	 * Success message
+	 */
 	message: string;
+	/**
+	 * Array of successfully validated files
+	 */
+	validFiles: File[];
 };
 
 export type FileValidationOptions = {
-	existingFileArray?: File[];
-	newFileList: FileList;
+	/**
+	 * Array of existing files
+	 */
+	existingFiles?: File[] | FileMeta[];
+	/**
+	 * FileList uploaded by user
+	 */
+	newFiles: File[] | FileList;
+	/**
+	 * Callback function to be called on each file upload as they occur
+	 */
 	onError?: (context: FileValidationErrorContext) => void;
+
+	/**
+	 * Callback function to be called once after all file upload errors have occurred
+	 */
+	onErrors?: (contextArray: FileValidationErrorContext[]) => void;
+	/**
+	 * Callback function to be called on validation success
+	 */
 	onSuccess?: (context: FileValidationSuccessContext) => void;
+	/**
+	 * Validation settings
+	 */
 	validationSettings?: ValidationSettings;
-	validator?: (context: { existingFileArray: File[] | undefined; newFileList: FileList }) => File[];
+	/**
+	 * Custom validation function
+	 */
+	validator?: (context: {
+		existingFiles: FileValidationOptions["existingFiles"];
+		newFiles: FileValidationOptions["newFiles"];
+	}) => File[];
 };
 
-const toMegaByte = (size: number) => size * 1024 * 1024;
+const megaByteToByte = (size: number) => size * 1024 * 1024;
 
 const handleFileValidation = (options: FileValidationOptions) => {
 	const {
-		existingFileArray = [],
-		newFileList,
+		existingFiles = [],
+		newFiles,
 		onError,
+		onErrors,
 		onSuccess,
-		validationSettings = {},
+		validationSettings,
 		validator,
 	} = options;
 
-	const { allowedFileTypes, disallowDuplicates, maxFileCount, maxFileSize } = validationSettings;
-
 	const validFilesArray: File[] = [];
 
-	const isFileUnique = (file: File) => {
-		return existingFileArray.every((fileItem) => fileItem.name !== file.name);
+	const errors: FileValidationErrorContext[] = [];
+
+	const isDuplicateFile = (file: File) => {
+		return existingFiles.some(
+			(existingFile) => existingFile.name === file.name && existingFile.size === file.size
+		);
 	};
 
-	const isFileLimitReached = (limit: number) => {
-		return existingFileArray.length === limit || validFilesArray.length === limit;
+	const isMaxFileCountReached = (maximumFileCount: number) => {
+		return existingFiles.length + validFilesArray.length > maximumFileCount;
 	};
 
-	//	== Loop through fileList and validate each file
-	for (const file of newFileList) {
-		if (maxFileCount && isFileLimitReached(maxFileCount)) {
-			const message = `Maximum file count of ${maxFileCount} files has been reached`;
+	const { allowedFileTypes, disallowDuplicates, maxFileCount, maxFileSize } = validationSettings ?? {};
 
-			onError?.({ cause: { file, setting: "maxFileCount" }, message });
+	//	== Loop through the uploaded fileList and validate each file
+	for (const file of newFiles) {
+		if (maxFileCount && isMaxFileCountReached(maxFileCount)) {
+			const message = `You can only upload a maximum of ${maxFileCount} files`;
+
+			const context: FileValidationErrorContext = { code: "maxFileCount", errorFile: file, message };
+
+			errors.push(context);
+
+			onError?.(context);
 
 			break;
+		}
+
+		if (disallowDuplicates && isDuplicateFile(file)) {
+			const message = `File: "${file.name}" has already been selected`;
+
+			const context: FileValidationErrorContext = {
+				code: "disallowDuplicates",
+				errorFile: file,
+				message,
+			};
+
+			errors.push(context);
+
+			onError?.(context);
+
+			continue;
 		}
 
 		if (allowedFileTypes && !allowedFileTypes.includes(file.type)) {
 			const acceptedFilesString = allowedFileTypes.join(" | ");
 
-			const message = `File type must be of: ${acceptedFilesString}`;
+			const message = `File "${file.name}" is not an accepted file type. File must be of type: ${acceptedFilesString}`;
 
-			onError?.({ cause: { file, setting: "allowedFileTypes" }, message });
+			const context: FileValidationErrorContext = {
+				code: "allowedFileTypes",
+				errorFile: file,
+				message,
+			};
+
+			errors.push(context);
+
+			onError?.(context);
 
 			continue;
 		}
 
-		if (maxFileSize && file.size > toMegaByte(maxFileSize)) {
-			const message = `Cannot upload a file larger than ${maxFileSize}mb`;
+		if (maxFileSize && file.size > megaByteToByte(maxFileSize)) {
+			const message = `File "${file.name}" exceeds the maximum size of ${maxFileSize}mb`;
 
-			onError?.({ cause: { file, setting: "maxFileSize" }, message });
+			const context: FileValidationErrorContext = {
+				code: "maxFileSize",
+				errorFile: file,
+				message,
+			};
 
-			continue;
-		}
+			errors.push(context);
 
-		if (disallowDuplicates && !isFileUnique(file)) {
-			const message = `File: "${file.name}" has already been selected`;
-
-			onError?.({ cause: { file, setting: "disallowDuplicates" }, message });
+			onError?.(context);
 
 			continue;
 		}
@@ -90,16 +182,19 @@ const handleFileValidation = (options: FileValidationOptions) => {
 		validFilesArray.push(file);
 	}
 
-	if (validFilesArray.length > 0) {
-		onSuccess?.({
-			acceptedFiles: validFilesArray,
-			message: `Uploaded ${validFilesArray.length} file${validFilesArray.length > 1 ? "s" : ""}!`,
-		});
+	if (errors.length > 0) {
+		onErrors?.(errors);
 	}
 
-	const validatorFnFileArray = validator?.({ existingFileArray, newFileList }) ?? [];
+	if (validFilesArray.length > 0) {
+		const message = `Uploaded ${validFilesArray.length} file${validFilesArray.length > 1 ? "s" : ""}!`;
 
-	return [...validFilesArray, ...validatorFnFileArray];
+		onSuccess?.({ message, validFiles: validFilesArray });
+	}
+
+	const validatorFnFileArray = validator?.({ existingFiles, newFiles }) ?? [];
+
+	return { errors, validFiles: [...validFilesArray, ...validatorFnFileArray] };
 };
 
 export { handleFileValidation };

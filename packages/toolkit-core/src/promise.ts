@@ -31,24 +31,26 @@ export const createPromiseWithResolvers = <TPromise>(options: BasePromiseOptions
 	return withResolvers;
 };
 
-export const createPromiseWithDelay = <TPromise>(
-	options: BasePromiseOptions & { delay?: number } = {}
-) => {
-	const { delay, signal } = options;
+// export const createPromiseWithDelay = <TPromise>(
+// 	options: BasePromiseOptions & { delay?: number } = {}
+// ) => {
+// 	const { delay, signal } = options;
 
-	const withResolvers = createPromiseWithResolvers<TPromise>({ signal });
+// 	const withResolvers = createPromiseWithResolvers<TPromise>({ signal });
 
-	const reject = (...params: Parameters<PromiseWithResolvers<TPromise>["reject"]>) => {
-		setTimeout(() => withResolvers.reject(...params), delay);
+// 	const reject = (reason: Parameters<PromiseWithResolvers<TPromise>["reject"]>[0]) => {
+// 		setTimeout(() => withResolvers.reject(reason), delay);
 
-		return withResolvers.promise;
-	};
+// 		return withResolvers.promise;
+// 	};
 
-	const resolve = (...params: Parameters<PromiseWithResolvers<TPromise>["resolve"]>) => {
-		setTimeout(() => withResolvers.resolve(...params), delay);
+// 	const resolve = <TInnerPromise = TPromise>(
+// 		value: Parameters<PromiseWithResolvers<TInnerPromise>["resolve"]>[0]
+// 	) => {
+// 		setTimeout(() => withResolvers.resolve(value as never), delay);
 
-		return withResolvers.promise;
-	};
+// 		return withResolvers.promise as unknown as Promise<TInnerPromise>;
+// 	};
 
-	return { promise: withResolvers.promise, reject, resolve };
-};
+// 	return { promise: withResolvers.promise, reject, resolve };
+// };
