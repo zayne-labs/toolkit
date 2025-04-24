@@ -137,8 +137,8 @@ type WithSlotSymbolAndName<
 	TActualProps extends UnknownObject = UnknownObject,
 > = {
 	(props: Pick<GetSlotComponentProps, "children"> & TActualProps): React.ReactNode;
-	slotName?: TSlotComponentProps["name"];
-	slotSymbol?: typeof slotComponentSymbol;
+	readonly slotName?: TSlotComponentProps["name"];
+	readonly slotSymbol?: unique symbol;
 };
 
 export const withSlotSymbolAndName = <
@@ -149,7 +149,9 @@ export const withSlotSymbolAndName = <
 	SlotComponent: WithSlotSymbolAndName<TSlotComponentProps, TActualProps> = (props) => props.children
 ) => {
 	/* eslint-disable no-param-reassign -- This is necessary */
+	// @ts-expect-error -- This is necessary for the time being, to prevent type errors and accidental overrides on consumer side
 	SlotComponent.slotSymbol = slotComponentSymbol;
+	// @ts-expect-error -- This is necessary for the time being, to prevent type errors and accidental overrides on consumer side
 	SlotComponent.slotName = name;
 	/* eslint-enable no-param-reassign -- This is necessary */
 
