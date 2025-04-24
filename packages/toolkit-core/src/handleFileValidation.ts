@@ -55,7 +55,7 @@ export type FileValidationOptions = {
 	/**
 	 * Array of existing files
 	 */
-	existingFiles?: File[] | FileMeta[];
+	existingFiles?: Array<File | FileMeta>;
 	/**
 	 * FileList uploaded by user
 	 */
@@ -110,7 +110,7 @@ const handleFileValidation = (options: FileValidationOptions) => {
 	};
 
 	const isMaxFileCountReached = (maximumFileCount: number) => {
-		return existingFiles.length + validFilesArray.length > maximumFileCount;
+		return existingFiles.length === maximumFileCount || validFilesArray.length === maximumFileCount;
 	};
 
 	const { allowedFileTypes, disallowDuplicates, maxFileCount, maxFileSize } = validationSettings ?? {};
