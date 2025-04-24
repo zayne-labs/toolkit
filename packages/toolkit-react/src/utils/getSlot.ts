@@ -1,5 +1,10 @@
 import { toArray } from "@zayne-labs/toolkit-core";
-import { AssertionError, type UnknownObject, isArray } from "@zayne-labs/toolkit-type-helpers";
+import {
+	AssertionError,
+	type Prettify,
+	type UnknownObject,
+	isArray,
+} from "@zayne-labs/toolkit-type-helpers";
 import { Fragment as ReactFragment, isValidElement } from "react";
 import type { InferProps } from "./types";
 
@@ -44,6 +49,11 @@ export const matchesAnySlotComponent = (child: React.ReactNode, SlotComponents: 
 
 type SlotOptions = {
 	/**
+	 * @description If false, the function will bail out early and return null as the slot.
+	 * @default true
+	 */
+	condition?: boolean;
+	/**
 	 * @description The error message to throw when multiple slots are found for a given slot component
 	 */
 	errorMessage?: string;
@@ -54,7 +64,7 @@ type SlotOptions = {
 };
 
 /**
- * @description Counts how many times a slot component appears in an array of children
+ * @description Counts how many times a given slot component appears in an array of children
  * @internal
  */
 const calculateSlotOccurrences = (
@@ -83,9 +93,14 @@ export const getSingleSlot = (
 	options: SlotOptions = {}
 ) => {
 	const {
+		condition = true,
 		errorMessage = "Only one instance of the SlotComponent is allowed",
 		throwOnMultipleSlotMatch = false,
 	} = options;
+
+	if (!condition) {
+		return null;
+	}
 
 	const actualChildren =
 		isValidElement<InferProps<typeof ReactFragment>>(children) && children.type === ReactFragment
@@ -110,6 +125,11 @@ export const getSingleSlot = (
 
 type MultipleSlotsOptions = {
 	/**
+	 * @description If false, the function will bail out early and return the regularChildren with the actual children and an empty slots array.
+	 * @default true
+	 */
+	condition?: boolean;
+	/**
 	 * @description The error message to throw when multiple slots are found for a given slot component
 	 * If a string is provided, the same message will be used for all slot components
 	 * If an array is provided, each string in the array will be used as the errorMessage for the corresponding slot component
@@ -123,6 +143,11 @@ type MultipleSlotsOptions = {
 	throwOnMultipleSlotMatch?: boolean | boolean[];
 };
 
+type GetMultipleSlotsResult<TSlotComponents extends FunctionalComponent[]> = {
+	regularChildren: React.ReactNode[];
+	slots: { [Key in keyof TSlotComponents]: ReturnType<TSlotComponents[Key]> };
+};
+
 /**
  * @description The same as getSingleSlot, but for multiple slot components
  */
@@ -130,10 +155,12 @@ export const getMultipleSlots = <const TSlotComponents extends FunctionalCompone
 	children: React.ReactNode,
 	SlotComponents: TSlotComponents,
 	options?: MultipleSlotsOptions
-) => {
-	type SlotsType = { [Key in keyof TSlotComponents]: ReturnType<TSlotComponents[Key]> };
+): Prettify<GetMultipleSlotsResult<TSlotComponents>> => {
+	const { condition = true, errorMessage, throwOnMultipleSlotMatch } = options ?? {};
 
-	const { errorMessage, throwOnMultipleSlotMatch } = options ?? {};
+	if (!condition) {
+		return { regularChildren: children as never, slots: [] } as GetMultipleSlotsResult<TSlotComponents>;
+	}
 
 	const slots = SlotComponents.map((SlotComponent, index) =>
 		getSingleSlot(children, SlotComponent, {
@@ -142,20 +169,27 @@ export const getMultipleSlots = <const TSlotComponents extends FunctionalCompone
 				? throwOnMultipleSlotMatch[index]
 				: throwOnMultipleSlotMatch,
 		})
-	) as SlotsType;
+	);
 
 	const regularChildren = getRegularChildren(children, SlotComponents);
 
-	return { regularChildren, slots };
+	return { regularChildren, slots } as GetMultipleSlotsResult<TSlotComponents>;
 };
 
 /**
  * @description Returns all children that are not slot elements (i.e., don't match any of the provided slot components)
  */
-export const getRegularChildren = <TChildren extends React.ReactNode>(
-	children: TChildren,
-	SlotComponentOrComponents: FunctionalComponent | FunctionalComponent[]
+export const getRegularChildren = (
+	children: React.ReactNode,
+	SlotComponentOrComponents: FunctionalComponent | FunctionalComponent[],
+	options?: Pick<SlotOptions, "condition">
 ) => {
+	const { condition = true } = options ?? {};
+
+	if (!condition) {
+		return [];
+	}
+
 	const actualChildren =
 		isValidElement<InferProps<typeof ReactFragment>>(children) && children.type === ReactFragment
 			? children.props.children
@@ -167,5 +201,5 @@ export const getRegularChildren = <TChildren extends React.ReactNode>(
 		(child) => !matchesAnySlotComponent(child, toArray(SlotComponentOrComponents))
 	);
 
-	return regularChildren as TChildren extends unknown[] ? TChildren : TChildren[];
+	return regularChildren;
 };
