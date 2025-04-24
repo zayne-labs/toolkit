@@ -1,7 +1,7 @@
 import { toArray } from "@zayne-labs/toolkit-core";
-import type { InferProps } from "@zayne-labs/toolkit-react/utils";
 import { AssertionError, type UnknownObject, isArray } from "@zayne-labs/toolkit-type-helpers";
 import { Fragment as ReactFragment, isValidElement } from "react";
+import type { InferProps } from "./types";
 
 export type FunctionalComponent<TProps extends UnknownObject = never> = React.FunctionComponent<TProps>;
 
