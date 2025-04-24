@@ -131,7 +131,7 @@ export const withSlotSymbolAndName = <
 	TActualProps extends UnknownObject = UnknownObject,
 >(
 	name: TSlotComponentProps["name"],
-	SlotComponent: WithSlotSymbolAndName<TSlotComponentProps, TActualProps>
+	SlotComponent: WithSlotSymbolAndName<TSlotComponentProps, TActualProps> = (props) => props.children
 ) => {
 	/* eslint-disable no-param-reassign -- This is necessary */
 	SlotComponent.slotSymbol = slotComponentSymbol;
