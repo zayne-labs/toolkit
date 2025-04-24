@@ -1,5 +1,5 @@
 import { toArray } from "@zayne-labs/toolkit-core";
-import type { UnionToIntersection, UnknownObject } from "@zayne-labs/toolkit-type-helpers";
+import type { Prettify, UnionToIntersection, UnknownObject } from "@zayne-labs/toolkit-type-helpers";
 import { Fragment as ReactFragment, isValidElement } from "react";
 import type { InferProps } from "./types";
 
@@ -8,12 +8,20 @@ import type { InferProps } from "./types";
  */
 type GetSlotMapResult<TSlotComponentProps extends GetSlotComponentProps> = UnionToIntersection<{
 	[TName in keyof TSlotComponentProps as TSlotComponentProps["name"]]: TSlotComponentProps["children"];
-}>;
+}> & { default: React.ReactNode[] };
 
 /**
  * Symbol used to identify SlotComponent instances
  */
 export const slotComponentSymbol = Symbol("slot-component");
+
+type GetSlotMapOptions = {
+	/**
+	 * If false, the function will bail out early and return only the default slot with the actual children.
+	 * @default true
+	 */
+	condition?: boolean;
+};
 
 /**
  * @description Creates a map of named slots from React children. Returns an object mapping slot names to their children,
@@ -48,8 +56,15 @@ export const slotComponentSymbol = Symbol("slot-component");
  * ```
  */
 export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
-	children: React.ReactNode
-) => {
+	children: React.ReactNode,
+	options?: GetSlotMapOptions
+): Prettify<GetSlotMapResult<TSlotComponentProps>> => {
+	const { condition = true } = options ?? {};
+
+	if (!condition) {
+		return { default: children } as GetSlotMapResult<TSlotComponentProps>;
+	}
+
 	const actualChildren =
 		isValidElement<InferProps<typeof ReactFragment>>(children) && children.type === ReactFragment
 			? children.props.children
@@ -87,7 +102,7 @@ export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
 		slots[slotName] = child.props.children;
 	}
 
-	return slots as GetSlotMapResult<TSlotComponentProps> & { default: React.ReactNode[] };
+	return slots as GetSlotMapResult<TSlotComponentProps>;
 };
 
 /**
