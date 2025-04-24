@@ -32,9 +32,10 @@ type GetImagePreviewResult<
 			: never;
 
 const createImagePreview = <TFile extends File | FileMeta, TPreviewType extends PreviewTypeUnion>(
-	options: PreviewOptions<TPreviewType> & { file: TFile; previewType?: TPreviewType }
+	file: TFile,
+	options?: PreviewOptions<TPreviewType> & { previewType?: TPreviewType }
 ): GetImagePreviewResult<TPreviewType, TFile> => {
-	const { file, onError, onSuccess, previewType = "objectURL" } = options;
+	const { onError, onSuccess, previewType = "objectURL" } = options ?? {};
 
 	if (!isFile(file)) {
 		return file.url as never;
