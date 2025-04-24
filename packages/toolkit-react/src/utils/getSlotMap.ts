@@ -138,7 +138,7 @@ type WithSlotSymbolAndName<
 > = {
 	(props: Pick<GetSlotComponentProps, "children"> & TActualProps): React.ReactNode;
 	readonly slotName?: TSlotComponentProps["name"];
-	readonly slotSymbol?: unique symbol;
+	readonly slotSymbol?: symbol;
 };
 
 export const withSlotSymbolAndName = <
