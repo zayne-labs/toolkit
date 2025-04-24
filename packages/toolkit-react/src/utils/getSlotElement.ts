@@ -1,6 +1,7 @@
 import { toArray } from "@zayne-labs/toolkit-core";
+import type { InferProps } from "@zayne-labs/toolkit-react/utils";
 import { AssertionError, type UnknownObject, isArray } from "@zayne-labs/toolkit-type-helpers";
-import { isValidElement } from "react";
+import { Fragment as ReactFragment, isValidElement } from "react";
 
 export type FunctionalComponent<TProps extends UnknownObject = never> = React.FunctionComponent<TProps>;
 
@@ -86,7 +87,12 @@ export const getSingleSlot = (
 		throwOnMultipleSlotMatch = false,
 	} = options;
 
-	const childrenArray = toArray<React.ReactNode>(children);
+	const actualChildren =
+		isValidElement<InferProps<typeof ReactFragment>>(children) && children.type === ReactFragment
+			? children.props.children
+			: children;
+
+	const childrenArray = toArray<React.ReactNode>(actualChildren);
 
 	const shouldThrow =
 		throwOnMultipleSlotMatch && calculateSlotOccurrences(childrenArray, SlotComponent) > 1;
@@ -150,7 +156,12 @@ export const getRegularChildren = <TChildren extends React.ReactNode>(
 	children: TChildren,
 	SlotComponentOrComponents: FunctionalComponent | FunctionalComponent[]
 ) => {
-	const childrenArray = toArray<React.ReactNode>(children);
+	const actualChildren =
+		isValidElement<InferProps<typeof ReactFragment>>(children) && children.type === ReactFragment
+			? children.props.children
+			: children;
+
+	const childrenArray = toArray<React.ReactNode>(actualChildren);
 
 	const regularChildren = childrenArray.filter(
 		(child) => !matchesAnySlotComponent(child, toArray(SlotComponentOrComponents))

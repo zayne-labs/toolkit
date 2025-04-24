@@ -1,6 +1,7 @@
 import { toArray } from "@zayne-labs/toolkit-core";
 import type { UnionToIntersection } from "@zayne-labs/toolkit-type-helpers";
-import { isValidElement } from "react";
+import { Fragment as ReactFragment, isValidElement } from "react";
+import type { InferProps } from "./types";
 
 /**
  * Possible children types that can be passed to a slot
@@ -54,7 +55,12 @@ export const slotComponentSymbol = Symbol("slot-component");
 export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
 	children: React.ReactNode
 ) => {
-	const childrenArray = toArray<React.ReactNode>(children);
+	const actualChildren =
+		isValidElement<InferProps<typeof ReactFragment>>(children) && children.type === ReactFragment
+			? children.props.children
+			: children;
+
+	const childrenArray = toArray<React.ReactNode>(actualChildren);
 
 	const slots: Record<string, PossibleSlotChildrenType> & { default: React.ReactNode[] } = {
 		default: [],
@@ -71,17 +77,19 @@ export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
 		const isSlotElementWithName =
 			isValidElement<SlotElementProps>(child)
 			&& (child.type as typeof SlotComponent).slotSymbol === slotComponentSymbol
-			&& child.props.name;
+			&& Boolean(child.props.name || (child.type as typeof SlotComponent).slotName);
 
 		const isRegularElementWithSlotName =
-			isValidElement<RegularElementProps>(child) && child.props["data-slot-name"];
+			isValidElement<RegularElementProps>(child) && Boolean(child.props["data-slot-name"]);
 
 		if (!isSlotElementWithName && !isRegularElementWithSlotName) {
 			slots.default.push(child);
 			continue;
 		}
 
-		const slotName = isSlotElementWithName ? child.props.name : child.props["data-slot-name"];
+		const slotName = isSlotElementWithName
+			? child.props.name || (child.type as typeof SlotComponent).slotName
+			: child.props["data-slot-name"];
 
 		slots[slotName] = child.props.children;
 	}
@@ -153,6 +161,7 @@ export const createSlotComponent = <TBaseSlotComponentProps extends GetSlotCompo
 	}
 
 	SlotComponent.slotSymbol = slotComponentSymbol;
+	SlotComponent.slotName = "";
 
 	return SlotComponent;
 };
