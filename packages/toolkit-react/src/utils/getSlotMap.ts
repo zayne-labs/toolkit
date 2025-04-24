@@ -82,24 +82,24 @@ export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
 			name: never;
 		};
 
-		const isSlotElementWithName =
+		const isSlotElement =
 			isValidElement<SlotElementProps>(child)
 			&& (child.type as SlotComponentType).slotSymbol === slotComponentSymbol
-			&& Boolean((child.type as WithSlotSymbolAndName).slotName ?? child.props.name);
+			&& Boolean((child.type as WithSlotNameAndSymbol).slotName ?? child.props.name);
 
-		const isRegularElementWithSlotName =
+		const isRegularElementWithDataSlotName =
 			isValidElement<RegularElementProps>(child) && Boolean(child.props["data-slot-name"]);
 
-		if (!isSlotElementWithName && !isRegularElementWithSlotName) {
+		if (!isSlotElement && !isRegularElementWithDataSlotName) {
 			slots.default.push(child);
 			continue;
 		}
 
-		const slotName = isSlotElementWithName
-			? ((child.type as WithSlotSymbolAndName).slotName ?? child.props.name)
+		const slotName = isSlotElement
+			? ((child.type as WithSlotNameAndSymbol).slotName ?? child.props.name)
 			: child.props["data-slot-name"];
 
-		slots[slotName] = child.props.children;
+		slots[slotName] = child;
 	}
 
 	return slots as GetSlotMapResult<TSlotComponentProps>;
@@ -132,7 +132,7 @@ export const createSlotComponent = <TSlotComponentProps extends GetSlotComponent
 
 type SlotComponentType = ReturnType<typeof createSlotComponent>;
 
-type WithSlotSymbolAndName<
+type WithSlotNameAndSymbol<
 	TSlotComponentProps extends Pick<GetSlotComponentProps, "name"> = Pick<GetSlotComponentProps, "name">,
 	TActualProps extends UnknownObject = UnknownObject,
 > = {
@@ -141,12 +141,12 @@ type WithSlotSymbolAndName<
 	readonly slotSymbol?: symbol;
 };
 
-export const withSlotSymbolAndName = <
+export const withSlotNameAndSymbol = <
 	TSlotComponentProps extends Pick<GetSlotComponentProps, "name">,
 	TActualProps extends UnknownObject = UnknownObject,
 >(
 	name: TSlotComponentProps["name"],
-	SlotComponent: WithSlotSymbolAndName<TSlotComponentProps, TActualProps> = (props) => props.children
+	SlotComponent: WithSlotNameAndSymbol<TSlotComponentProps, TActualProps> = (props) => props.children
 ) => {
 	/* eslint-disable no-param-reassign -- This is necessary */
 	// @ts-expect-error -- This is necessary for the time being, to prevent type errors and accidental overrides on consumer side
