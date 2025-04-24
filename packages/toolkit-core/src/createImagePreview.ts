@@ -24,9 +24,9 @@ type GetImagePreviewResult<
 > = TFile extends FileMeta
 	? string | undefined
 	: PreviewTypeUnion extends TPreviewType
-		? string
+		? string | undefined
 		: TPreviewType extends "objectURL"
-			? string
+			? string | undefined
 			: TPreviewType extends "base64URL"
 				? null
 				: never;
@@ -42,7 +42,7 @@ const createImagePreview = <TFile extends File | FileMeta, TPreviewType extends 
 	}
 
 	if (previewType === "objectURL") {
-		let result = "";
+		let result: string | undefined;
 
 		try {
 			result = URL.createObjectURL(file);
