@@ -21,15 +21,15 @@ export type PreviewOptions<TPreviewType extends PreviewTypeUnion> = {
 type GetImagePreviewResult<
 	TPreviewType extends PreviewTypeUnion,
 	TFile extends File | FileMeta,
-> = PreviewTypeUnion extends TPreviewType
-	? string
-	: TPreviewType extends "objectURL"
+> = TFile extends FileMeta
+	? string | undefined
+	: PreviewTypeUnion extends TPreviewType
 		? string
-		: TPreviewType extends "base64URL"
-			? TFile extends FileMeta
-				? string | null
-				: null
-			: never;
+		: TPreviewType extends "objectURL"
+			? string
+			: TPreviewType extends "base64URL"
+				? null
+				: never;
 
 const createImagePreview = <TFile extends File | FileMeta, TPreviewType extends PreviewTypeUnion>(
 	file: TFile,
