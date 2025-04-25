@@ -1,4 +1,4 @@
-export { checkIsDeviceMobileOrTablet } from "./checkIsDeviceMobileOrTablet";
+export { checkIsDeviceMobile } from "./checkIsDeviceMobile";
 export * from "./common-utils";
 export * from "./constants";
 export { copyToClipboard } from "./copyToClipboard";

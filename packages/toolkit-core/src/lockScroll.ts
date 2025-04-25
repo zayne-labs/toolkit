@@ -1,10 +1,8 @@
-import { checkIsDeviceMobileOrTablet } from "./checkIsDeviceMobileOrTablet";
-
 type LockScrollOptions = {
-	isActive: boolean;
+	lock: boolean;
 };
 
-const getScrollbarWidth = () => {
+export const getScrollbarWidth = () => {
 	// == Store the initial overflow style
 	const initialOverflowValue = document.documentElement.style.overflow;
 
@@ -22,21 +20,37 @@ const getScrollbarWidth = () => {
 	return widthWithoutScrollbar - widthWithScrollbar;
 };
 
-const lockScroll = ({ isActive }: LockScrollOptions) => {
-	const isMobileOrTablet = checkIsDeviceMobileOrTablet();
-	const isDesktop = !isMobileOrTablet;
+export const checkHasVerticalScrollBar = () => {
+	const element = document.documentElement;
 
-	if (!isActive) {
+	let hasVerticalScrollBar = element.scrollTop > 0;
+
+	// == In case scrollTop is zero, set it to 1 and check again to be certain of the scrollbar absence, before restoring the original scrollTop
+	if (!hasVerticalScrollBar) {
+		element.scrollTop = 1;
+		hasVerticalScrollBar = element.scrollTop > 0;
+		element.scrollTop = 0;
+	}
+
+	return hasVerticalScrollBar;
+};
+
+export const lockScroll = (options: LockScrollOptions) => {
+	const { lock } = options;
+
+	const hasVerticalScrollBar = checkHasVerticalScrollBar();
+
+	if (!hasVerticalScrollBar) return;
+
+	if (!lock) {
 		document.body.style.setProperty("--overflow-y", null);
-		isDesktop && document.body.style.setProperty("--scrollbar-padding", null);
+		document.body.style.setProperty("--scrollbar-padding", null);
 		return;
 	}
 
-	document.body.style.setProperty("--overflow-y", "hidden");
-
 	const scrollbarWidth = getScrollbarWidth();
 
-	isDesktop && document.body.style.setProperty("--scrollbar-padding", `${scrollbarWidth}px`);
-};
+	document.body.style.setProperty("--overflow-y", "hidden");
 
-export { lockScroll };
+	document.body.style.setProperty("--scrollbar-padding", `${scrollbarWidth}px`);
+};

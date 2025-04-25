@@ -1,4 +1,4 @@
-const checkIsDeviceMobileOrTablet = (): boolean => {
+const checkIsDeviceMobile = (): boolean => {
 	const deviceHasMouse = globalThis.matchMedia("(pointer:fine)").matches;
 	const deviceHasNoMouse = globalThis.matchMedia("(pointer:coarse)").matches;
 
@@ -27,4 +27,4 @@ const checkIsDeviceMobileOrTablet = (): boolean => {
 	}
 };
 
-export { checkIsDeviceMobileOrTablet };
+export { checkIsDeviceMobile };
