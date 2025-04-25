@@ -2,11 +2,9 @@ import { toArray } from "@zayne-labs/toolkit-core";
 import {
 	type AnyFunction,
 	type Prettify,
-	type UnionDiscriminator,
 	type UnionToIntersection,
 	type UnknownObject,
 	isFunction,
-	isString,
 } from "@zayne-labs/toolkit-type-helpers";
 import { Fragment as ReactFragment, isValidElement } from "react";
 import type { InferProps } from "./types";
@@ -80,45 +78,32 @@ export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
 
 	const childrenArray = toArray<React.ReactNode>(actualChildren);
 
-	const slots: Record<string, React.ReactNode> & { default: React.ReactNode[] } = { default: [] };
+	const slots: Record<string, React.ReactNode> & { default: React.ReactNode[] } = {
+		default: [],
+	};
 
 	for (const child of childrenArray) {
-		type PossibleSlotProps = UnionDiscriminator<
-			[Pick<GetSlotComponentProps, "name">, { "data-slot-name": string }]
-		>;
-
-		if (!isValidElement<PossibleSlotProps>(child)) {
+		if (!isValidElement<TSlotComponentProps>(child) || !isFunction(child.type)) {
 			slots.default.push(child);
 			continue;
 		}
 
-		type WithSlotReference = AnyFunction & { slotReference: WithSlotNameAndSymbol };
+		type ElementWithSlotReference = AnyFunction & { slotReference: SlotWithNameAndSymbol };
 
-		const resolvedChildType =
-			isFunction(child.type) && Object.hasOwn(child.type, "slotReference")
-				? (child.type as WithSlotReference).slotReference
-				: (child.type as WithSlotNameAndSymbol);
+		const resolvedChildType = Object.hasOwn(child.type, "slotReference")
+			? (child.type as ElementWithSlotReference).slotReference
+			: (child.type as SlotWithNameAndSymbol);
 
 		const isSlotElement =
 			resolvedChildType.slotSymbol === slotComponentSymbol
 			&& Boolean(resolvedChildType.slotName ?? child.props.name);
 
-		const isRegularElementWithDataSlotName =
-			isString(child.type) && Boolean(child.props["data-slot-name"]);
-
-		if (!isSlotElement && !isRegularElementWithDataSlotName) {
+		if (!isSlotElement) {
 			slots.default.push(child);
 			continue;
 		}
 
-		const slotName = isSlotElement
-			? (resolvedChildType.slotName ?? child.props.name)
-			: child.props["data-slot-name"];
-
-		if (!slotName) {
-			slots.default.push(child);
-			continue;
-		}
+		const slotName = resolvedChildType.slotName ?? child.props.name;
 
 		slots[slotName] = child;
 	}
@@ -151,7 +136,7 @@ export const createSlotComponent = <TSlotComponentProps extends GetSlotComponent
 	return SlotComponent;
 };
 
-type WithSlotNameAndSymbol<
+type SlotWithNameAndSymbol<
 	TSlotComponentProps extends Pick<GetSlotComponentProps, "name"> = Pick<GetSlotComponentProps, "name">,
 	TActualProps extends UnknownObject = UnknownObject,
 > = {
@@ -165,7 +150,7 @@ export const withSlotNameAndSymbol = <
 	TActualProps extends UnknownObject = UnknownObject,
 >(
 	name: TSlotComponentProps["name"],
-	SlotComponent: WithSlotNameAndSymbol<TSlotComponentProps, TActualProps> = (props) => props.children
+	SlotComponent: SlotWithNameAndSymbol<TSlotComponentProps, TActualProps> = (props) => props.children
 ) => {
 	/* eslint-disable no-param-reassign -- This is necessary */
 	// @ts-expect-error -- This is necessary for the time being, to prevent type errors and accidental overrides on consumer side
