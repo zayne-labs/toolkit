@@ -94,14 +94,14 @@ export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
 
 		type WithSlotReference = AnyFunction & { slotReference: WithSlotNameAndSymbol };
 
-		const resolveChildType =
+		const resolvedChildType =
 			isFunction(child.type) && Object.hasOwn(child.type, "slotReference")
 				? (child.type as WithSlotReference).slotReference
 				: (child.type as WithSlotNameAndSymbol);
 
 		const isSlotElement =
-			resolveChildType.slotSymbol === slotComponentSymbol
-			&& Boolean(resolveChildType.slotName ?? child.props.name);
+			resolvedChildType.slotSymbol === slotComponentSymbol
+			&& Boolean(resolvedChildType.slotName ?? child.props.name);
 
 		const isRegularElementWithDataSlotName =
 			isString(child.type) && Boolean(child.props["data-slot-name"]);
@@ -112,7 +112,7 @@ export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
 		}
 
 		const slotName = isSlotElement
-			? (resolveChildType.slotName ?? child.props.name)
+			? (resolvedChildType.slotName ?? child.props.name)
 			: child.props["data-slot-name"];
 
 		if (!slotName) {
