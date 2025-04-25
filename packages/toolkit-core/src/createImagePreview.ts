@@ -16,7 +16,7 @@ type PreviewTypeUnion = "base64URL" | "objectURL";
 export type PreviewOptions<TPreviewType extends PreviewTypeUnion> = {
 	base64URL: PreviewOptionsForBase64URL;
 	objectURL: PreviewOptionsForObjectURL;
-}[TPreviewType];
+}[TPreviewType] & { previewType?: TPreviewType };
 
 type GetImagePreviewResult<
 	TPreviewType extends PreviewTypeUnion,
@@ -33,7 +33,7 @@ type GetImagePreviewResult<
 
 const createImagePreview = <TFile extends File | FileMeta, TPreviewType extends PreviewTypeUnion>(
 	file: TFile,
-	options?: PreviewOptions<TPreviewType> & { previewType?: TPreviewType }
+	options?: PreviewOptions<TPreviewType>
 ): GetImagePreviewResult<TPreviewType, TFile> => {
 	const { onError, onSuccess, previewType = "objectURL" } = options ?? {};
 
