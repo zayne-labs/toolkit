@@ -1,15 +1,28 @@
 import { toArray } from "@zayne-labs/toolkit-core";
 import {
+	type AnyFunction,
 	AssertionError,
 	type Prettify,
 	type UnknownObject,
 	isArray,
+	isFunction,
 } from "@zayne-labs/toolkit-type-helpers";
 import { Fragment as ReactFragment, isValidElement } from "react";
 import type { InferProps } from "./types";
 
 export type FunctionalComponent<TProps extends UnknownObject = never> = React.FunctionComponent<TProps>;
 
+const isWithSlotSymbol = <TFunction extends AnyFunction>(
+	component: TFunction
+): component is Record<"slotSymbol", unknown> & TFunction => {
+	return "slotSymbol" in component && Boolean(component.slotSymbol);
+};
+
+const isWithSlotReference = <TFunction extends AnyFunction>(
+	component: TFunction
+): component is Record<"slotReference", unknown> & TFunction => {
+	return "slotReference" in component && Boolean(component.slotReference);
+};
 /**
  * @description Checks if a react child (within the children array) matches the provided SlotComponent using multiple matching strategies:
  * 1. Matches by slot symbol property
@@ -17,21 +30,24 @@ export type FunctionalComponent<TProps extends UnknownObject = never> = React.Fu
  */
 
 export const matchesSlotComponent = (child: React.ReactNode, SlotComponent: FunctionalComponent) => {
-	if (!isValidElement(child)) {
+	if (!isValidElement(child) || !isFunction(child.type)) {
 		return false;
 	}
 
-	type WithSlot = { readonly slotSymbol?: unique symbol } | undefined;
+	const resolvedChildType = isWithSlotReference(child.type)
+		? (child.type.slotReference as FunctionalComponent)
+		: child.type;
 
-	if (
-		(child.type as WithSlot)?.slotSymbol
-		&& (SlotComponent as WithSlot)?.slotSymbol
-		&& Object.is((child.type as WithSlot)?.slotSymbol, (SlotComponent as WithSlot)?.slotSymbol)
-	) {
+	const hasMatchingSlotSymbol =
+		isWithSlotSymbol(resolvedChildType)
+		&& isWithSlotSymbol(SlotComponent)
+		&& resolvedChildType.slotSymbol === SlotComponent.slotSymbol;
+
+	if (hasMatchingSlotSymbol) {
 		return true;
 	}
 
-	if ((child.type as FunctionalComponent).name === SlotComponent.name) {
+	if (child.type.name === SlotComponent.name) {
 		return true;
 	}
 

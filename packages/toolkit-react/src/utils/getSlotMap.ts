@@ -1,5 +1,13 @@
 import { toArray } from "@zayne-labs/toolkit-core";
-import type { Prettify, UnionToIntersection, UnknownObject } from "@zayne-labs/toolkit-type-helpers";
+import {
+	type AnyFunction,
+	type Prettify,
+	type UnionDiscriminator,
+	type UnionToIntersection,
+	type UnknownObject,
+	isFunction,
+	isString,
+} from "@zayne-labs/toolkit-type-helpers";
 import { Fragment as ReactFragment, isValidElement } from "react";
 import type { InferProps } from "./types";
 
@@ -75,20 +83,28 @@ export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
 	const slots: Record<string, React.ReactNode> & { default: React.ReactNode[] } = { default: [] };
 
 	for (const child of childrenArray) {
-		type SlotElementProps = TSlotComponentProps & { "data-slot-name": never };
+		type PossibleSlotProps = UnionDiscriminator<
+			[Pick<GetSlotComponentProps, "name">, { "data-slot-name": string }]
+		>;
 
-		type RegularElementProps = Pick<TSlotComponentProps, "children"> & {
-			"data-slot-name": string;
-			name: never;
-		};
+		if (!isValidElement<PossibleSlotProps>(child)) {
+			slots.default.push(child);
+			continue;
+		}
+
+		type WithSlotReference = AnyFunction & { slotReference: WithSlotNameAndSymbol };
+
+		const resolveChildType =
+			isFunction(child.type) && Object.hasOwn(child.type, "slotReference")
+				? (child.type as WithSlotReference).slotReference
+				: (child.type as WithSlotNameAndSymbol);
 
 		const isSlotElement =
-			isValidElement<SlotElementProps>(child)
-			&& (child.type as SlotComponentType).slotSymbol === slotComponentSymbol
-			&& Boolean((child.type as WithSlotNameAndSymbol).slotName ?? child.props.name);
+			resolveChildType.slotSymbol === slotComponentSymbol
+			&& Boolean(resolveChildType.slotName ?? child.props.name);
 
 		const isRegularElementWithDataSlotName =
-			isValidElement<RegularElementProps>(child) && Boolean(child.props["data-slot-name"]);
+			isString(child.type) && Boolean(child.props["data-slot-name"]);
 
 		if (!isSlotElement && !isRegularElementWithDataSlotName) {
 			slots.default.push(child);
@@ -96,8 +112,13 @@ export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
 		}
 
 		const slotName = isSlotElement
-			? ((child.type as WithSlotNameAndSymbol).slotName ?? child.props.name)
+			? (resolveChildType.slotName ?? child.props.name)
 			: child.props["data-slot-name"];
+
+		if (!slotName) {
+			slots.default.push(child);
+			continue;
+		}
 
 		slots[slotName] = child;
 	}
@@ -129,8 +150,6 @@ export const createSlotComponent = <TSlotComponentProps extends GetSlotComponent
 
 	return SlotComponent;
 };
-
-type SlotComponentType = ReturnType<typeof createSlotComponent>;
 
 type WithSlotNameAndSymbol<
 	TSlotComponentProps extends Pick<GetSlotComponentProps, "name"> = Pick<GetSlotComponentProps, "name">,

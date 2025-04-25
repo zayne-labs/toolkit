@@ -9,5 +9,3 @@ export const mergeFunctions = <TFunction extends AnyFunction<void>>(
 
 	return mergedFunction;
 };
-
-export const mergeClassNames = (...args: Array<string | undefined>) => args.filter(Boolean).join(" ");

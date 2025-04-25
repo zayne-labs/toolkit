@@ -1,51 +1,55 @@
+import { css } from "@zayne-labs/toolkit-core";
 import {
 	type GetSlotComponentProps,
 	createSlotComponent,
-	getSingleSlot,
+	getMultipleSlots,
 	getSlotMap,
 } from "@zayne-labs/toolkit-react/utils";
 
+const scopedCss = css`
+	@scope {
+		button {
+			background-color: red;
+			margin-top: 10px;
+		}
+
+		.wrapper-section {
+			display: flex;
+			flex-direction: column;
+			gap: 50px;
+		}
+	}
+`;
+
 function AnotherApp() {
 	return (
-		<div>
-			<style>
-				{`
-					@scope {
-						button {
-							background-color: red;
-							margin-top: 10px;
-						}
-					}
-				`}
-			</style>
+		<main>
+			<style>{scopedCss}</style>
 
-			<Parent>
-				{/* eslint-disable-next-line react/no-useless-fragment -- Allow */}
-				<>Hello</>
+			<section className="wrapper-section">
+				<ParentOne>
+					<ParentOne.Slot name="header">ParentOne Header</ParentOne.Slot>
 
-				<Parent.Slot name="header">
-					<header>Header</header>
-				</Parent.Slot>
+					<ParentOne.Slot name="content">ParentOne Content</ParentOne.Slot>
 
-				<Parent.Slot name="content">
-					<p>Content</p>
-				</Parent.Slot>
+					<ParentOne.Slot name="footer">ParentOne Footer</ParentOne.Slot>
 
-				<Parent.Slot name="footer">
-					<footer>Footer</footer>
-				</Parent.Slot>
-			</Parent>
+					<p>This is a default Slot under Parent One</p>
+				</ParentOne>
 
-			<ParentTwo>
-				<ParentTwo.Header>
-					<header>Header</header>
-				</ParentTwo.Header>
-			</ParentTwo>
+				<ParentTwo>
+					<ParentTwo.Header>ParentTwo Header</ParentTwo.Header>
 
-			<button className="btn" type="button">
-				Click me
-			</button>
-		</div>
+					<ParentTwo.Content>ParentTwo Content</ParentTwo.Content>
+
+					<ParentTwo.Footer>ParentTwo Footer</ParentTwo.Footer>
+
+					<p>This is a default Slot under Parent Two</p>
+				</ParentTwo>
+			</section>
+
+			<button type="button">Click me</button>
+		</main>
 	);
 }
 
@@ -54,36 +58,66 @@ type SlotComponentProps =
 	| GetSlotComponentProps<"footer">
 	| GetSlotComponentProps<"header">;
 
-function Parent(props: { children: React.ReactNode }) {
+function ParentOne(props: { children: React.ReactNode }) {
 	const { children } = props;
 
 	const slots = getSlotMap<SlotComponentProps>(children);
 
-	console.info({ slots });
+	return (
+		<section>
+			<header>{slots.header}</header>
+			<p>{slots.content}</p>
+			<footer>{slots.footer}</footer>
 
-	return <section>{slots.default}</section>;
+			<aside id="default-slots">{slots.default}</aside>
+		</section>
+	);
 }
 
-Parent.Slot = createSlotComponent<SlotComponentProps>();
+ParentOne.Slot = createSlotComponent<SlotComponentProps>();
 
 function ParentTwo(props: { children: React.ReactNode }) {
 	const { children } = props;
 
-	const headerSlot = getSingleSlot(children, ParentTwo.Header);
+	const {
+		regularChildren,
+		slots: [headerSlot, contentSlot, footerSlot],
+	} = getMultipleSlots(children, [ParentTwoHeader, ParentTwoContent, ParentTwoFooter]);
 
-	return <section>{headerSlot}</section>;
+	return (
+		<section>
+			<header>{headerSlot}</header>
+			<p>{contentSlot}</p>
+			<footer>{footerSlot}</footer>
+
+			<aside id="default-slots">{regularChildren}</aside>
+		</section>
+	);
 }
 
-function ParentHeader(props: { children: React.ReactNode }) {
+ParentTwo.Header = ParentTwoHeader;
+ParentTwo.Content = ParentTwoContent;
+ParentTwo.Footer = ParentTwoFooter;
+
+function ParentTwoHeader(props: { children: React.ReactNode }) {
 	const { children } = props;
 
-	const headerSlot = getSingleSlot(children, ParentHeader);
-
-	return <header>{headerSlot}</header>;
+	return <em>{children}</em>;
 }
+ParentTwoHeader.slotSymbol = Symbol("header");
 
-ParentHeader.slotSymbol = Symbol("header");
+function ParentTwoContent(props: { children: React.ReactNode }) {
+	const { children } = props;
 
-ParentTwo.Header = ParentHeader;
+	return <em>{children}</em>;
+}
+ParentTwoContent.slotSymbol = Symbol("content");
+
+function ParentTwoFooter(props: { children: React.ReactNode }) {
+	const { children } = props;
+
+	return <em>{children}</em>;
+}
+ParentTwoFooter.slotSymbol = Symbol("footer");
 
 export default AnotherApp;
