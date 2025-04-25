@@ -11,21 +11,17 @@ const useDisclosure = (options: DisclosureOptions = {}) => {
 	const { hasScrollControl = false, initialState = false } = options;
 	const [isOpen, toggleIsOpen] = useToggle(initialState);
 
-	const handleScrollControl = useCallbackRef(
-		(state: boolean) => hasScrollControl && lockScroll({ isActive: state })
-	);
-
 	const onOpen = useCallbackRef(<TValue>(value?: TValue) => {
 		const booleanValue = typeof value === "boolean" && value ? value : true;
 		toggleIsOpen(booleanValue);
-		handleScrollControl(booleanValue);
+		hasScrollControl && lockScroll({ lock: booleanValue });
 	});
 
 	const onClose = useCallbackRef(<TValue>(value?: TValue) => {
 		const booleanValue = typeof value === "boolean" && !value ? value : false;
 
 		toggleIsOpen(booleanValue);
-		handleScrollControl(booleanValue);
+		hasScrollControl && lockScroll({ lock: booleanValue });
 	});
 
 	const onToggle = useCallbackRef(<TValue>(value?: TValue) => {
