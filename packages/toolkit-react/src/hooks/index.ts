@@ -14,7 +14,7 @@ export { usePresence } from "./usePresence/usePresence";
 export { useScrollObserver } from "./useScrollObserver";
 export { useSearch } from "./useSearch";
 export * from "./useSearchParams";
-export { useStorageState } from "./useStorageState";
+export * from "./useStorageState";
 export { useStore } from "./useStore";
 export * from "./useThrottle";
 export { useToggle } from "./useToggle";
