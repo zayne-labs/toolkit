@@ -1,14 +1,17 @@
 import { isFunction } from "@zayne-labs/toolkit-type-helpers";
 import { type RefCallback, useCallback } from "react";
 
-type PossibleRef<TRef> = React.Ref<TRef> | undefined;
+type PossibleRef<TRef extends HTMLElement> = React.Ref<TRef> | undefined;
 
 /**
  * @description Set a given ref to a given value.
  *
  * This utility takes care of different types of refs: callback refs and RefObject(s)
  */
-export const setRef = <TRef>(ref: PossibleRef<TRef>, node: TRef): ReturnType<RefCallback<TRef>> => {
+export const setRef = <TRef extends HTMLElement>(
+	ref: PossibleRef<TRef>,
+	node: TRef | null
+): ReturnType<RefCallback<TRef>> => {
 	if (!ref) return;
 
 	if (isFunction(ref)) {
