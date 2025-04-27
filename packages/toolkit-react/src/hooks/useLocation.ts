@@ -19,7 +19,7 @@ type UseLocationResult<TSlice> = [
 ];
 
 const useLocation = <TSlice = LocationInfo>(
-	selector: SelectorFn<LocationInfo, TSlice>,
+	selector?: SelectorFn<LocationInfo, TSlice>,
 	options?: LocationStoreOptions
 ) => {
 	const locationStore = useConstant(() => createLocationStore(options));

@@ -24,6 +24,7 @@ export type SubscribeOptions<TState> = {
 export type StoreApi<in out TState> = {
 	getInitialState: () => TState;
 	getState: () => TState;
+	resetState: () => void;
 	setState: SetState<TState>;
 	subscribe: {
 		// prettier-ignore
@@ -36,3 +37,9 @@ export type StoreApi<in out TState> = {
 		) => () => void;
 	};
 };
+
+export type StateInitializer<TState, TResult = TState> = (
+	set: StoreApi<TState>["setState"],
+	get: StoreApi<TState>["getState"],
+	api: StoreApi<TState>
+) => TResult;

@@ -1,5 +1,4 @@
-import type { StoreStateSetter } from "@/createStore";
-import type { UnmaskType } from "@zayne-labs/toolkit-type-helpers";
+import type { StoreApi } from "@/createStore";
 
 export type StorageOptions<TState> = {
 	equalityFn?: (nextState: Partial<TState>, previousState: Partial<TState>) => boolean;
@@ -8,18 +7,9 @@ export type StorageOptions<TState> = {
 	logger?: (error: unknown) => void;
 	parser?: (value: unknown) => TState;
 	partialize?: (state: TState) => Partial<TState>;
+	serializer?: (object: TState | null) => string;
 	storageArea?: "localStorage" | "sessionStorage";
-	stringifier?: (object: TState | null) => string;
 	syncStateAcrossTabs?: boolean;
 };
 
-export type SetStorageState<TState> = UnmaskType<{
-	(
-		newState: Partial<TState> | StoreStateSetter<TState, Partial<TState> | null>,
-		shouldReplace?: false
-	): void;
-	// eslint-disable-next-line perfectionist/sort-union-types -- I want TState to be first in the union
-	(newState: TState | StoreStateSetter<TState, TState | null>, shouldReplace: true): void;
-}>;
-
-export type RemoveStorageState = () => void;
+export type StorageStoreApi<TState> = StoreApi<TState> & { removeState: () => void };

@@ -1,11 +1,5 @@
 import { isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
-import type { EqualityFn, Listener, StoreApi } from "./types";
-
-export type StateInitializer<TState, TResult = TState> = (
-	set: StoreApi<TState>["setState"],
-	get: StoreApi<TState>["getState"],
-	api: StoreApi<TState>
-) => TResult;
+import type { EqualityFn, Listener, StateInitializer, StoreApi } from "./types";
 
 type StoreOptions<TState> = {
 	equalityFn?: EqualityFn<TState>;
@@ -14,7 +8,7 @@ type StoreOptions<TState> = {
 const createStore = <TState>(
 	initializer: StateInitializer<TState>,
 	options: StoreOptions<TState> = {}
-) => {
+): StoreApi<TState> => {
 	let state: ReturnType<typeof initializer>;
 
 	const listeners = new Set<Listener<TState>>();
@@ -23,11 +17,11 @@ const createStore = <TState>(
 
 	const getInitialState = () => initialState;
 
-	type $StoreApi = StoreApi<TState>;
+	type InternalStoreApi = StoreApi<TState>;
 
 	const { equalityFn = Object.is } = options;
 
-	const setState: $StoreApi["setState"] = (newState, shouldReplace) => {
+	const setState: InternalStoreApi["setState"] = (newState, shouldReplace) => {
 		const previousState = state;
 
 		const nextState = isFunction(newState) ? newState(previousState) : newState;
@@ -42,7 +36,7 @@ const createStore = <TState>(
 		listeners.forEach((onStoreChange) => onStoreChange(state, previousState));
 	};
 
-	const subscribe: $StoreApi["subscribe"] = (onStoreChange, subscribeOptions = {}) => {
+	const subscribe: InternalStoreApi["subscribe"] = (onStoreChange, subscribeOptions = {}) => {
 		const { fireListenerImmediately = false } = subscribeOptions;
 
 		const currentState = getState();
@@ -66,7 +60,7 @@ const createStore = <TState>(
 			onStoreChange(slice, slice);
 		}
 
-		const handleOnStoreChange: Parameters<$StoreApi["subscribe"]>[0] = ($state, prevState) => {
+		const handleOnStoreChange: Parameters<InternalStoreApi["subscribe"]>[0] = ($state, prevState) => {
 			const previousSlice = selector(prevState);
 			const slice = selector($state);
 
@@ -78,7 +72,15 @@ const createStore = <TState>(
 		return subscribe(handleOnStoreChange);
 	};
 
-	const api: $StoreApi = { getInitialState, getState, setState, subscribe };
+	const resetState = () => setState(getInitialState(), true);
+
+	const api: InternalStoreApi = {
+		getInitialState,
+		getState,
+		resetState,
+		setState,
+		subscribe,
+	};
 
 	const initialState = (state = initializer(setState, getState, api));
 

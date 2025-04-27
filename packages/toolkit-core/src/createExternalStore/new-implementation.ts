@@ -2,19 +2,21 @@ import { createStore } from "@/createStore";
 import { on } from "@/on";
 import { parseJSON } from "@/parseJSON";
 import { isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
-import type { RemoveStorageState, SetStorageState, StorageOptions } from "./types";
+import type { StorageOptions, StorageStoreApi } from "./types";
 import { setAndDispatchStorageEvent } from "./utils";
 
-const createExternalStorageStore = <TState>(options: StorageOptions<TState> = {} as never) => {
+const createExternalStorageStore = <TState>(
+	options: StorageOptions<TState> = {} as never
+): StorageStoreApi<TState> => {
 	const {
 		equalityFn = Object.is,
 		initialValue = null as never,
 		key,
 		logger = console.info,
 		parser = parseJSON<TState>,
-		partialize = (state) => state,
+		partialize,
+		serializer = JSON.stringify,
 		storageArea = "localStorage",
-		stringifier = JSON.stringify,
 		syncStateAcrossTabs = true,
 	} = options;
 
@@ -50,19 +52,12 @@ const createExternalStorageStore = <TState>(options: StorageOptions<TState> = {}
 
 	const store = createStore<TState>(() => initialStoreState);
 
-	const getInitialState = store.getInitialState;
+	type InternalStoreApi = StorageStoreApi<TState>;
 
-	const getState = store.getState;
-
-	const setState: SetStorageState<TState> = (newState, shouldReplace) => {
+	const setState: InternalStoreApi["setState"] = (newState, shouldReplace) => {
 		const previousState = store.getState();
 
 		const nextState = isFunction(newState) ? newState(previousState) : newState;
-
-		if (nextState === null) {
-			removeState();
-			return;
-		}
 
 		if (equalityFn(nextState, previousState)) return;
 
@@ -73,9 +68,9 @@ const createExternalStorageStore = <TState>(options: StorageOptions<TState> = {}
 				? { ...previousState, ...nextState }
 				: (nextState as TState);
 
-		const partializedState = partialize(state);
+		const possiblyPartializedState = partialize?.(state) ?? state;
 
-		const newValue = stringifier(partializedState);
+		const newValue = serializer(possiblyPartializedState);
 
 		const oldValue = rawStorageValue;
 
@@ -90,7 +85,7 @@ const createExternalStorageStore = <TState>(options: StorageOptions<TState> = {}
 		});
 	};
 
-	const subscribe: (typeof store)["subscribe"] = (onStoreChange) => {
+	const subscribe: InternalStoreApi["subscribe"] = (onStoreChange) => {
 		let unsubscribe: (() => void) | undefined;
 
 		const handleStorageChange = (event: StorageEvent) => {
@@ -123,7 +118,7 @@ const createExternalStorageStore = <TState>(options: StorageOptions<TState> = {}
 			onStoreChange(slice, slice);
 		}
 
-		const handleStoreChange: Parameters<typeof subscribe>[0] = (state, prevState) => {
+		const handleStoreChange: Parameters<InternalStoreApi["subscribe"]>[0] = (state, prevState) => {
 			const previousSlice = selector(prevState);
 			const slice = selector(state);
 
@@ -135,7 +130,7 @@ const createExternalStorageStore = <TState>(options: StorageOptions<TState> = {}
 		return subscribe(handleStoreChange);
 	};
 
-	const removeState: RemoveStorageState = () => {
+	const removeState = () => {
 		setAndDispatchStorageEvent({
 			eventFn: () => selectedStorage.removeItem(key),
 			key,
@@ -143,10 +138,15 @@ const createExternalStorageStore = <TState>(options: StorageOptions<TState> = {}
 		});
 	};
 
+	const resetState = store.resetState;
+	const getInitialState = store.getInitialState;
+	const getState = store.getState;
+
 	return {
 		getInitialState,
 		getState,
 		removeState,
+		resetState,
 		setState,
 		subscribe,
 	};

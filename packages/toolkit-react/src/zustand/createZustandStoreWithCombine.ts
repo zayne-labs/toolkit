@@ -1,18 +1,18 @@
-import type { AnyFunction, AnyObject } from "@zayne-labs/toolkit-type-helpers";
+import type { AnyFunction, AnyObject, Prettify } from "@zayne-labs/toolkit-type-helpers";
 import { type StateCreator, type StoreMutatorIdentifier, create, createStore } from "zustand";
 
-export type Combine = <
-	TInitialState extends AnyObject,
-	TExtraState extends AnyObject,
-	Mps extends Array<[StoreMutatorIdentifier, unknown]> = [],
-	Mcs extends Array<[StoreMutatorIdentifier, unknown]> = [],
->(
-	initialState: TInitialState,
-	additionalStateCreator: StateCreator<TInitialState, Mps, Mcs, TExtraState>
-) => StateCreator<TExtraState & TInitialState>;
+type Write<TInitialState, TExtraState> = Prettify<Omit<TInitialState, keyof TExtraState> & TExtraState>;
 
-export const combine: Combine =
-	(initialState, storeCreator) =>
+export const combine =
+	<
+		TInitialState extends AnyObject,
+		TExtraState extends AnyObject,
+		Mps extends Array<[StoreMutatorIdentifier, unknown]> = [],
+		Mcs extends Array<[StoreMutatorIdentifier, unknown]> = [],
+	>(
+		initialState: TInitialState,
+		storeCreator: StateCreator<TInitialState, Mps, Mcs, TExtraState>
+	): StateCreator<Write<TInitialState, TExtraState>, Mps, Mcs> =>
 	// eslint-disable-next-line ts-eslint/no-unsafe-return -- We don't know what the storeCreator will return
 	(...params) => ({
 		...initialState,
