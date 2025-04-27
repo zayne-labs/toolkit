@@ -27,6 +27,8 @@ export type EmptyObject = NonNullable<unknown>;
 /* eslint-disable ts-eslint/no-explicit-any -- Any is needed so one can pass any prop type without type errors */
 export type UnknownObjectWithAnyKey = UnmaskType<Record<keyof any, unknown>>;
 
+export type Awaitable<TValue> = Promise<TValue> | TValue;
+
 export type AnyObject = UnmaskType<Record<keyof any, any>>;
 /* eslint-enable ts-eslint/no-explicit-any -- Any is needed so one can pass any prop type without type errors */
 

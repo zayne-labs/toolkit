@@ -1,6 +1,7 @@
 import { css } from "@zayne-labs/toolkit-core";
 import {
 	type GetSlotComponentProps,
+	composeEventHandlers,
 	createSlotComponent,
 	getMultipleSlots,
 	getSlotMap,
@@ -73,6 +74,8 @@ const scopedCss = css`
 	}
 `;
 
+const onClick = composeEventHandlers();
+
 function AnotherApp() {
 	return (
 		<main>
@@ -100,7 +103,9 @@ function AnotherApp() {
 				</ParentTwo>
 			</section>
 
-			<button type="button">Click me</button>
+			<button type="button" onClick={onClick}>
+				Click me
+			</button>
 		</main>
 	);
 }

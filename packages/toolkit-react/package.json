@@ -25,9 +25,6 @@
 		"./utils": "./dist/esm/utils/index.js",
 		"./zustand": "./dist/esm/zustand/index.js"
 	},
-	"main": "./dist/esm/hooks/index.js",
-	"module": "./dist/esm/hooks/index.js",
-	"types": "./dist/esm/hooks/index.d.ts",
 	"files": [
 		"dist"
 	],

@@ -7,7 +7,6 @@ export * from "./createImagePreview";
 export * from "./createLocationStore";
 export * from "./createScrollObserver";
 export * from "./createStore";
-export * from "./css-utils";
 export { debounce } from "./debounce";
 export * from "./handleFileValidation";
 export * from "./lockScroll";

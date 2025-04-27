@@ -1,44 +1,75 @@
-import { mergeClassNames, mergeFunctions } from "@zayne-labs/toolkit-core";
-import { isFunction, isPlainObject } from "@zayne-labs/toolkit-type-helpers";
+import { type AnyFunction, isFunction } from "@zayne-labs/toolkit-type-helpers";
+import { composeTwoEventHandlers } from "./composeEventHandlers";
 
-type UnknownProps = Record<never, never>;
+// == This approach is more efficient than using a regex.
+const isEventHandler = (key: string, value: unknown): value is AnyFunction => {
+	const thirdCharCode = key.codePointAt(2);
 
-const mergeTwoProps = <TProps extends UnknownProps>(
-	slotProps: TProps | undefined,
-	childProps: TProps | undefined
-): TProps => {
-	if (!slotProps || !childProps) {
-		return childProps ?? slotProps ?? ({} as TProps);
+	if (!isFunction(value) || thirdCharCode === undefined) {
+		return false;
 	}
 
-	// == all child props should override slotProps
-	const overrideProps = { ...childProps } as Record<string, unknown>;
+	const isHandler = key.startsWith("on") && thirdCharCode >= 65 /* A */ && thirdCharCode <= 90; /* Z */
 
-	for (const propName of Object.keys(slotProps)) {
-		const slotPropValue = (slotProps as Record<string, unknown>)[propName];
-		const childPropValue = (childProps as Record<string, unknown>)[propName];
-
-		// == if it's `style`, we merge them
-		if (propName === "style" && isPlainObject(slotPropValue) && isPlainObject(childPropValue)) {
-			overrideProps[propName] = { ...slotPropValue, ...childPropValue };
-			continue;
-		}
-
-		// == if it's `className` or `class`, we merge them
-		if (propName === "className" || propName === "class") {
-			overrideProps[propName] = mergeClassNames(slotPropValue as string, childPropValue as string);
-			continue;
-		}
-
-		const isHandler = propName.startsWith("on");
-
-		// == if the handler exists on both, we compose them
-		if (isHandler && isFunction(slotPropValue) && isFunction(childPropValue)) {
-			overrideProps[propName] = mergeFunctions(childPropValue, slotPropValue);
-		}
-	}
-
-	return { ...slotProps, ...overrideProps };
+	return isHandler;
 };
 
-export { mergeTwoProps };
+const mergeTwoClassNames = (formerClassName: string | undefined, latterClassName: string | undefined) => {
+	if (!latterClassName || !formerClassName) {
+		// eslint-disable-next-line ts-eslint/prefer-nullish-coalescing -- Logical OR is fit for this case
+		return latterClassName || formerClassName;
+	}
+
+	// eslint-disable-next-line prefer-template -- String concatenation is more performant than template literals in this case
+	return formerClassName + " " + latterClassName;
+};
+
+export const mergeTwoProps = <TProps extends Record<never, never>>(
+	formerProps: TProps | undefined,
+	latterProps: TProps | undefined
+): TProps => {
+	// == If no props are provided, return an empty object
+	if (!latterProps || !formerProps) {
+		return latterProps ?? formerProps ?? ({} as TProps);
+	}
+
+	const propsAccumulator = { ...formerProps } as Record<string, unknown>;
+
+	for (const latterPropName of Object.keys(latterProps)) {
+		const formerPropValue = (formerProps as Record<string, unknown>)[latterPropName];
+		const latterPropValue = (latterProps as Record<string, unknown>)[latterPropName];
+
+		// == If the prop is `className` or `class`, we merge them
+		if (latterPropName === "className" || latterPropName === "class") {
+			propsAccumulator[latterPropName] = mergeTwoClassNames(
+				formerPropValue as string,
+				latterPropValue as string
+			);
+			continue;
+		}
+
+		// == If the prop is `style`, we merge them
+		if (latterPropName === "style") {
+			propsAccumulator[latterPropName] = {
+				...(formerPropValue as object),
+				...(latterPropValue as object),
+			};
+			continue;
+		}
+
+		// == If the handler exists on both, we compose them
+		if (isEventHandler(latterPropName, latterPropValue)) {
+			propsAccumulator[latterPropName] = composeTwoEventHandlers(
+				formerPropValue as AnyFunction | undefined,
+				latterPropValue
+			);
+
+			continue;
+		}
+
+		// == latterProps override by default
+		propsAccumulator[latterPropName] = latterPropValue;
+	}
+
+	return propsAccumulator as TProps;
+};

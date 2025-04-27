@@ -1,5 +1,5 @@
 import { isFunction } from "@zayne-labs/toolkit-type-helpers";
-import type { RefCallback } from "react";
+import { type RefCallback, useCallback } from "react";
 
 type PossibleRef<TRef> = React.Ref<TRef> | undefined;
 
@@ -23,21 +23,22 @@ export const setRef = <TRef>(ref: PossibleRef<TRef>, node: TRef): ReturnType<Ref
  * @description A utility to combine refs. Accepts callback refs and RefObject(s)
  */
 export const composeRefs = <TRef extends HTMLElement>(
-	refs: Array<PossibleRef<TRef>>
+	...refs: Array<PossibleRef<TRef>>
 ): RefCallback<TRef> => {
 	const mergedRefCallBack: RefCallback<TRef> = (node) => {
 		const cleanupFnArray = refs.map((ref) => setRef(ref, node));
 
 		const cleanupFn = () => cleanupFnArray.forEach((cleanup) => cleanup?.());
 
-		// == React 18 may not call the cleanup function so we need to call it manually on element unmount
-		if (!node) {
-			cleanupFn();
-			return;
-		}
-
 		return cleanupFn;
 	};
 
 	return mergedRefCallBack;
+};
+
+export const useComposeRefs = <TRef extends HTMLElement>(...refs: Array<PossibleRef<TRef>>) => {
+	// eslint-disable-next-line react-hooks/exhaustive-deps -- Allow
+	const mergedRef = useCallback(() => composeRefs(...refs), refs);
+
+	return mergedRef;
 };
