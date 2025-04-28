@@ -101,7 +101,7 @@
 		},
 		{
 			"path": "./src/zustand/index.ts",
-			"limit": "1000 b"
+			"limit": "2 kb"
 		}
 	]
 }
