@@ -1,4 +1,5 @@
 import { lockScroll } from "@zayne-labs/toolkit-core";
+import { isBoolean } from "@zayne-labs/toolkit-type-helpers";
 import { useCallbackRef } from "./useCallbackRef";
 import { useToggle } from "./useToggle";
 
@@ -11,22 +12,20 @@ const useDisclosure = (options: DisclosureOptions = {}) => {
 	const { hasScrollControl = false, initialState = false } = options;
 	const [isOpen, toggleIsOpen] = useToggle(initialState);
 
-	const onOpen = useCallbackRef(<TValue>(value?: TValue) => {
-		const booleanValue = typeof value === "boolean" && value ? value : true;
-		toggleIsOpen(booleanValue);
-		hasScrollControl && lockScroll({ lock: booleanValue });
+	const onOpen = useCallbackRef(() => {
+		toggleIsOpen(true);
+		hasScrollControl && lockScroll({ lock: true });
 	});
 
-	const onClose = useCallbackRef(<TValue>(value?: TValue) => {
-		const booleanValue = typeof value === "boolean" && !value ? value : false;
-
-		toggleIsOpen(booleanValue);
-		hasScrollControl && lockScroll({ lock: booleanValue });
+	const onClose = useCallbackRef(() => {
+		toggleIsOpen(false);
+		hasScrollControl && lockScroll({ lock: false });
 	});
 
 	const onToggle = useCallbackRef(<TValue>(value?: TValue) => {
-		if (typeof value === "boolean") {
-			value ? onOpen(value) : onClose(value);
+		if (isBoolean(value)) {
+			toggleIsOpen(value);
+			hasScrollControl && lockScroll({ lock: value });
 			return;
 		}
 
@@ -35,5 +34,4 @@ const useDisclosure = (options: DisclosureOptions = {}) => {
 
 	return { isOpen, onClose, onOpen, onToggle };
 };
-
 export { useDisclosure };

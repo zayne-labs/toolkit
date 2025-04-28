@@ -20,33 +20,36 @@ export const getScrollbarWidth = () => {
 	return widthWithoutScrollbar - widthWithScrollbar;
 };
 
-export const checkHasVerticalScrollBar = () => {
-	const element = document.documentElement;
+export const checkHasVerticalScrollBar = (element = document.documentElement) => {
+	// Check if content is actually larger than the container
+	const hasScrollableContent = element.scrollHeight > element.clientHeight;
 
-	let hasVerticalScrollBar = element.scrollTop > 0;
+	// Get all computed overflow styles that could affect scrolling
+	const computedStyle = globalThis.getComputedStyle(element);
+	const bodyComputedStyle = globalThis.getComputedStyle(document.body);
 
-	// == In case scrollTop is zero, set it to 1 and check again to be certain of the scrollbar absence, before restoring the original scrollTop
-	if (!hasVerticalScrollBar) {
-		element.scrollTop = 1;
-		hasVerticalScrollBar = element.scrollTop > 0;
-		element.scrollTop = 0;
-	}
+	// Check if overflow is explicitly prevented
+	const isOverflowHidden =
+		computedStyle.overflowY === "hidden"
+		|| bodyComputedStyle.overflowY === "hidden"
+		|| computedStyle.overflow === "hidden"
+		|| bodyComputedStyle.overflow === "hidden";
 
-	return hasVerticalScrollBar;
+	return hasScrollableContent && !isOverflowHidden;
 };
 
 export const lockScroll = (options: LockScrollOptions) => {
 	const { lock } = options;
-
-	const hasVerticalScrollBar = checkHasVerticalScrollBar();
-
-	if (!hasVerticalScrollBar) return;
 
 	if (!lock) {
 		document.body.style.setProperty("--overflow-y", null);
 		document.body.style.setProperty("--scrollbar-padding", null);
 		return;
 	}
+
+	const hasVerticalScrollBar = checkHasVerticalScrollBar();
+
+	if (!hasVerticalScrollBar) return;
 
 	const scrollbarWidth = getScrollbarWidth();
 
