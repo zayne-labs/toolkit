@@ -1,5 +1,6 @@
 import { lockScroll } from "@zayne-labs/toolkit-core";
 import { isBoolean } from "@zayne-labs/toolkit-type-helpers";
+import { useMemo } from "react";
 import { useCallbackRef } from "./useCallbackRef";
 import { useToggle } from "./useToggle";
 
@@ -32,6 +33,8 @@ const useDisclosure = (options: DisclosureOptions = {}) => {
 		isOpen ? onClose() : onOpen();
 	});
 
-	return { isOpen, onClose, onOpen, onToggle };
+	const api = useMemo(() => ({ isOpen, onClose, onOpen, onToggle }), [isOpen, onClose, onOpen, onToggle]);
+
+	return api;
 };
 export { useDisclosure };
