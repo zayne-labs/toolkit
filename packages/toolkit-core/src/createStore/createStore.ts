@@ -9,11 +9,11 @@ const createStore = <TState>(
 	initializer: StateInitializer<TState>,
 	options: StoreOptions<TState> = {}
 ): StoreApi<TState> => {
-	let state: ReturnType<typeof initializer>;
+	let currentState: ReturnType<typeof initializer>;
 
 	const listeners = new Set<Listener<TState>>();
 
-	const getState = () => state;
+	const getState = () => currentState;
 
 	const getInitialState = () => initialState;
 
@@ -22,27 +22,27 @@ const createStore = <TState>(
 	const { equalityFn = Object.is } = options;
 
 	const setState: InternalStoreApi["setState"] = (newState, shouldReplace) => {
-		const previousState = state;
+		const previousState = currentState;
 
 		const nextState = isFunction(newState) ? newState(previousState) : newState;
 
-		if (equalityFn(nextState, state)) return;
+		if (equalityFn(nextState, previousState)) return;
 
-		state =
-			!shouldReplace && isObject(state) && isObject(nextState)
-				? { ...state, ...nextState }
+		currentState =
+			!shouldReplace && isObject(previousState) && isObject(nextState)
+				? { ...previousState, ...nextState }
 				: (nextState as TState);
 
-		listeners.forEach((onStoreChange) => onStoreChange(state, previousState));
+		listeners.forEach((onStoreChange) => onStoreChange(currentState, previousState));
 	};
 
 	const subscribe: InternalStoreApi["subscribe"] = (onStoreChange, subscribeOptions = {}) => {
 		const { fireListenerImmediately = false } = subscribeOptions;
 
-		const currentState = getState();
-
 		if (fireListenerImmediately) {
-			onStoreChange(currentState, currentState);
+			const state = getState();
+
+			onStoreChange(state, state);
 		}
 
 		listeners.add(onStoreChange);
@@ -60,16 +60,16 @@ const createStore = <TState>(
 			onStoreChange(slice, slice);
 		}
 
-		const handleOnStoreChange: Parameters<InternalStoreApi["subscribe"]>[0] = ($state, prevState) => {
+		const unsubscribe = subscribe((state, prevState) => {
+			const slice = selector(state);
 			const previousSlice = selector(prevState);
-			const slice = selector($state);
 
 			if (sliceEqualityFn(slice as never, previousSlice as never)) return;
 
 			onStoreChange(slice, previousSlice);
-		};
+		});
 
-		return subscribe(handleOnStoreChange);
+		return unsubscribe;
 	};
 
 	const resetState = () => setState(getInitialState(), true);
@@ -82,7 +82,7 @@ const createStore = <TState>(
 		subscribe,
 	};
 
-	const initialState = (state = initializer(setState, getState, api));
+	const initialState = (currentState = initializer(setState, getState, api));
 
 	return api;
 };

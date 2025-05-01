@@ -28,35 +28,49 @@ export const createSearchParams = (paramsInit: URLSearchParamsInit = ""): URLSea
 	return new URLSearchParams(keyValuePair);
 };
 
-export type URLInfo = {
+export type PartialURLInfo = {
+	hash?: string;
+	pathname?: string;
+	search?: URLSearchParamsInit;
+	searchString?: string;
+	state?: NonNullable<unknown> | null;
+};
+
+export type URLInfoObject = {
 	hash: string;
 	pathname: string;
-	search: string | URLSearchParamsInit;
-	state: NonNullable<unknown> | null;
+	search: URLSearchParams;
+	searchString: string;
+	state?: NonNullable<unknown> | null;
+};
+
+export type FormUrlResult<TUrl extends string | PartialURLInfo | URL> = {
+	urlObject: TUrl extends PartialURLInfo ? URLInfoObject : null;
+
+	urlString: string;
 };
 
 const questionMark = "?";
 const hashMark = "#";
 
-const formatUrl = (url: string | Partial<URLInfo> | URL) => {
+export const formatUrl = <TUrl extends string | PartialURLInfo>(url: TUrl): FormUrlResult<TUrl> => {
 	if (isString(url)) {
-		return { urlObject: null, urlString: url };
+		return { urlObject: null, urlString: url } as never;
 	}
 
-	if (url instanceof URL) {
-		return { urlObject: null, urlString: url.toString() };
-	}
+	const search = createSearchParams(url.search);
 
 	const urlObject = {
 		...url,
 		hash: url.hash ?? "",
-		pathname: url.pathname ?? "",
-		search: createSearchParams(url.search).toString() || "",
-	};
+		pathname: url.pathname ?? "/",
+		search,
+		searchString: search.toString(),
+	} satisfies URLInfoObject;
 
-	const formattedSearch = urlObject.search.startsWith(questionMark)
-		? urlObject.search
-		: `${questionMark}${urlObject.search}`;
+	const formattedSearch = urlObject.searchString.startsWith(questionMark)
+		? urlObject.searchString
+		: `${questionMark}${urlObject.searchString}`;
 
 	const formattedHash = urlObject.hash.startsWith(hashMark)
 		? urlObject.hash
@@ -64,24 +78,31 @@ const formatUrl = (url: string | Partial<URLInfo> | URL) => {
 
 	const urlString = `${urlObject.pathname}${formattedSearch}${formattedHash}`;
 
-	return { urlObject, urlString };
+	return { urlObject, urlString } as never;
 };
 
 /* eslint-disable unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window */
 
-export const pushState = (url: string | Partial<URLInfo> | URL, state?: URLInfo["state"]) => {
+export const pushState = (url: string | PartialURLInfo, options?: { state?: PartialURLInfo["state"] }) => {
 	const { urlObject, urlString } = formatUrl(url);
 
-	window.history.pushState(urlObject?.state ?? state, "", urlString);
+	const { state = urlObject?.state } = options ?? {};
+
+	window.history.pushState(state, "", urlString);
 };
 
-export const replaceState = (url: string | Partial<URLInfo>, state?: URLInfo["state"]) => {
+export const replaceState = (
+	url: string | PartialURLInfo,
+	options?: { state?: PartialURLInfo["state"] }
+) => {
 	const { urlObject, urlString } = formatUrl(url);
 
-	window.history.replaceState(urlObject?.state ?? state, "", urlString);
+	const { state = urlObject?.state } = options ?? {};
+
+	window.history.replaceState(state, "", urlString);
 };
 
-export const hardNavigate = (url: string | Partial<URLInfo> | URL, type?: "assign" | "replace") => {
+export const hardNavigate = (url: string | Partial<PartialURLInfo> | URL, type?: "assign" | "replace") => {
 	const { urlString } = formatUrl(url);
 
 	window.location[type ?? "assign"](urlString);

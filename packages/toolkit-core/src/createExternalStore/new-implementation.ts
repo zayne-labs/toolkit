@@ -50,18 +50,18 @@ const createExternalStorageStore = <TState>(
 
 	const initialStoreState = rawStorageValue ? safeParser(rawStorageValue) : getInitialStorageValue();
 
-	const store = createStore<TState>(() => initialStoreState);
+	const internalStore = createStore(() => initialStoreState);
 
 	type InternalStoreApi = StorageStoreApi<TState>;
 
 	const setState: InternalStoreApi["setState"] = (newState, shouldReplace) => {
-		const previousState = store.getState();
+		const previousState = internalStore.getState();
 
 		const nextState = isFunction(newState) ? newState(previousState) : newState;
 
 		if (equalityFn(nextState, previousState)) return;
 
-		store.setState(nextState, shouldReplace as never);
+		internalStore.setState(nextState, shouldReplace as never);
 
 		const state =
 			!shouldReplace && isObject(previousState) && isObject(nextState)
@@ -92,18 +92,18 @@ const createExternalStorageStore = <TState>(
 			if (event.key !== key || event.storageArea !== selectedStorage) return;
 
 			if (syncStateAcrossTabs) {
-				event.newValue && store.setState(safeParser(event.newValue));
+				event.newValue && internalStore.setState(safeParser(event.newValue));
 				rawStorageValue = event.newValue;
 			}
 
-			unsubscribe = store.subscribe(onStoreChange, { fireListenerImmediately: true });
+			unsubscribe = internalStore.subscribe(onStoreChange, { fireListenerImmediately: true });
 		};
 
 		// eslint-disable-next-line unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window
-		const storageEventCleanup = on("storage", window, handleStorageChange);
+		const cleanup = on("storage", window, handleStorageChange);
 
 		return () => {
-			storageEventCleanup();
+			cleanup();
 			unsubscribe?.();
 		};
 	};
@@ -113,7 +113,7 @@ const createExternalStorageStore = <TState>(
 			subscribeOptions;
 
 		if (fireListenerImmediately) {
-			const slice = selector(store.getState());
+			const slice = selector(internalStore.getState());
 
 			onStoreChange(slice, slice);
 		}
@@ -138,9 +138,9 @@ const createExternalStorageStore = <TState>(
 		});
 	};
 
-	const resetState = store.resetState;
-	const getInitialState = store.getInitialState;
-	const getState = store.getState;
+	const resetState = internalStore.resetState;
+	const getInitialState = internalStore.getInitialState;
+	const getState = internalStore.getState;
 
 	return {
 		getInitialState,

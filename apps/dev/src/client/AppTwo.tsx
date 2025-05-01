@@ -1,13 +1,27 @@
-// import { useSearchParamsObject } from "@zayne-labs/toolkit-react";
+import { useSearchParamsObject } from "@zayne-labs/toolkit-react";
+import { useState } from "react";
 
-function App() {
-	// const [searchParams, setSearchParams] = useSearchParamsObject();
+function AppTwo() {
+	const [searchParams, setSearchParams] = useSearchParamsObject<{ state: string }>();
+	const [state, setState] = useState(false);
+
+	console.log({ searchParams });
 
 	return (
 		<div>
-			<button type="button">Click me</button>
+			<button
+				type="button"
+				onClick={() => {
+					const newState = !state;
+					// setState(newState);
+					setSearchParams({ state: "foo" });
+				}}
+			>
+				Click me
+			</button>
+			<p>{searchParams.state}</p>
 		</div>
 	);
 }
 
-export default App;
+export default AppTwo;

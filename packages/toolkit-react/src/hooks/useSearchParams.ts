@@ -11,6 +11,7 @@ type UseSearchParamsOptions = {
 	locationOptions?: LocationStoreOptions;
 };
 
+// FIXME: Add support for createSearchParams state for global state like you did for useStorageState
 export const useSearchParams = <TSearchParams extends URLSearchParamsInit>(
 	options?: UseSearchParamsOptions
 ) => {
@@ -24,8 +25,6 @@ export const useSearchParams = <TSearchParams extends URLSearchParamsInit>(
 		const params = isFunction(newQueryParams) ? newQueryParams(searchParams) : newQueryParams;
 
 		const nextSearchParams = createSearchParams(params);
-
-		if (Object.is(searchParams.toString(), nextSearchParams.toString())) return;
 
 		setLocation[action]({ search: nextSearchParams });
 	};
@@ -49,6 +48,8 @@ export const useSearchParamsObject = <TSearchParams extends Record<string, strin
 
 		setSearchParams(params);
 	};
+
+	setSearchParamsObject.triggerPopstate = setSearchParams.triggerPopstate;
 
 	return [searchParamsObject, setSearchParamsObject] as const;
 };

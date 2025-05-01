@@ -49,30 +49,30 @@ const createExternalStorageStore = <TState>(
 
 	const initialState = rawStorageValue ? safeParser(rawStorageValue) : getInitialStorageValue();
 
-	let state: TState = initialState as never;
+	let currentStorageState = initialState;
 
-	const getState = () => state;
+	const getState = () => currentStorageState;
 
 	const getInitialState = () => initialState;
 
-	const mergeState = (nextState: Partial<TState> | null, shouldReplace?: boolean) => {
-		return !shouldReplace && isObject(state) && isObject(nextState)
-			? { ...state, ...nextState }
+	const mergeCurrentStateWithNextState = (nextState: Partial<TState> | null, shouldReplace?: boolean) => {
+		return !shouldReplace && isObject(currentStorageState) && isObject(nextState)
+			? { ...currentStorageState, ...nextState }
 			: (nextState as TState);
 	};
 
 	type InternalStoreApi = StorageStoreApi<TState>;
 
 	const setState: InternalStoreApi["setState"] = (newState, shouldReplace) => {
-		const previousState = getState();
+		const previousState = currentStorageState;
 
 		const nextState = isFunction(newState) ? newState(previousState) : newState;
 
 		if (equalityFn(nextState, previousState)) return;
 
-		state = mergeState(nextState, shouldReplace);
+		currentStorageState = mergeCurrentStateWithNextState(nextState, shouldReplace);
 
-		const partializedState = partialize(state);
+		const partializedState = partialize(currentStorageState);
 
 		const newValue = serializer(partializedState);
 
@@ -93,22 +93,22 @@ const createExternalStorageStore = <TState>(
 		const handleStorageChange = (event: StorageEvent) => {
 			if (event.key !== key || event.storageArea !== selectedStorage) return;
 
-			const currentState = safeParser(event.newValue as string);
+			const nextState = safeParser(event.newValue as string);
 
 			const previousState = safeParser(event.oldValue as string);
 
 			if (syncStateAcrossTabs) {
-				state = mergeState(currentState);
+				currentStorageState = mergeCurrentStateWithNextState(nextState);
 				rawStorageValue = event.newValue;
 			}
 
-			onStoreChange(currentState, previousState);
+			onStoreChange(nextState, previousState);
 		};
 
 		// eslint-disable-next-line unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window
-		const removeStorageEvent = on("storage", window, handleStorageChange);
+		const cleanup = on("storage", window, handleStorageChange);
 
-		return removeStorageEvent;
+		return cleanup;
 	};
 
 	subscribe.withSelector = (selector, onStoreChange, subscribeOptions = {}) => {
