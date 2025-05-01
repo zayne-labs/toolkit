@@ -1,7 +1,7 @@
 {
 	"name": "@zayne-labs/toolkit-react",
 	"type": "module",
-	"version": "0.9.33",
+	"version": "0.9.34",
 	"packageManager": "pnpm@9.15.4",
 	"description": "A collection of utility functions, types and composables used by my other projects. Nothing too fancy but can be useful.",
 	"author": "Ryan Zayne",
@@ -48,8 +48,10 @@
 	},
 	"peerDependencies": {
 		"@types/react": ">=18.0.0",
+		"@zayne-labs/toolkit-core": "workspace:^",
+		"@zayne-labs/toolkit-type-helpers": "workspace:^",
 		"react": ">=18.0.0",
-		"zustand": ">=4.0.0"
+		"zustand": ">=5.0.0"
 	},
 	"peerDependenciesMeta": {
 		"@types/react": {
@@ -62,10 +64,6 @@
 			"optional": true
 		}
 	},
-	"dependencies": {
-		"@zayne-labs/toolkit-core": "workspace:*",
-		"@zayne-labs/toolkit-type-helpers": "workspace:*"
-	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.17.4",
 		"@changesets/cli": "^2.29.2",
@@ -74,6 +72,8 @@
 		"@total-typescript/ts-reset": "^0.6.1",
 		"@types/node": "^22.14.1",
 		"@types/react": "^19.1.2",
+		"@zayne-labs/toolkit-core": "workspace:*",
+		"@zayne-labs/toolkit-type-helpers": "workspace:*",
 		"@zayne-labs/tsconfig": "0.8.1",
 		"concurrently": "^9.1.2",
 		"cross-env": "^7.0.3",
