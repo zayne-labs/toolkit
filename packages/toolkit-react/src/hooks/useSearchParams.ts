@@ -4,20 +4,18 @@ import {
 	createSearchParams,
 } from "@zayne-labs/toolkit-core";
 import { isFunction } from "@zayne-labs/toolkit-type-helpers";
-import { useLocation } from "./useLocation";
+import { useLocationState } from "./useLocationState";
 
-type UseSearchParamsOptions = {
+type UseSearchParamsOptions = LocationStoreOptions & {
 	action?: "push" | "replace";
-	locationOptions?: LocationStoreOptions;
 };
 
-// FIXME: Add support for createSearchParams state for global state like you did for useStorageState
 export const useSearchParams = <TSearchParams extends URLSearchParamsInit>(
 	options?: UseSearchParamsOptions
 ) => {
-	const { action = "push", locationOptions } = options ?? {};
+	const { action = "push", ...restOfOptions } = options ?? {};
 
-	const [searchParams, setLocation] = useLocation((state) => state.search, locationOptions);
+	const [searchParams, actions] = useLocationState((state) => state.search, restOfOptions);
 
 	const setSearchParams = (
 		newQueryParams: TSearchParams | ((prev: URLSearchParams) => TSearchParams)
@@ -26,10 +24,10 @@ export const useSearchParams = <TSearchParams extends URLSearchParamsInit>(
 
 		const nextSearchParams = createSearchParams(params);
 
-		setLocation[action]({ search: nextSearchParams });
+		actions[action]({ search: nextSearchParams });
 	};
 
-	setSearchParams.triggerPopstate = setLocation.triggerPopstate;
+	setSearchParams.triggerPopstateEvent = actions.triggerPopstateEvent;
 
 	return [searchParams, setSearchParams] as const;
 };
@@ -49,7 +47,7 @@ export const useSearchParamsObject = <TSearchParams extends Record<string, strin
 		setSearchParams(params);
 	};
 
-	setSearchParamsObject.triggerPopstate = setSearchParams.triggerPopstate;
+	setSearchParamsObject.triggerPopstateEvent = setSearchParams.triggerPopstateEvent;
 
 	return [searchParamsObject, setSearchParamsObject] as const;
 };

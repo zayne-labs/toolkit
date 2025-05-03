@@ -9,14 +9,20 @@ import { useStore } from "./useStore";
 
 type UseStorageResult<TState, TSlice = TState> = [state: TSlice, actions: StorageStoreApi<TState>];
 
-export const createStorageStore = <TState>(baseOptions: StorageOptions<TState>) => {
+/**
+ * @description Creates a custom hook that returns a storage state and actions to modify it. You can use this if you need shared options.
+ * @note You must use this if you want to be able to prevent syncing state across tabs.
+ */
+export const createUseStorageState = <TState>(baseOptions: StorageOptions<TState>) => {
 	const externalStore = createExternalStorageStore(baseOptions);
 
 	type UseBoundStorageState = StorageStoreApi<TState> & {
 		<TSlice = TState>(selector?: SelectorFn<TState, TSlice>): UseStorageResult<TState, TSlice>;
 	};
 
-	const useStorageState = (selector?: SelectorFn<TState, unknown>) => {
+	const useStorageState = <TSlice = TState>(
+		selector?: SelectorFn<TState, TSlice>
+	): UseStorageResult<TState, TSlice> => {
 		const stateInStorage = useStore(externalStore, selector);
 
 		return [stateInStorage, externalStore];
@@ -31,7 +37,7 @@ type UseStorageStateOptions<TValue> = Omit<StorageOptions<TValue>, "initialValue
 
 export const useStorageState = <TValue, TSlice = TValue>(
 	key: string,
-	initialValue: TValue,
+	initialValue?: TValue,
 	options?: UseStorageStateOptions<TValue> & { select?: SelectorFn<TValue, TSlice> }
 ): UseStorageResult<TValue, TSlice> => {
 	const { select, ...restOfOptions } = options ?? {};

@@ -5,9 +5,9 @@ import AppThree from "./AppThree";
 import AppTwo from "./AppTwo";
 
 createRoot(document.querySelector("#app") as HTMLElement).render(
-	<StrictMode>
+	<>
 		<App />
 		<AppTwo />
 		<AppThree />
-	</StrictMode>
+	</>
 );

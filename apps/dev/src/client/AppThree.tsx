@@ -1,12 +1,13 @@
-import { useLocation } from "@zayne-labs/toolkit-react";
+import { useLocationState } from "@zayne-labs/toolkit-react";
 
 function AppTwo() {
-	const [locationState] = useLocation((state) => state.search);
+	const [searchString] = useLocationState((state) => state.searchString);
 
 	return (
 		<div>
-			<button type="button">Click me</button>
-			{/* <p>{location}</p> */}
+			<button type="button">Click me From App Three</button>
+			<p> Search String: {searchString}</p>
+			{/* <p> Storage State: {storageState}</p> */}
 		</div>
 	);
 }

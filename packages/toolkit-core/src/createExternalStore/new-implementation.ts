@@ -24,9 +24,9 @@ const createExternalStorageStore = <TState>(
 
 	let rawStorageValue = selectedStorage.getItem(key);
 
-	const safeParser = (value: string) => {
+	const safeParser = (value: string | null) => {
 		try {
-			return parser(value);
+			return parser(value) as TState;
 		} catch (error) {
 			logger(error);
 			return null as never;
@@ -50,53 +50,62 @@ const createExternalStorageStore = <TState>(
 
 	const initialStoreState = rawStorageValue ? safeParser(rawStorageValue) : getInitialStorageValue();
 
-	const internalStore = createStore(() => initialStoreState);
+	const internalStoreApi = createStore(() => initialStoreState);
 
 	type InternalStoreApi = StorageStoreApi<TState>;
 
 	const setState: InternalStoreApi["setState"] = (newState, shouldReplace) => {
-		const previousState = internalStore.getState();
+		const previousState = internalStoreApi.getState();
 
 		const nextState = isFunction(newState) ? newState(previousState) : newState;
 
 		if (equalityFn(nextState, previousState)) return;
 
-		internalStore.setState(nextState, shouldReplace as never);
-
-		const state =
+		const currentState =
 			!shouldReplace && isObject(previousState) && isObject(nextState)
 				? { ...previousState, ...nextState }
 				: (nextState as TState);
 
-		const possiblyPartializedState = partialize?.(state) ?? state;
+		const possiblyPartializedState = partialize?.(currentState) ?? currentState;
 
 		const newValue = serializer(possiblyPartializedState);
 
 		const oldValue = rawStorageValue;
 
-		rawStorageValue = newValue;
+		selectedStorage.setItem(key, newValue);
 
 		setAndDispatchStorageEvent({
-			eventFn: () => selectedStorage.setItem(key, newValue),
 			key,
 			newValue,
 			oldValue,
 			storageArea: selectedStorage,
+			syncStateAcrossTabs,
 		});
+
+		// == If we're not syncing state across tabs, we set the internal store state at this point
+		if (!syncStateAcrossTabs) {
+			internalStoreApi.setState(currentState);
+			rawStorageValue = newValue;
+		}
 	};
 
 	const subscribe: InternalStoreApi["subscribe"] = (onStoreChange) => {
+		// == If we're not syncing state across tabs, we just directly subscribe to the internal store
+		if (!syncStateAcrossTabs) {
+			return internalStoreApi.subscribe(onStoreChange);
+		}
+
+		// == Otherwise, we subscribe to the internal store from within the storage event handler
 		let unsubscribe: (() => void) | undefined;
 
 		const handleStorageChange = (event: StorageEvent) => {
+			// Return early if event is not for our key/storage
 			if (event.key !== key || event.storageArea !== selectedStorage) return;
 
-			if (syncStateAcrossTabs) {
-				event.newValue && internalStore.setState(safeParser(event.newValue));
-				rawStorageValue = event.newValue;
-			}
+			internalStoreApi.setState(safeParser(event.newValue));
+			rawStorageValue = event.newValue;
 
-			unsubscribe = internalStore.subscribe(onStoreChange, { fireListenerImmediately: true });
+			unsubscribe = internalStoreApi.subscribe(onStoreChange, { fireListenerImmediately: true });
 		};
 
 		// eslint-disable-next-line unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window
@@ -113,7 +122,7 @@ const createExternalStorageStore = <TState>(
 			subscribeOptions;
 
 		if (fireListenerImmediately) {
-			const slice = selector(internalStore.getState());
+			const slice = selector(internalStoreApi.getState());
 
 			onStoreChange(slice, slice);
 		}
@@ -131,16 +140,14 @@ const createExternalStorageStore = <TState>(
 	};
 
 	const removeState = () => {
-		setAndDispatchStorageEvent({
-			eventFn: () => selectedStorage.removeItem(key),
-			key,
-			storageArea: selectedStorage,
-		});
+		selectedStorage.removeItem(key);
+
+		setAndDispatchStorageEvent({ key, storageArea: selectedStorage, syncStateAcrossTabs });
 	};
 
-	const resetState = internalStore.resetState;
-	const getInitialState = internalStore.getInitialState;
-	const getState = internalStore.getState;
+	const resetState = internalStoreApi.resetState;
+	const getInitialState = internalStoreApi.getInitialState;
+	const getState = internalStoreApi.getState;
 
 	return {
 		getInitialState,

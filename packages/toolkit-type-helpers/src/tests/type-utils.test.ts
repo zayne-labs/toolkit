@@ -26,6 +26,14 @@ type TypeTestsForWritable = [
 		Equal<Writeable<{ readonly a: string } | { readonly b: number }>, { a: string } | { b: number }>
 	>,
 
+	// Test 6: Type with functions
+	Expect<
+		Equal<
+			Writeable<{ readonly a: string; readonly b: () => string }, "deep">,
+			{ a: string; b: () => string }
+		>
+	>,
+
 	// Test 6: Tuple
 	Expect<Equal<Writeable<readonly [string, number]>, [string, number]>>,
 

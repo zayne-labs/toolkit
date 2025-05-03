@@ -1,7 +1,7 @@
+import { on } from "@/on";
 import { isBrowser } from "../constants";
 import type { EqualityFn, StoreApi } from "../createStore";
-import { type URLInfoObject, formatUrl, pushState, replaceState } from "../navigation";
-import { on } from "../on";
+import { type PartialURLInfo, type URLInfoObject, formatUrl } from "../navigation";
 
 export type LocationInfo = URLInfoObject;
 
@@ -9,8 +9,18 @@ export type LocationStoreOptions = {
 	equalityFn?: EqualityFn<string | LocationInfo>;
 };
 
+type NavigationOptions = {
+	state?: PartialURLInfo["state"];
+};
+
+export type LocationStoreApi = Omit<StoreApi<LocationInfo>, "resetState" | "setState"> & {
+	push: (url: string | PartialURLInfo, options?: NavigationOptions) => void;
+	replace: LocationStoreApi["push"];
+	triggerPopstateEvent: (nextLocationState?: LocationInfo["state"]) => void;
+};
+
 /* eslint-disable unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window */
-const createLocationStore = (options: LocationStoreOptions = {}) => {
+const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreApi => {
 	// TODO - Apply shallow equality here
 	const { equalityFn = Object.is } = options;
 
@@ -26,7 +36,7 @@ const createLocationStore = (options: LocationStoreOptions = {}) => {
 		state: isBrowser() ? (window.history.state as LocationInfo["state"]) : null,
 	} satisfies LocationInfo;
 
-	let currentLocationState = initialState;
+	let currentLocationState: LocationInfo = initialState;
 
 	const getState = () => currentLocationState;
 
@@ -36,79 +46,72 @@ const createLocationStore = (options: LocationStoreOptions = {}) => {
 	 * @description This has to be done in order to actually trigger the popState event, otherwise it would only fire when the user clicks on the forward/back button.
 	 * @see https://stackoverflow.com/a/37492075/18813022
 	 */
-	const triggerPopstateEvent = (state?: LocationInfo["state"]) => {
-		window.dispatchEvent(new PopStateEvent("popstate", { state }));
+	const triggerPopstateEvent: LocationStoreApi["triggerPopstateEvent"] = (nextLocationState) => {
+		window.dispatchEvent(new PopStateEvent("popstate", { state: nextLocationState }));
 	};
 
-	type ModifiedPopSateEvent = Omit<PopStateEvent, "state"> & {
-		state: {
-			currentLocationState: LocationInfo;
-			previousLocationState: LocationInfo;
-		};
-	};
+	const setState = (newURL: string | PartialURLInfo, navigationOptions?: NavigationOptions) => {
+		const { urlString: currentString } = formatUrl(currentLocationState);
 
-	const setState = (...params: Parameters<typeof pushState>) => {
-		const [newURL, $options] = params;
-
-		const previousLocationState = currentLocationState;
-
-		const { urlString: previousUrlString } = formatUrl(previousLocationState);
-
-		const { urlObject: nextLocationState, urlString: nextUrlString } = formatUrl(newURL);
+		const { urlObject: nextUrlObject, urlString: nextUrlString } = formatUrl(newURL);
 
 		const isLocationStateEqual =
-			equalityFn(nextUrlString, previousUrlString)
-			|| equalityFn(nextLocationState ?? {}, previousLocationState);
+			nextUrlString === currentString || equalityFn(nextUrlObject ?? {}, currentLocationState);
 
 		if (isLocationStateEqual) return;
 
-		const currentSearchParam = getSearchParam();
+		const { state: navigationState } = navigationOptions ?? {};
 
-		currentLocationState = {
+		const nextLocationState = {
+			...nextUrlObject,
+			...(Boolean(navigationState) && { state: navigationState }),
+		};
+
+		triggerPopstateEvent(nextLocationState);
+
+		return { historyState: nextLocationState.state, nextUrlString };
+	};
+
+	const push: LocationStoreApi["push"] = (newURL, navigationOptions) => {
+		const { historyState, nextUrlString } = setState(newURL, navigationOptions) ?? {};
+
+		if (!nextUrlString) return;
+
+		window.history.pushState(historyState, "", nextUrlString);
+	};
+
+	const replace: LocationStoreApi["replace"] = (newURL, navigationOptions) => {
+		const { historyState, nextUrlString } = setState(newURL, navigationOptions) ?? {};
+
+		if (!nextUrlString) return;
+
+		window.history.replaceState(historyState, "", nextUrlString);
+	};
+
+	const getCurrentLocationObject = () => {
+		const currentSearchParams = getSearchParam();
+
+		return {
 			hash: window.location.hash,
 			pathname: window.location.pathname,
-			search: currentSearchParam,
-			searchString: currentSearchParam.toString(),
-			state: (window.history.state as LocationInfo["state"]) ?? $options?.state,
-			...nextLocationState,
-		} satisfies LocationInfo;
-
-		const state = { currentLocationState, previousLocationState };
-
-		triggerPopstateEvent(state);
-
-		return { nextUrlString, state };
+			search: currentSearchParams,
+			searchString: currentSearchParams.toString(),
+			state: window.history.state as LocationInfo["state"],
+		};
 	};
 
-	const push: typeof pushState = (...params) => {
-		const { nextUrlString, state } = setState(...params) ?? {};
+	const subscribe: LocationStoreApi["subscribe"] = (onLocationStoreChange) => {
+		type ModifiedPopSateEvent = Omit<PopStateEvent, "state"> & { state?: LocationInfo };
 
-		if (!nextUrlString) return;
-
-		const pushStateObject = state?.currentLocationState.state;
-
-		window.history.pushState(pushStateObject, "", nextUrlString);
-	};
-
-	const replace: typeof replaceState = (...params) => {
-		const { nextUrlString, state } = setState(...params) ?? {};
-
-		if (!nextUrlString) return;
-
-		const replaceStateObject = state?.currentLocationState.state;
-
-		window.history.replaceState(replaceStateObject, "", nextUrlString);
-	};
-
-	type Subscribe = StoreApi<LocationInfo>["subscribe"];
-
-	const subscribe: Subscribe = (onLocationStoreChange) => {
 		const handleLocationStoreChange = (event: ModifiedPopSateEvent) => {
-			const currentState = event.state.currentLocationState;
+			const previousLocationState = currentLocationState;
 
-			const previousLocationState = event.state.previousLocationState;
+			currentLocationState = {
+				...getCurrentLocationObject(),
+				...event.state,
+			};
 
-			onLocationStoreChange(currentState, previousLocationState);
+			onLocationStoreChange(currentLocationState, previousLocationState);
 		};
 
 		const cleanup = on("popstate", window, handleLocationStoreChange);
@@ -138,16 +141,16 @@ const createLocationStore = (options: LocationStoreOptions = {}) => {
 		return unsubscribe;
 	};
 
-	const locationStore = {
+	const api = {
 		getInitialState,
 		getState,
 		push,
 		replace,
 		subscribe,
 		triggerPopstateEvent,
-	};
+	} satisfies LocationStoreApi;
 
-	return locationStore;
+	return api;
 };
 /* eslint-enable unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window */
 

@@ -1,25 +1,23 @@
 import { useSearchParamsObject } from "@zayne-labs/toolkit-react";
-import { useState } from "react";
 
 function AppTwo() {
 	const [searchParams, setSearchParams] = useSearchParamsObject<{ state: string }>();
-	const [state, setState] = useState(false);
 
-	console.log({ searchParams });
+	// const [storageState, actions] = useStorageState<number>("state");
 
 	return (
 		<div>
 			<button
 				type="button"
 				onClick={() => {
-					const newState = !state;
-					// setState(newState);
-					setSearchParams({ state: "foo" });
+					// actions.setState(Math.random());
+					setSearchParams({ state: Math.random().toString() });
 				}}
 			>
-				Click me
+				Click me from App Two
 			</button>
-			<p>{searchParams.state}</p>
+			<p> Search Params: {searchParams.state}</p>
+			{/* <p> Storage State: {storageState}</p> */}
 		</div>
 	);
 }

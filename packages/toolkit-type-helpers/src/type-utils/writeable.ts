@@ -6,6 +6,9 @@ export type WriteableVariantUnion = "deep" | "shallow";
  * @template TObject - The object type to make writeable
  * @template TVariant - The level of writeable transformation ("shallow" | "deep")
  */
+
+type ArrayOrObject = Record<number | string | symbol, unknown> | unknown[];
+
 export type Writeable<
 	TObject,
 	TVariant extends WriteableVariantUnion = "shallow",
@@ -13,7 +16,7 @@ export type Writeable<
 	? TVariant extends "deep"
 		? [
 				...{
-					[Key in keyof TTupleItems]: TTupleItems[Key] extends object
+					[Key in keyof TTupleItems]: TTupleItems[Key] extends ArrayOrObject
 						? Writeable<TTupleItems[Key], TVariant>
 						: TTupleItems[Key];
 				},
@@ -21,14 +24,14 @@ export type Writeable<
 		: [...TTupleItems]
 	: TObject extends ReadonlyArray<infer TArrayItem>
 		? TVariant extends "deep"
-			? Array<TArrayItem extends object ? Writeable<TArrayItem, TVariant> : TArrayItem>
+			? Array<TArrayItem extends ArrayOrObject ? Writeable<TArrayItem, TVariant> : TArrayItem>
 			: TArrayItem[]
-		: TObject extends object
+		: TObject extends ArrayOrObject
 			? {
 					-readonly [Key in keyof TObject]: TVariant extends "shallow"
 						? TObject[Key]
 						: TVariant extends "deep"
-							? TObject[Key] extends object
+							? TObject[Key] extends ArrayOrObject
 								? Writeable<TObject[Key], TVariant>
 								: TObject[Key]
 							: never;

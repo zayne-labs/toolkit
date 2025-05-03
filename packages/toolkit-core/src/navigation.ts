@@ -33,7 +33,7 @@ export type PartialURLInfo = {
 	pathname?: string;
 	search?: URLSearchParamsInit;
 	searchString?: string;
-	state?: NonNullable<unknown> | null;
+	state?: unknown;
 };
 
 export type URLInfoObject = {
@@ -41,7 +41,7 @@ export type URLInfoObject = {
 	pathname: string;
 	search: URLSearchParams;
 	searchString: string;
-	state?: NonNullable<unknown> | null;
+	state?: unknown;
 };
 
 export type FormUrlResult<TUrl extends string | PartialURLInfo | URL> = {
