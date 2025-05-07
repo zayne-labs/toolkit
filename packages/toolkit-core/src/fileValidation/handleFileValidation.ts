@@ -54,7 +54,7 @@ export type FileValidationErrorContext = {
 	/**
 	 * File that caused the validation error
 	 */
-	errorFile: File;
+	file: File;
 	/**
 	 * Error message
 	 */
@@ -137,7 +137,7 @@ const handleFileValidation = (options: FileValidationOptions): ValidationResult 
 			const context: FileValidationErrorContext = {
 				cause: "maxFileCount",
 				code: "too-many-files",
-				errorFile: file,
+				file,
 				message,
 			};
 
@@ -156,7 +156,7 @@ const handleFileValidation = (options: FileValidationOptions): ValidationResult 
 			const context: FileValidationErrorContext = {
 				cause: "allowedFileTypes",
 				code: "file-invalid-type",
-				errorFile: file,
+				file,
 				message,
 			};
 
@@ -173,7 +173,7 @@ const handleFileValidation = (options: FileValidationOptions): ValidationResult 
 			const context: FileValidationErrorContext = {
 				cause: "maxFileSize",
 				code: "file-too-large",
-				errorFile: file,
+				file,
 				message,
 			};
 
@@ -190,7 +190,7 @@ const handleFileValidation = (options: FileValidationOptions): ValidationResult 
 			const context: FileValidationErrorContext = {
 				cause: "disallowDuplicates",
 				code: "duplicate-file",
-				errorFile: file,
+				file,
 				message,
 			};
 
@@ -207,7 +207,7 @@ const handleFileValidation = (options: FileValidationOptions): ValidationResult 
 			const context: FileValidationErrorContext = {
 				cause: "validator",
 				code: "custom-validation-failed",
-				errorFile: file,
+				file,
 				message,
 			};
 
