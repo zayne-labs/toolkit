@@ -1,7 +1,7 @@
 {
 	"name": "@zayne-labs/toolkit-react",
 	"type": "module",
-	"version": "0.9.36",
+	"version": "0.9.38",
 	"packageManager": "pnpm@9.15.4",
 	"description": "A collection of utility functions, types and composables used by my other projects. Nothing too fancy but can be useful.",
 	"author": "Ryan Zayne",
