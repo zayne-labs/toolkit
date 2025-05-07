@@ -8,7 +8,7 @@ export * from "./createLocationStore";
 export * from "./createScrollObserver";
 export * from "./createStore";
 export { debounce } from "./debounce";
-export * from "./handleFileValidation";
+export * from "./fileValidation";
 export * from "./lockScroll";
 export * from "./navigation";
 export * from "./omitKeys";

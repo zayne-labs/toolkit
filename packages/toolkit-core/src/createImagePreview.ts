@@ -1,5 +1,5 @@
 import { isFile } from "@zayne-labs/toolkit-type-helpers";
-import type { FileMeta } from "./handleFileValidation";
+import type { FileMeta } from "./fileValidation/handleFileValidation";
 
 type PreviewOptionsForObjectURL = {
 	onError?: (ctx: { error: TypeError | null }) => void;
