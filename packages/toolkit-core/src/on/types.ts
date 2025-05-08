@@ -1,6 +1,6 @@
 import type { NonEmptyArray } from "@zayne-labs/toolkit-type-helpers";
 
-export type PossibleNodes = Document | HTMLElement | MediaQueryList | Window | null;
+export type PossibleNodes = Document | Element | HTMLElement | MediaQueryList | Window | null;
 
 export type ElementOrSelector = string | PossibleNodes;
 
@@ -56,11 +56,20 @@ export type AddEventParams = AddHtmlEvents | AddMediaEvents | AddWindowEvents | 
 
 /* eslint-disable ts-eslint/consistent-type-definitions  -- Needs an interface to allow users extend */
 export interface RegisterConfig {
-	// TODO: Work on finding as way to add this in future, probably by attaching the cleanup fb to the event object
+	/**
+	 * The event to attach to the element
+	 */
 	event: string;
+
+	/**
+	 * The listener to attach to the event
+	 */
 	listener: AddDocumentEvents[2] | AddHtmlEvents[2] | AddMediaEvents[2] | AddWindowEvents[2];
 
-	options?: boolean | AddEventListenerOptions;
+	/**
+	 * The options to attach to the event
+	 */
+	options?: Parameters<typeof addEventListener>[2];
 
 	/**
 	 * The scope to use for the query
@@ -78,23 +87,24 @@ export interface RegisterConfig {
 
 	type: "add" | "remove";
 }
+type CleanupFn = () => void;
 
 export interface ON {
 	<TEvent extends keyof HTMLElementEventMap, TNode extends ElementOrSelector | ElementOrSelectorArray>(
 		...params: AddHtmlEvents<TEvent, TNode>
-	): () => void;
+	): CleanupFn;
 	<TEvent extends keyof DocumentEventMap, TNode extends Document>(
 		...params: AddDocumentEvents<TEvent, TNode>
-	): () => void;
+	): CleanupFn;
 	<TEvent extends keyof MediaQueryListEventMap, TNode extends MediaQueryList>(
 		...params: AddMediaEvents<TEvent, TNode>
-	): () => void;
+	): CleanupFn;
 	<TEvent extends keyof WindowEventMap, TNode extends Window>(
 		...params: AddWindowEvents<TEvent, TNode>
-	): () => void;
+	): CleanupFn;
 }
 
-export type OFF = {
+export interface OFF {
 	<TEvent extends keyof HTMLElementEventMap, TNode extends ElementOrSelector | ElementOrSelectorArray>(
 		...params: AddHtmlEvents<TEvent, TNode>
 	): void;
@@ -107,6 +117,6 @@ export type OFF = {
 	<TEvent extends keyof WindowEventMap, TNode extends Window>(
 		...params: AddWindowEvents<TEvent, TNode>
 	): void;
-};
+}
 
 /* eslint-enable ts-eslint/consistent-type-definitions -- Needs an interface to allow users extend */
