@@ -11,7 +11,7 @@ export const isValidFileType = (
 			return file.type === type;
 		}
 
-		const fileExtension = file.name.split(".").at(-1)?.toLowerCase();
+		const fileExtension = file.name.includes(".") ? file.name.split(".").at(-1)?.toLowerCase() : null;
 
 		if (!fileExtension) {
 			return false;
