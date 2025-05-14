@@ -48,8 +48,6 @@
 	},
 	"peerDependencies": {
 		"@types/react": ">=18.0.0",
-		"@zayne-labs/toolkit-core": "workspace:^",
-		"@zayne-labs/toolkit-type-helpers": "workspace:^",
 		"react": ">=18.0.0",
 		"zustand": ">=5.0.0"
 	},
@@ -64,26 +62,28 @@
 			"optional": true
 		}
 	},
+	"dependencies": {
+		"@zayne-labs/toolkit-core": "workspace:*",
+		"@zayne-labs/toolkit-type-helpers": "workspace:*"
+	},
 	"devDependencies": {
-		"@arethetypeswrong/cli": "^0.17.4",
-		"@changesets/cli": "^2.29.2",
+		"@arethetypeswrong/cli": "^0.18.1",
+		"@changesets/cli": "^2.29.4",
 		"@size-limit/esbuild-why": "^11.2.0",
 		"@size-limit/preset-small-lib": "^11.2.0",
 		"@total-typescript/ts-reset": "^0.6.1",
-		"@types/node": "^22.14.1",
-		"@types/react": "^19.1.2",
-		"@zayne-labs/toolkit-core": "workspace:*",
-		"@zayne-labs/toolkit-type-helpers": "workspace:*",
-		"@zayne-labs/tsconfig": "0.8.1",
+		"@types/node": "^22.15.18",
+		"@types/react": "^19.1.4",
+		"@zayne-labs/tsconfig": "0.8.2",
 		"concurrently": "^9.1.2",
 		"cross-env": "^7.0.3",
 		"publint": "^0.3.12",
 		"react": "^19.1.0",
 		"size-limit": "^11.2.0",
-		"terser": "^5.39.0",
+		"terser": "^5.39.1",
 		"tsup": "^8.4.0",
 		"typescript": "5.8.3",
-		"zustand": "^5.0.3"
+		"zustand": "^5.0.4"
 	},
 	"publishConfig": {
 		"access": "public",
