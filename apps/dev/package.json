@@ -13,6 +13,7 @@
 		"@zayne-labs/toolkit-core": "workspace:*",
 		"@zayne-labs/toolkit-react": "workspace:*",
 		"@zayne-labs/toolkit-type-helpers": "workspace:*",
+		"@zayne-labs/ui-react": "^0.9.8",
 		"react": "19.1.0",
 		"react-dom": "19.1.0"
 	},

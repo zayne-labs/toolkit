@@ -1,11 +1,11 @@
 import { css } from "@zayne-labs/toolkit-core";
+import { composeEventHandlers } from "@zayne-labs/toolkit-react/utils";
+import { getMultipleSlots } from "@zayne-labs/ui-react/utils/getSlot";
 import {
 	type GetSlotComponentProps,
-	composeEventHandlers,
 	createSlotComponent,
-	getMultipleSlots,
 	getSlotMap,
-} from "@zayne-labs/toolkit-react/utils";
+} from "@zayne-labs/ui-react/utils/getSlotMap";
 
 const scopedCss = css`
 	@scope {

@@ -3,7 +3,7 @@ import { on } from "@/on";
 import { parseJSON } from "@/parseJSON";
 import { isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
 import type { StorageOptions, StorageStoreApi } from "./types";
-import { setAndDispatchStorageEvent } from "./utils";
+import { dispatchStorageEvent } from "./utils";
 
 const createExternalStorageStore = <TState>(
 	options: StorageOptions<TState> = {} as never
@@ -74,12 +74,11 @@ const createExternalStorageStore = <TState>(
 
 		selectedStorage.setItem(key, newValue);
 
-		setAndDispatchStorageEvent({
+		dispatchStorageEvent({
 			key,
 			newValue,
 			oldValue,
 			storageArea: selectedStorage,
-			syncStateAcrossTabs,
 		});
 
 		// == If we're not syncing state across tabs, we set the internal store state at this point
@@ -142,7 +141,7 @@ const createExternalStorageStore = <TState>(
 	const removeState = () => {
 		selectedStorage.removeItem(key);
 
-		setAndDispatchStorageEvent({ key, storageArea: selectedStorage, syncStateAcrossTabs });
+		dispatchStorageEvent({ key, storageArea: selectedStorage });
 	};
 
 	const resetState = internalStoreApi.resetState;

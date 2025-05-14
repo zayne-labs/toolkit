@@ -1,9 +1,8 @@
-import type { Listener } from "@/createStore";
 import { on } from "@/on";
 import { parseJSON } from "@/parseJSON";
 import { isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
 import type { StorageOptions, StorageStoreApi } from "./types";
-import { setAndDispatchStorageEvent } from "./utils";
+import { type DispatchOptions, dispatchStorageEvent } from "./utils";
 
 const createExternalStorageStore = <TState>(
 	options: StorageOptions<TState> = {} as never
@@ -50,8 +49,6 @@ const createExternalStorageStore = <TState>(
 
 	const initialState = rawStorageValue ? safeParser(rawStorageValue) : getInitialStorageValue();
 
-	const listeners = new Set<Listener<TState>>();
-
 	let currentStorageState = initialState;
 
 	const getState = () => currentStorageState;
@@ -83,60 +80,42 @@ const createExternalStorageStore = <TState>(
 
 		selectedStorage.setItem(key, newValue);
 
-		setAndDispatchStorageEvent({
+		dispatchStorageEvent({
 			key,
 			newValue,
 			oldValue,
 			storageArea: selectedStorage,
-			syncStateAcrossTabs,
 		});
-
-		if (!syncStateAcrossTabs) {
-			currentStorageState = currentState;
-			rawStorageValue = newValue;
-			listeners.forEach((onStoreChange) => onStoreChange(currentState, previousState));
-		}
-	};
-
-	const internalSubscribe = (
-		onStoreChange: Parameters<InternalStoreApi["subscribe"]>[0],
-		subscribeOptions: Parameters<InternalStoreApi["subscribe"]>[1] = {}
-	) => {
-		const { fireListenerImmediately = false } = subscribeOptions;
-
-		if (fireListenerImmediately) {
-			const state = getState();
-
-			onStoreChange(state, state);
-		}
-
-		listeners.add(onStoreChange);
-
-		return () => listeners.delete(onStoreChange);
 	};
 
 	const subscribe: InternalStoreApi["subscribe"] = (onStoreChange) => {
-		if (!syncStateAcrossTabs) {
-			return internalSubscribe(onStoreChange);
-		}
+		const handleStorageChange = (event: CustomEvent<Required<DispatchOptions>> | StorageEvent) => {
+			const actualEvent = event instanceof CustomEvent ? event.detail : event;
 
-		let unsubscribe: (() => void) | undefined;
+			if (actualEvent.key !== key || actualEvent.storageArea !== selectedStorage) return;
 
-		const handleStorageChange = (event: StorageEvent) => {
-			if (event.key !== key || event.storageArea !== selectedStorage) return;
+			const previousState = safeParser(actualEvent.oldValue);
 
-			currentStorageState = mergeCurrentStateWithNextState(safeParser(event.newValue));
-			rawStorageValue = event.newValue;
+			currentStorageState = safeParser(actualEvent.newValue);
 
-			unsubscribe = internalSubscribe(onStoreChange, { fireListenerImmediately: true });
+			rawStorageValue = actualEvent.newValue;
+
+			onStoreChange(currentStorageState, previousState);
 		};
 
+		const storageStoreCleanup = on(
+			"storage-store-change" as never,
+			// eslint-disable-next-line unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window
+			window,
+			handleStorageChange
+		);
+
 		// eslint-disable-next-line unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window
-		const cleanup = on("storage", window, handleStorageChange);
+		const storageCleanup = syncStateAcrossTabs ? on("storage", window, handleStorageChange) : null;
 
 		return () => {
-			cleanup();
-			unsubscribe?.();
+			storageStoreCleanup();
+			storageCleanup?.();
 		};
 	};
 
@@ -165,7 +144,7 @@ const createExternalStorageStore = <TState>(
 	const removeState = () => {
 		selectedStorage.removeItem(key);
 
-		setAndDispatchStorageEvent({ key, storageArea: selectedStorage, syncStateAcrossTabs });
+		dispatchStorageEvent({ key, storageArea: selectedStorage });
 	};
 
 	const resetState = () => setState(getInitialState(), true);

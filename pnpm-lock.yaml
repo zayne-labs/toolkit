@@ -65,6 +65,9 @@ importers:
       '@zayne-labs/toolkit-type-helpers':
         specifier: workspace:*
         version: link:../../packages/toolkit-type-helpers
+      '@zayne-labs/ui-react':
+        specifier: ^0.9.8
+        version: 0.9.8(@zayne-labs/toolkit-core@packages+toolkit-core)(@zayne-labs/toolkit-react@packages+toolkit-react)(@zayne-labs/toolkit-type-helpers@packages+toolkit-type-helpers)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(tailwind-merge@3.3.0)(zustand@5.0.3(@types/react@19.1.2)(react@19.1.0))
       react:
         specifier: 19.1.0
         version: 19.1.0
@@ -1188,6 +1191,27 @@ packages:
 
   '@zayne-labs/tsconfig@0.8.1':
     resolution: {integrity: sha512-xbFGrgUpZHivScGvn+NZJLMSr56lD9yxE0OaOFQ4AdBesUtSTMnjaCe6OwpLWMQudRZMRb6i8Ie/118K1RbZAw==}
+
+  '@zayne-labs/ui-react@0.9.8':
+    resolution: {integrity: sha512-xIUuNPyc+xN+nADoYWAoTpGU7wK513nqIpZXvv/TJiNKCOkSr2kxvY2H0eoBTQPFdABFeoW2JnDW3DqBwOHtfw==}
+    engines: {node: '>=18.x'}
+    peerDependencies:
+      '@zayne-labs/toolkit-core': ^0.9.38
+      '@zayne-labs/toolkit-react': ^0.9.38
+      '@zayne-labs/toolkit-type-helpers': ^0.9.38
+      react: 19.x.x
+      react-dom: 19.x.x
+      react-hook-form: 7.x.x
+      tailwind-merge: ^2.5.0 || ^3.0.0
+      tailwindcss: 4.x.x
+      zustand: 4.x.x || 5.x.x
+    peerDependenciesMeta:
+      react-hook-form:
+        optional: true
+      tailwindcss:
+        optional: true
+      zustand:
+        optional: true
 
   '@zod/core@0.10.0':
     resolution: {integrity: sha512-iMITRygme3v9jPsITJjvRMw60+MQq7MWnNpJleRkfjeSCjBm3c1/tiw3NUS4re/M2CBXVP5kAjI7sQrf22twXA==}
@@ -2815,6 +2839,9 @@ packages:
     resolution: {integrity: sha512-vrozgXDQwYO72vHjUb/HnFbQx1exDjoKzqx23aXEg2a9VIg2TSFZ8FmeZpTjUCFMYw7mpX4BE2SFu8wI7asYsw==}
     engines: {node: ^14.18.0 || >=16.0.0}
 
+  tailwind-merge@3.3.0:
+    resolution: {integrity: sha512-fyW/pEfcQSiigd5SNn0nApUOxx0zB/dm6UDU/rEwc2c3sX2smWUNbapHv+QRqLGVp9GWX3THIa7MUGPo+YkDzQ==}
+
   tapable@2.2.1:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
     engines: {node: '>=6'}
@@ -4154,6 +4181,17 @@ snapshots:
   '@zayne-labs/toolkit-type-helpers@0.9.33': {}
 
   '@zayne-labs/tsconfig@0.8.1': {}
+
+  '@zayne-labs/ui-react@0.9.8(@zayne-labs/toolkit-core@packages+toolkit-core)(@zayne-labs/toolkit-react@packages+toolkit-react)(@zayne-labs/toolkit-type-helpers@packages+toolkit-type-helpers)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(tailwind-merge@3.3.0)(zustand@5.0.3(@types/react@19.1.2)(react@19.1.0))':
+    dependencies:
+      '@zayne-labs/toolkit-core': link:packages/toolkit-core
+      '@zayne-labs/toolkit-react': link:packages/toolkit-react
+      '@zayne-labs/toolkit-type-helpers': link:packages/toolkit-type-helpers
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+      tailwind-merge: 3.3.0
+    optionalDependencies:
+      zustand: 5.0.3(@types/react@19.1.2)(react@19.1.0)
 
   '@zod/core@0.10.0': {}
 
@@ -5870,6 +5908,8 @@ snapshots:
     dependencies:
       '@pkgr/core': 0.1.2
       tslib: 2.8.1
+
+  tailwind-merge@3.3.0: {}
 
   tapable@2.2.1: {}
 

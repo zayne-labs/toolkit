@@ -58,7 +58,7 @@ const createCustomContext = <TContextValue, TStrict extends boolean = true>(
 		return extendedContextValue as NonNullable<typeof extendedContextValue>;
 	};
 
-	return defineEnum([Context.Provider, useCustomContext]);
+	return defineEnum([Context, useCustomContext]);
 };
 
 export { createCustomContext };
