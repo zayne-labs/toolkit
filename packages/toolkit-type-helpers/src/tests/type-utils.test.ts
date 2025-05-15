@@ -29,8 +29,8 @@ type TypeTestsForWritable = [
 	// Test 6: Type with functions
 	Expect<
 		Equal<
-			Writeable<{ readonly a: string; readonly b: () => string }, "deep">,
-			{ a: string; b: () => string }
+			Writeable<ReadonlyArray<{ readonly a: readonly string[]; readonly b: () => string }>, "deep">,
+			Array<{ a: string[]; b: () => string }>
 		>
 	>,
 
