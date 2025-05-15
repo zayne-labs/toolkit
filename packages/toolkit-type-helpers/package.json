@@ -1,7 +1,7 @@
 {
 	"name": "@zayne-labs/toolkit-type-helpers",
 	"type": "module",
-	"version": "0.9.40",
+	"version": "0.9.42",
 	"packageManager": "pnpm@9.15.4",
 	"description": "A collection of utility functions, types and composables used by my other projects. Nothing too fancy but can be useful.",
 	"author": "Ryan Zayne",
@@ -60,8 +60,7 @@
 		"cross-env": "^7.0.3",
 		"publint": "^0.3.12",
 		"size-limit": "^11.2.0",
-		"terser": "^5.39.1",
-		"tsup": "^8.4.0",
+		"tsup": "^8.5.0",
 		"typescript": "5.8.3",
 		"vitest": "3.1.3"
 	},
