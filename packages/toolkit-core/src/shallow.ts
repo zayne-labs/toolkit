@@ -49,7 +49,7 @@ const compareIterables = (valueA: Iterable<unknown>, valueB: Iterable<unknown>) 
 	return Boolean(nextA.done) && Boolean(nextB.done);
 };
 
-export const shallow = <T>(valueA: T, valueB: T): boolean => {
+export const shallowCompare = <T>(valueA: T, valueB: T): boolean => {
 	if (Object.is(valueA, valueB)) {
 		return true;
 	}
@@ -70,4 +70,23 @@ export const shallow = <T>(valueA: T, valueB: T): boolean => {
 	}
 
 	return compareIterables(valueA, valueB);
+};
+
+export const shallowObjectCompare = (objA: Record<string, unknown>, objB: Record<string, unknown>) => {
+	const keysOfA = Object.keys(objA);
+
+	if (keysOfA.length !== Object.keys(objB).length) {
+		return false;
+	}
+
+	for (const keyInA of keysOfA) {
+		if (!Object.hasOwn(objB, keyInA)) {
+			return false;
+		}
+		if (!Object.is(objA[keyInA], objB[keyInA])) {
+			return false;
+		}
+	}
+
+	return true;
 };

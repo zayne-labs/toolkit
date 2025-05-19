@@ -9,6 +9,7 @@ export * from "./createScrollObserver";
 export * from "./createStore";
 export { debounce } from "./debounce";
 export * from "./fileValidation";
+export * from "./shallow";
 export * from "./lockScroll";
 export * from "./navigation";
 export * from "./omitKeys";
