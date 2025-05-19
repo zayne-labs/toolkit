@@ -3,7 +3,7 @@ import { createPromiseWithResolvers } from "./promise";
 
 type Delay = UnionDiscriminator<[{ milliseconds: number }, { seconds: number }]>;
 
-export const waitUntil = (delay: number | Delay) => {
+export const waitFor = (delay: number | Delay) => {
 	if (typeof delay === "number" || delay.seconds === 0 || delay.milliseconds === 0) return;
 
 	const { promise, resolve } = createPromiseWithResolvers();
@@ -21,7 +21,7 @@ export const waitUntil = (delay: number | Delay) => {
 	return promise;
 };
 
-export const waitUntilSync = (delay: number | Delay) => {
+export const waitForSync = (delay: number | Delay) => {
 	if (typeof delay === "number" || delay.seconds === 0 || delay.milliseconds === 0) return;
 
 	const startTime = performance.now();
