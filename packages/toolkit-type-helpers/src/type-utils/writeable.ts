@@ -1,6 +1,6 @@
 type ArrayOrObject = Record<number | string | symbol, unknown> | unknown[];
 
-export type WriteableVariantUnion = "deep" | "shallow";
+export type WriteableLevel = "deep" | "shallow";
 
 /**
  * Makes all properties in an object type writeable (removes readonly modifiers).
@@ -9,20 +9,19 @@ export type WriteableVariantUnion = "deep" | "shallow";
  * @template TVariant - The level of writeable transformation ("shallow" | "deep")
  */
 
-export type Writeable<
-	TObject,
-	TVariant extends WriteableVariantUnion = "shallow",
-> = TObject extends readonly [...infer TTupleItems]
+export type Writeable<TObject, TLevel extends WriteableLevel = "shallow"> = TObject extends readonly [
+	...infer TTupleItems,
+]
 	? [
 			...{
-				[Index in keyof TTupleItems]: TVariant extends "deep"
+				[Index in keyof TTupleItems]: TLevel extends "deep"
 					? Writeable<TTupleItems[Index], "deep">
 					: TTupleItems[Index];
 			},
 		]
 	: TObject extends ArrayOrObject
 		? {
-				-readonly [Key in keyof TObject]: TVariant extends "deep"
+				-readonly [Key in keyof TObject]: TLevel extends "deep"
 					? Writeable<TObject[Key], "deep">
 					: TObject[Key];
 			}

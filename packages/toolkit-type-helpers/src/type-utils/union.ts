@@ -62,7 +62,9 @@ export type UnionDiscriminator<
 		>
 	: TAccumulator;
 
-export type ExtractUnion<TObject, TVariant extends "keys" | "values" = "values"> = TObject extends
+export type UnionVariant = "keys" | "values";
+
+export type ExtractUnion<TObject, TVariant extends UnionVariant = "values"> = TObject extends
 	| Array<infer TUnion>
 	| ReadonlyArray<infer TUnion>
 	| Set<infer TUnion>
