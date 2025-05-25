@@ -1,4 +1,4 @@
-import { type Options, defineConfig } from "tsup";
+import { type Options, defineConfig } from "tsdown";
 
 const isDevMode = process.env.NODE_ENV === "development";
 
@@ -6,7 +6,6 @@ const sharedOptions = {
 	clean: true, // clean up dist folder,
 	format: ["esm"],
 	platform: "browser",
-	splitting: true,
 	target: "esnext",
 	treeshake: true,
 	tsconfig: "tsconfig.json",
@@ -25,12 +24,12 @@ const config = defineConfig([
 	{
 		...sharedOptions,
 		clean: true,
-		entry: ["src/resets/index.js"],
+		entry: ["src/resets/index.ts"],
 		name: "Resets",
 		async onSuccess() {
 			const { cp: copyDirectory } = await import("node:fs/promises");
 
-			return copyDirectory("src/resets", "dist/resets", { recursive: true });
+			return copyDirectory("src/resets/dts", "dist/resets", { recursive: true });
 		},
 		outDir: "./dist/resets",
 	},

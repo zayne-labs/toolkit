@@ -1,76 +1,76 @@
 {
-	"name": "@zayne-labs/toolkit-core",
-	"type": "module",
-	"version": "0.9.46",
-	"packageManager": "pnpm@9.15.4",
-	"description": "A collection of utility functions, types and composables used by my other projects. Nothing too fancy but can be useful.",
-	"author": "Ryan Zayne",
-	"license": "MIT",
-	"homepage": "https://github.com/zayne-labs/toolkit#readme",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/zayne-labs/toolkit.git"
-	},
-	"bugs": {
-		"url": "https://github.com/zayne-labs/toolkit/issues"
-	},
-	"keywords": [
-		"utilities",
-		"types",
-		"hooks"
-	],
-	"sideEffects": false,
-	"exports": "./dist/esm/index.js",
-	"files": [
-		"dist"
-	],
-	"engines": {
-		"node": ">=18.x"
-	},
-	"scripts": {
-		"build": "tsup",
-		"build:dev": "cross-env NODE_ENV=development tsup",
-		"build:test": "concurrently --prefix-colors \"yellow.bold,#7da4f8.bold,magenta\" --names PUBLINT,TSUP 'pnpm:lint:publint' 'pnpm:build:dev'",
-		"dev": "pnpm build:dev --watch",
-		"lint:attw": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
-		"lint:eslint": "eslint . --max-warnings 0",
-		"lint:eslint:interactive": "pnpx eslint-interactive@latest . --max-warnings 0 --fix",
-		"lint:format": "prettier --write .",
-		"lint:publint": "publint --strict .",
-		"lint:size": "size-limit",
-		"lint:type-check": "tsc --pretty  -p tsconfig.json",
-		"release": "pnpm publish --no-git-checks",
-		"release:test": "pnpx pkg-pr-new publish"
-	},
-	"dependencies": {
-		"@zayne-labs/toolkit-type-helpers": "workspace:*"
-	},
-	"devDependencies": {
-		"@arethetypeswrong/cli": "^0.18.1",
-		"@changesets/cli": "^2.29.4",
-		"@size-limit/esbuild-why": "^11.2.0",
-		"@size-limit/preset-small-lib": "^11.2.0",
-		"@total-typescript/ts-reset": "^0.6.1",
-		"@types/node": "^22.15.18",
-		"@zayne-labs/tsconfig": "0.8.2",
-		"clsx": "^2.1.1",
-		"concurrently": "^9.1.2",
-		"cross-env": "^7.0.3",
-		"publint": "^0.3.12",
-		"size-limit": "^11.2.0",
-		"tsup": "^8.5.0",
-		"typescript": "5.8.3",
-		"vitest": "^3.1.3"
-	},
-	"publishConfig": {
-		"access": "public",
-		"registry": "https://registry.npmjs.org/",
-		"provenance": true
-	},
-	"size-limit": [
-		{
-			"path": "./src/index.ts",
-			"limit": "5 kb"
-		}
-	]
+  "name": "@zayne-labs/toolkit-core",
+  "type": "module",
+  "version": "0.9.46",
+  "packageManager": "pnpm@9.15.4",
+  "description": "A collection of utility functions, types and composables used by my other projects. Nothing too fancy but can be useful.",
+  "author": "Ryan Zayne",
+  "license": "MIT",
+  "homepage": "https://github.com/zayne-labs/toolkit#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zayne-labs/toolkit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zayne-labs/toolkit/issues"
+  },
+  "keywords": [
+    "utilities",
+    "types",
+    "hooks"
+  ],
+  "sideEffects": false,
+  "exports": "./dist/esm/index.js",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18.x"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "build:dev": "cross-env NODE_ENV=development tsdown",
+    "build:test": "concurrently --prefix-colors \"yellow.bold,#7da4f8.bold,magenta\" --names PUBLINT,TSUP 'pnpm:lint:publint' 'pnpm:build:dev'",
+    "dev": "pnpm build:dev --watch",
+    "lint:attw": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
+    "lint:eslint": "eslint . --max-warnings 0",
+    "lint:eslint:interactive": "pnpx eslint-interactive@latest . --max-warnings 0 --fix",
+    "lint:format": "prettier --write .",
+    "lint:publint": "publint --strict .",
+    "lint:size": "size-limit",
+    "lint:type-check": "tsc --pretty  -p tsconfig.json",
+    "release": "pnpm publish --no-git-checks",
+    "release:test": "pnpx pkg-pr-new publish"
+  },
+  "dependencies": {
+    "@zayne-labs/toolkit-type-helpers": "workspace:*"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.1",
+    "@changesets/cli": "^2.29.4",
+    "@size-limit/esbuild-why": "^11.2.0",
+    "@size-limit/preset-small-lib": "^11.2.0",
+    "@total-typescript/ts-reset": "^0.6.1",
+    "@types/node": "^22.15.18",
+    "@zayne-labs/tsconfig": "0.8.2",
+    "clsx": "^2.1.1",
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "publint": "^0.3.12",
+    "size-limit": "^11.2.0",
+    "tsdown": "^0.12.3",
+    "typescript": "5.8.3",
+    "vitest": "^3.1.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/",
+    "provenance": true
+  },
+  "size-limit": [
+    {
+      "path": "./src/index.ts",
+      "limit": "5 kb"
+    }
+  ]
 }
