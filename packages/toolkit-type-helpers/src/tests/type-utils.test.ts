@@ -1,14 +1,8 @@
-import type { Writeable } from "@/type-utils";
+import type { Equal, Expect, Writeable } from "@/type-utils";
 import { expectTypeOf, test } from "vitest";
 
-// Type tests
-type Expect<T extends true> = T;
-
-type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? true : false;
-
 // Basic Type Level Tests
-// eslint-disable-next-line ts-eslint/no-unused-vars -- Need them for type tests
-type TypeTestsForWritable = [
+type IgnoredTypeTestsForWritable = [
 	// Test 1: Basic object
 	Expect<Equal<Writeable<{ readonly a: string }>, { a: string }>>,
 

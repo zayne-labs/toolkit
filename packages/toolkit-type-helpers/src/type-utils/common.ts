@@ -54,3 +54,10 @@ export type AnyNumber = number & Record<never, never>;
 
 // eslint-disable-next-line perfectionist/sort-union-types, perfectionist/sort-intersection-types -- I want TUnion to be first in the union
 export type LiteralUnion<TUnion extends TBase, TBase = string> = TUnion | (TBase & Record<never, never>);
+
+export type Expect<TType extends true> = TType;
+
+type GetGenericFn<TType> = <TGenericFnParam>() => TGenericFnParam extends TType ? true : false;
+
+export type Equal<TTypeOne, TTypeTwo> =
+	GetGenericFn<TTypeOne> extends GetGenericFn<TTypeTwo> ? true : false;
