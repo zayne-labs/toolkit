@@ -5,7 +5,7 @@ import type { Mutate, StoreMutatorIdentifier, UseBoundStore } from "zustand";
 
 type Get<T, K, F> = K extends keyof T ? T[K] : F;
 
-type StateCreator<
+export type StateCreator<
 	T,
 	Mis extends Array<[StoreMutatorIdentifier, unknown]> = [],
 	Mos extends Array<[StoreMutatorIdentifier, unknown]> = [],

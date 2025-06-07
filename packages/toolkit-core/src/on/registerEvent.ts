@@ -19,7 +19,7 @@ const registerSingleElement = (element: ElementOrSelector, config: RegisterConfi
 	}
 
 	if (isString(element)) {
-		const nodeOrNodeList = queryScope[queryType as "querySelector"](element);
+		const nodeOrNodeList = (queryScope[queryType] as Document["querySelector"])(element);
 
 		if (nodeOrNodeList instanceof NodeList) {
 			nodeOrNodeList.forEach((node) => node[actionType](event, listener as EventListener, options));
