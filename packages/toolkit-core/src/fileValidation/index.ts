@@ -1,2 +1,12 @@
 export * from "./handleFileValidation";
-export type { FileMeta, FileValidationOptions, FileValidationResult } from "./types";
+export type {
+	FileMeta,
+	FileValidationErrorContext,
+	FileValidationOptions,
+	FileValidationResult,
+	FileValidationSuccessContext,
+	ValidationHooks,
+	ValidationHooksAsync,
+	ValidationSettings,
+	ValidationSettingsAsync,
+} from "./types";
