@@ -1,5 +1,5 @@
 import { defineEnum, isFile, isNumber, isString } from "@zayne-labs/toolkit-type-helpers";
-import type { FileValidationOptions, ValidationSettings } from "./types";
+import type { FileValidationOptions, FileValidationSettings } from "./types";
 
 export const isValidFileType = (
 	file: File,
@@ -41,7 +41,7 @@ export const isDuplicateFile = (
 };
 
 export const isMaxFileCountReached = (
-	maxFileCount: Required<ValidationSettings>["maxFileCount"],
+	maxFileCount: Required<FileValidationSettings>["maxFileCount"],
 	existingFiles: Required<FileValidationOptions>["existingFiles"],
 	validFiles: Required<FileValidationOptions>["newFiles"]
 ) => {
@@ -53,7 +53,7 @@ const UNIT_MULTIPLIERS = defineEnum({
 	kb: 1,
 	mb: 2,
 	tb: 4,
-}) satisfies Record<keyof Extract<ValidationSettings["maxFileSize"], object>, number>;
+}) satisfies Record<keyof Extract<FileValidationSettings["maxFileSize"], object>, number>;
 
 /**
  * @description Converts various size formats to bytes
@@ -71,7 +71,7 @@ const UNIT_MULTIPLIERS = defineEnum({
  * toBytes({ kb: 500 }) // 500KB = 512,000 bytes
  * ```
  */
-export const toBytes = (size: Required<ValidationSettings>["maxFileSize"] | undefined) => {
+export const toBytes = (size: Required<FileValidationSettings>["maxFileSize"] | undefined) => {
 	if (size === undefined) return;
 
 	// Handle number input (default: bytes)

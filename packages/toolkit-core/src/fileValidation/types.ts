@@ -15,7 +15,7 @@ export interface FileValidationOptions<TVariant extends "async" | "sync" = "sync
 	/**
 	 * Callbacks for handling validation events
 	 */
-	hooks?: TVariant extends "sync" ? ValidationHooks : ValidationHooksAsync;
+	hooks?: TVariant extends "sync" ? FileValidationHooks : FileValidationHooksAsync;
 	/**
 	 * Files to validate
 	 */
@@ -23,7 +23,7 @@ export interface FileValidationOptions<TVariant extends "async" | "sync" = "sync
 	/**
 	 * Settings to configure validation behavior
 	 */
-	settings?: TVariant extends "sync" ? ValidationSettings : ValidationSettingsAsync;
+	settings?: TVariant extends "sync" ? FileValidationSettings : FileValidationSettingsAsync;
 }
 
 export interface FileValidationResult {
@@ -58,7 +58,7 @@ export interface FileValidationErrorContext {
 	/**
 	 * Name of the validation setting that caused the error
 	 */
-	cause: keyof ValidationSettings;
+	cause: keyof FileValidationSettings;
 	/**
 	 * Error code identifying the type of validation failure
 	 */
@@ -84,7 +84,7 @@ export interface FileValidationSuccessContext {
 	validFiles: File[];
 }
 
-export interface ValidationSettings {
+export interface FileValidationSettings {
 	/**
 	 * List of allowed file extensions/types (e.g. ['.jpg', '.png'])
 	 */
@@ -121,7 +121,7 @@ export interface ValidationSettings {
 		| undefined;
 }
 
-export interface ValidationHooks {
+export interface FileValidationHooks {
 	/**
 	 * Called when an individual file fails validation
 	 */
@@ -140,10 +140,10 @@ type ToAwaitableFn<TFunction> =
 	TFunction extends AnyFunction ? (...params: Parameters<TFunction>) => Awaitable<ReturnType<TFunction>>
 	:	TFunction;
 
-export type ValidationSettingsAsync = {
-	[Key in keyof ValidationSettings]: ToAwaitableFn<ValidationSettings[Key]>;
+export type FileValidationSettingsAsync = {
+	[Key in keyof FileValidationSettings]: ToAwaitableFn<FileValidationSettings[Key]>;
 };
 
-export type ValidationHooksAsync = {
-	[Key in keyof ValidationHooks]: ToAwaitableFn<ValidationHooks[Key]>;
+export type FileValidationHooksAsync = {
+	[Key in keyof FileValidationHooks]: ToAwaitableFn<FileValidationHooks[Key]>;
 };

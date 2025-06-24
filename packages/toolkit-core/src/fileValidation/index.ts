@@ -2,11 +2,11 @@ export * from "./handleFileValidation";
 export type {
 	FileMeta,
 	FileValidationErrorContext,
+	FileValidationHooks,
+	FileValidationHooksAsync,
 	FileValidationOptions,
 	FileValidationResult,
+	FileValidationSettings,
+	FileValidationSettingsAsync,
 	FileValidationSuccessContext,
-	ValidationHooks,
-	ValidationHooksAsync,
-	ValidationSettings,
-	ValidationSettingsAsync,
 } from "./types";
