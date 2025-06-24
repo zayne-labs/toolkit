@@ -129,7 +129,7 @@ export interface ValidationHooks {
 	/**
 	 * Called after all validation is complete if any files failed
 	 */
-	onErrorsCollected?: (context: Prettify<Pick<FileValidationResult, "errors">>) => void;
+	onErrorCollection?: (context: Prettify<Pick<FileValidationResult, "errors">>) => void;
 	/**
 	 * Called after all validation is complete if any files passed
 	 */

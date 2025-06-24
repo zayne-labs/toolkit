@@ -13,7 +13,7 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 
 	const maxFileSizeInBytes = toBytes(maxFileSize);
 
-	const { onError, onErrorsCollected, onSuccess } = hooks ?? {};
+	const { onError, onErrorCollection, onSuccess } = hooks ?? {};
 
 	//	== Loop through the uploaded fileList and validate each file
 
@@ -104,7 +104,7 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 
 	// Handle final callbacks
 	if (errors.length > 0) {
-		await onErrorsCollected?.({ errors });
+		await onErrorCollection?.({ errors });
 	}
 
 	if (validFiles.length > 0) {
