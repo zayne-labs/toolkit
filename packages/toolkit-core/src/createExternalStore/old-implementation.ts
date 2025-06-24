@@ -56,9 +56,9 @@ const createExternalStorageStore = <TState>(
 	const getInitialState = () => initialState;
 
 	const mergeCurrentStateWithNextState = (nextState: Partial<TState> | null, shouldReplace?: boolean) => {
-		return !shouldReplace && isObject(currentStorageState) && isObject(nextState)
-			? { ...currentStorageState, ...nextState }
-			: (nextState as TState);
+		return !shouldReplace && isObject(currentStorageState) && isObject(nextState) ?
+				{ ...currentStorageState, ...nextState }
+			:	(nextState as TState);
 	};
 
 	type InternalStoreApi = StorageStoreApi<TState>;

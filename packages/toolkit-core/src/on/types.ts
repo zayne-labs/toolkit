@@ -54,7 +54,6 @@ export type AddMediaEvents<
 // eslint-disable-next-line perfectionist/sort-union-types -- This order is important
 export type AddEventParams = AddHtmlEvents | AddMediaEvents | AddWindowEvents | AddDocumentEvents;
 
-/* eslint-disable ts-eslint/consistent-type-definitions  -- Needs an interface to allow users extend */
 export interface RegisterConfig {
 	/**
 	 * The event to attach to the element
@@ -118,5 +117,3 @@ export interface OFF {
 		...params: AddWindowEvents<TEvent, TNode>
 	): void;
 }
-
-/* eslint-enable ts-eslint/consistent-type-definitions -- Needs an interface to allow users extend */

@@ -1,5 +1,5 @@
 import { isFile } from "@zayne-labs/toolkit-type-helpers";
-import type { FileMeta } from "./fileValidation/handleFileValidation";
+import type { FileMeta } from "./fileValidation/types";
 
 type PreviewOptionsForObjectURL = {
 	onError?: (ctx: { error: TypeError | null }) => void;
@@ -18,18 +18,12 @@ export type PreviewOptions<TPreviewType extends PreviewTypeUnion> = {
 	objectURL: PreviewOptionsForObjectURL;
 }[TPreviewType] & { previewType?: TPreviewType };
 
-type GetImagePreviewResult<
-	TPreviewType extends PreviewTypeUnion,
-	TFile extends File | FileMeta,
-> = TFile extends FileMeta
-	? string | undefined
-	: PreviewTypeUnion extends TPreviewType
-		? string | undefined
-		: TPreviewType extends "objectURL"
-			? string | undefined
-			: TPreviewType extends "base64URL"
-				? null
-				: never;
+type GetImagePreviewResult<TPreviewType extends PreviewTypeUnion, TFile extends File | FileMeta> =
+	TFile extends FileMeta ? string | undefined
+	: PreviewTypeUnion extends TPreviewType ? string | undefined
+	: TPreviewType extends "objectURL" ? string | undefined
+	: TPreviewType extends "base64URL" ? null
+	: never;
 
 const createImagePreview = <TFile extends File | FileMeta, TPreviewType extends PreviewTypeUnion>(
 	file: TFile,

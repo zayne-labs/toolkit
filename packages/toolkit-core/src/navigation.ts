@@ -68,13 +68,13 @@ export const formatUrl = <TUrl extends string | PartialURLInfo>(url: TUrl): Form
 		searchString: search.toString(),
 	} satisfies URLInfoObject;
 
-	const formattedSearch = urlObject.searchString.startsWith(questionMark)
-		? urlObject.searchString
-		: `${questionMark}${urlObject.searchString}`;
+	const formattedSearch =
+		urlObject.searchString.startsWith(questionMark) ?
+			urlObject.searchString
+		:	`${questionMark}${urlObject.searchString}`;
 
-	const formattedHash = urlObject.hash.startsWith(hashMark)
-		? urlObject.hash
-		: `${hashMark}${urlObject.hash}`;
+	const formattedHash =
+		urlObject.hash.startsWith(hashMark) ? urlObject.hash : `${hashMark}${urlObject.hash}`;
 
 	const urlString = `${urlObject.pathname}${formattedSearch}${formattedHash}`;
 

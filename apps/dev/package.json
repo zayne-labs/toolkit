@@ -13,18 +13,18 @@
 		"@zayne-labs/toolkit-core": "workspace:*",
 		"@zayne-labs/toolkit-react": "workspace:*",
 		"@zayne-labs/toolkit-type-helpers": "workspace:*",
-		"@zayne-labs/ui-react": "^0.9.18",
+		"@zayne-labs/ui-react": "^0.9.21",
 		"react": "19.1.0",
 		"react-dom": "19.1.0"
 	},
 	"devDependencies": {
-		"@types/node": "^22.15.30",
-		"@types/react": "19.1.6",
+		"@types/node": "^24.0.4",
+		"@types/react": "19.1.8",
 		"@types/react-dom": "19.1.6",
-		"@vitejs/plugin-react-swc": "^3.10.1",
-		"@zayne-labs/tsconfig": "0.9.1",
-		"tsx": "^4.19.3",
+		"@vitejs/plugin-react-swc": "^3.10.2",
+		"@zayne-labs/tsconfig": "0.9.3",
+		"tsx": "^4.20.3",
 		"typescript": "5.8.3",
-		"vite": "^6.3.5"
+		"vite": "^7.0.0"
 	}
 }

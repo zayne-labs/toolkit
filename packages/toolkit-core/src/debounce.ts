@@ -48,9 +48,9 @@ const debounce = <TParams>(
 		$clearMainTimeout();
 
 		timeoutId = setTimeout(() => {
-			isArray(resolvedParams)
-				? callbackFn(...(resolvedParams as TParams[]))
-				: callbackFn(resolvedParams);
+			isArray(resolvedParams) ?
+				callbackFn(...(resolvedParams as TParams[]))
+			:	callbackFn(resolvedParams);
 
 			timeoutId = null;
 		}, overrideOptions?.$delay ?? delay) as never;
@@ -64,9 +64,9 @@ const debounce = <TParams>(
 			// == Cancel the main timeout before invoking callbackFn
 			$clearMainTimeout();
 
-			isArray(resolvedParams)
-				? callbackFn(...(resolvedParams as TParams[]))
-				: callbackFn(resolvedParams);
+			isArray(resolvedParams) ?
+				callbackFn(...(resolvedParams as TParams[]))
+			:	callbackFn(resolvedParams);
 
 			maxWaitTimeoutId = null;
 		}, options.maxWait) as never;

@@ -1,7 +1,7 @@
 import {
+	createExternalStorageStore,
 	type StorageOptions,
 	type StorageStoreApi,
-	createExternalStorageStore,
 } from "@zayne-labs/toolkit-core";
 import type { SelectorFn } from "@zayne-labs/toolkit-type-helpers";
 import { useConstant } from "./useConstant";
@@ -16,9 +16,8 @@ type UseStorageResult<TState, TSlice = TState> = [state: TSlice, actions: Storag
 export const createUseStorageState = <TState>(baseOptions: StorageOptions<TState>) => {
 	const externalStore = createExternalStorageStore(baseOptions);
 
-	type UseBoundStorageState = StorageStoreApi<TState> & {
-		<TSlice = TState>(selector?: SelectorFn<TState, TSlice>): UseStorageResult<TState, TSlice>;
-	};
+	type UseBoundStorageState = StorageStoreApi<TState>
+		& (<TSlice = TState>(selector?: SelectorFn<TState, TSlice>) => UseStorageResult<TState, TSlice>);
 
 	const useStorageState = <TSlice = TState>(
 		selector?: SelectorFn<TState, TSlice>

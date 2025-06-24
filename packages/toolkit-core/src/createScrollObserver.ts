@@ -9,12 +9,13 @@ export const createScrollObserver = <TElement extends HTMLElement>(
 ) => {
 	const { rootMargin = "10px 0px 0px 0px", ...restOfOptions } = options;
 
-	const elementObserver = isBrowser()
-		? new IntersectionObserver(
+	const elementObserver =
+		isBrowser() ?
+			new IntersectionObserver(
 				(entries, observer) => entries.forEach((entry) => options.onIntersection?.(entry, observer)),
 				{ rootMargin, ...restOfOptions }
 			)
-		: null;
+		:	null;
 
 	const handleObservation = (element: TElement | null) => {
 		const scrollWatcher = document.createElement("span");

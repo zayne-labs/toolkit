@@ -62,9 +62,9 @@ const createExternalStorageStore = <TState>(
 		if (equalityFn(nextState, previousState)) return;
 
 		const currentState =
-			!shouldReplace && isObject(previousState) && isObject(nextState)
-				? { ...previousState, ...nextState }
-				: (nextState as TState);
+			!shouldReplace && isObject(previousState) && isObject(nextState) ?
+				{ ...previousState, ...nextState }
+			:	(nextState as TState);
 
 		const possiblyPartializedState = partialize?.(currentState) ?? currentState;
 

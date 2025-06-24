@@ -48,21 +48,21 @@
 		"test:dev": "vitest dev"
 	},
 	"devDependencies": {
-		"@arethetypeswrong/cli": "^0.18.1",
-		"@changesets/cli": "^2.29.4",
+		"@arethetypeswrong/cli": "^0.18.2",
+		"@changesets/cli": "^2.29.5",
 		"@size-limit/esbuild-why": "^11.2.0",
 		"@size-limit/preset-small-lib": "^11.2.0",
 		"@total-typescript/ts-reset": "^0.6.1",
-		"@types/node": "^22.15.30",
-		"@zayne-labs/tsconfig": "0.9.1",
+		"@types/node": "^24.0.4",
+		"@zayne-labs/tsconfig": "0.9.3",
 		"clsx": "^2.1.1",
-		"concurrently": "^9.1.2",
+		"concurrently": "^9.2.0",
 		"cross-env": "^7.0.3",
 		"publint": "^0.3.12",
 		"size-limit": "^11.2.0",
-		"tsdown": "^0.12.7",
+		"tsdown": "^0.12.8",
 		"typescript": "5.8.3",
-		"vitest": "3.2.2"
+		"vitest": "3.2.4"
 	},
 	"publishConfig": {
 		"access": "public",

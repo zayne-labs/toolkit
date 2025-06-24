@@ -29,9 +29,9 @@ const createStore = <TState>(
 		if (equalityFn(nextState, previousState)) return;
 
 		currentState =
-			!shouldReplace && isObject(previousState) && isObject(nextState)
-				? { ...previousState, ...nextState }
-				: (nextState as TState);
+			!shouldReplace && isObject(previousState) && isObject(nextState) ?
+				{ ...previousState, ...nextState }
+			:	(nextState as TState);
 
 		listeners.forEach((onStoreChange) => onStoreChange(currentState, previousState));
 	};
