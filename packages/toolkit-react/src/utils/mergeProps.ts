@@ -1,10 +1,8 @@
 import { mergeTwoProps } from "./mergeTwoProps";
 
-type UnionToIntersection<TUnion> = (TUnion extends unknown ? (param: TUnion) => void : "") extends (
-	param: infer TParam
-) => void
-	? TParam
-	: "";
+type UnionToIntersection<TUnion> =
+	(TUnion extends unknown ? (param: TUnion) => void : "") extends (param: infer TParam) => void ? TParam
+	:	"";
 
 /**
  * Merges multiple sets of React props.

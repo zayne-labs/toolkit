@@ -14,13 +14,11 @@ type ErrorMessages<TType extends number | string | symbol = never> = Partial<
  */
 type AllowOnlyFirst<TFirstType, TSecondType, TErrorMessages extends ErrorMessages = never> = Prettify<
 	TFirstType & {
-		[Key in keyof Omit<TSecondType, keyof TFirstType>]?: Key extends keyof TErrorMessages
-			? TErrorMessages[Key]
-			: "$all" extends keyof TErrorMessages
-				? TErrorMessages["$all"]
-				: TErrorMessages extends null
-					? TErrorMessages
-					: never;
+		[Key in keyof Omit<TSecondType, keyof TFirstType>]?: Key extends keyof TErrorMessages ?
+			TErrorMessages[Key]
+		: "$all" extends keyof TErrorMessages ? TErrorMessages["$all"]
+		: TErrorMessages extends null ? TErrorMessages
+		: never;
 	}
 >;
 
@@ -30,12 +28,9 @@ type AllowOnlyFirst<TFirstType, TSecondType, TErrorMessages extends ErrorMessage
  * @template TArrayOfTypes Array of types to merge
  * @template TAccumulator Accumulator for the resulting merged type
  */
-type MergeTypes<
-	TArrayOfTypes extends unknown[],
-	TAccumulator = NonNullable<unknown>,
-> = TArrayOfTypes extends [infer TFirstType, ...infer TRest]
-	? MergeTypes<TRest, TAccumulator & TFirstType>
-	: TAccumulator;
+type MergeTypes<TArrayOfTypes extends unknown[], TAccumulator = NonNullable<unknown>> =
+	TArrayOfTypes extends [infer TFirstType, ...infer TRest] ? MergeTypes<TRest, TAccumulator & TFirstType>
+	:	TAccumulator;
 
 /**
  * Type utility that extracts discriminated properties from a union of types.
@@ -52,31 +47,28 @@ export type UnionDiscriminator<
 	TErrorMessages extends ErrorMessages<keyof MergeTypes<TArrayOfTypes>> = never,
 	TAccumulator = never,
 	TMergedProperties = MergeTypes<TArrayOfTypes>,
-> = TArrayOfTypes extends [infer TFirstType, ...infer TRest]
-	? UnionDiscriminator<
+> =
+	TArrayOfTypes extends [infer TFirstType, ...infer TRest] ?
+		UnionDiscriminator<
 			TRest,
 			TErrorMessages,
 			// eslint-disable-next-line perfectionist/sort-union-types -- Let TAccumulator be first
 			TAccumulator | AllowOnlyFirst<TFirstType, TMergedProperties, TErrorMessages>,
 			TMergedProperties
 		>
-	: TAccumulator;
+	:	TAccumulator;
 
 export type UnionVariant = "keys" | "values";
 
-export type ExtractUnion<TObject, TVariant extends UnionVariant = "values"> = TObject extends
-	| Array<infer TUnion>
-	| ReadonlyArray<infer TUnion>
-	| Set<infer TUnion>
-	? TUnion
-	: TObject extends Record<infer TKeys, infer TValues>
-		? TVariant extends "keys"
-			? TKeys
-			: Prettify<Writeable<TValues, "deep">>
-		: never;
+export type ExtractUnion<TObject, TVariant extends UnionVariant = "values"> =
+	TObject extends Array<infer TUnion> | ReadonlyArray<infer TUnion> | Set<infer TUnion> ? TUnion
+	: TObject extends Record<infer TKeys, infer TValues> ?
+		TVariant extends "keys" ?
+			TKeys
+		:	Prettify<Writeable<TValues, "deep">>
+	:	never;
 
-export type UnionToIntersection<TUnion> = (
-	TUnion extends unknown ? (param: TUnion) => void : never
-) extends (param: infer TParam) => void
-	? TParam
-	: never;
+export type UnionToIntersection<TUnion> =
+	(TUnion extends unknown ? (param: TUnion) => void : never) extends (param: infer TParam) => void ?
+		TParam
+	:	never;

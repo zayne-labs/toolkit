@@ -25,9 +25,8 @@ export type CustomContextOptions<TContextValue, TStrict extends boolean> = {
 	strict?: TStrict;
 };
 
-type UseCustomContextResult<TContextValue, TStrict extends boolean> = TStrict extends true
-	? TContextValue
-	: TContextValue | null;
+type UseCustomContextResult<TContextValue, TStrict extends boolean> =
+	TStrict extends true ? TContextValue : TContextValue | null;
 
 const createCustomContext = <TContextValue, TStrict extends boolean = true>(
 	options: CustomContextOptions<TContextValue, TStrict> = {}
