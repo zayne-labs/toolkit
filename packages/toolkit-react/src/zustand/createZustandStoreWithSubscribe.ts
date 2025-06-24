@@ -49,6 +49,6 @@ const createWithSubscribeImpl = <TState>(createState: StateCreator<TState>) => {
 };
 
 export const createWithSubscribe = (<TState>(stateInitializer: StateCreator<TState> | undefined) =>
-	stateInitializer
-		? createWithSubscribeImpl(stateInitializer)
-		: createWithSubscribeImpl) as CreateWithSubscribe;
+	stateInitializer ?
+		createWithSubscribeImpl(stateInitializer)
+	:	createWithSubscribeImpl) as CreateWithSubscribe;

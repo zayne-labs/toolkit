@@ -9,20 +9,17 @@ export type WriteableLevel = "deep" | "shallow";
  * @template TVariant - The level of writeable transformation ("shallow" | "deep")
  */
 
-export type Writeable<TObject, TLevel extends WriteableLevel = "shallow"> = TObject extends readonly [
-	...infer TTupleItems,
-]
-	? [
+export type Writeable<TObject, TLevel extends WriteableLevel = "shallow"> =
+	TObject extends readonly [...infer TTupleItems] ?
+		[
 			...{
-				[Index in keyof TTupleItems]: TLevel extends "deep"
-					? Writeable<TTupleItems[Index], "deep">
-					: TTupleItems[Index];
+				[Index in keyof TTupleItems]: TLevel extends "deep" ? Writeable<TTupleItems[Index], "deep">
+				:	TTupleItems[Index];
 			},
 		]
-	: TObject extends ArrayOrObject
-		? {
-				-readonly [Key in keyof TObject]: TLevel extends "deep"
-					? Writeable<TObject[Key], "deep">
-					: TObject[Key];
-			}
-		: TObject;
+	: TObject extends ArrayOrObject ?
+		{
+			-readonly [Key in keyof TObject]: TLevel extends "deep" ? Writeable<TObject[Key], "deep">
+			:	TObject[Key];
+		}
+	:	TObject;
