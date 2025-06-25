@@ -97,7 +97,8 @@ export interface FileValidationSettings {
 
 	/**
 	 * Maximum file size
-	 * By default, the value is in megabytes, but you can also use an object with gb, kb, mb, and bytes properties
+	 *
+	 * By default, the value is in bytes, but you can also use an object with kb, mb, gb etc as properties
 	 */
 	maxFileSize?:
 		| number
