@@ -7,7 +7,7 @@ import { formatBytes, isDuplicateFile, isMaxFileCountReached, isValidFileType, t
  * @internal
  */
 const executeValidation = async (options: FileValidationOptions<"async"> & FileValidationResult) => {
-	const { errors, existingFiles = [], hooks, newFiles, settings, validFiles } = options;
+	const { errors, existingFiles = [], hooks, newFiles = [], settings, validFiles } = options;
 
 	const { allowedFileTypes, maxFileCount, maxFileSize, rejectDuplicateFiles, validator } = settings ?? {};
 
@@ -19,6 +19,8 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 
 	/* eslint-disable no-await-in-loop -- Required for async validation */
 	for (const file of newFiles) {
+		if (!file) continue;
+
 		if (maxFileCount && isMaxFileCountReached(maxFileCount, existingFiles, validFiles)) {
 			const context = {
 				cause: "maxFileCount",

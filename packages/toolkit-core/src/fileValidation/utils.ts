@@ -45,7 +45,7 @@ export const isMaxFileCountReached = (
 	existingFiles: Required<FileValidationOptions>["existingFiles"],
 	validFiles: Required<FileValidationOptions>["newFiles"]
 ) => {
-	return existingFiles.length === maxFileCount || validFiles.length === maxFileCount;
+	return existingFiles.length === maxFileCount || validFiles?.length === maxFileCount;
 };
 
 const UNIT_MULTIPLIERS = defineEnum({

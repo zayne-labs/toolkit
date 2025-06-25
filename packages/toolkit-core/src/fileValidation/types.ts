@@ -19,7 +19,7 @@ export interface FileValidationOptions<TVariant extends "async" | "sync" = "sync
 	/**
 	 * Files to validate
 	 */
-	newFiles: File[] | FileList;
+	newFiles: Array<File | undefined> | FileList | undefined;
 	/**
 	 * Settings to configure validation behavior
 	 */
