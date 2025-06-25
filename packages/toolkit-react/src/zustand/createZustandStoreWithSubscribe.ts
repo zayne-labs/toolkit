@@ -1,7 +1,7 @@
-import { useStore } from "@/hooks";
-import { type StoreApi, createStore } from "@zayne-labs/toolkit-core";
+import { createStore, type StoreApi } from "@zayne-labs/toolkit-core";
 import type { SelectorFn } from "@zayne-labs/toolkit-type-helpers";
 import type { Mutate, StoreMutatorIdentifier, UseBoundStore } from "zustand";
+import { useStore } from "@/hooks";
 
 type Get<T, K, F> = K extends keyof T ? T[K] : F;
 

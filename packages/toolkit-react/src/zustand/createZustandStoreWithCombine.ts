@@ -1,5 +1,5 @@
 import type { AnyFunction, AnyObject, Prettify } from "@zayne-labs/toolkit-type-helpers";
-import { type StateCreator, type StoreMutatorIdentifier, create, createStore } from "zustand";
+import { create, createStore, type StateCreator, type StoreMutatorIdentifier } from "zustand";
 
 type Write<TInitialState, TExtraState> = Prettify<Omit<TInitialState, keyof TExtraState> & TExtraState>;
 
