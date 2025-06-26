@@ -1,8 +1,8 @@
+import { isIterable, isObject } from "@zayne-labs/toolkit-type-helpers";
+
 /*
  * Copied from https://github.com/pmndrs/zustand/blob/main/src/vanilla/shallow.ts
  */
-
-import { isIterable, isObject } from "@zayne-labs/toolkit-type-helpers";
 
 type RecordWithEntries = {
 	entries: () => Iterable<[unknown, unknown]>;
@@ -58,18 +58,28 @@ export const shallowCompare = <T>(valueA: T, valueB: T): boolean => {
 		return false;
 	}
 
-	if (!isIterable(valueA) || !isIterable(valueB)) {
-		return compareEntries(
-			{ entries: () => Object.entries(valueA) },
-			{ entries: () => Object.entries(valueB) }
-		);
+	if (Object.getPrototypeOf(valueA) !== Object.getPrototypeOf(valueB)) {
+		return false;
 	}
 
-	if (hasIterableEntries(valueA) && hasIterableEntries(valueB)) {
+	if (
+		isIterable(valueA)
+		&& isIterable(valueB)
+		&& hasIterableEntries(valueA)
+		&& hasIterableEntries(valueB)
+	) {
 		return compareEntries(valueA, valueB);
 	}
 
-	return compareIterables(valueA, valueB);
+	if (isIterable(valueA) && isIterable(valueB)) {
+		return compareIterables(valueA, valueB);
+	}
+
+	// == Assume plain objects
+	return compareEntries(
+		{ entries: () => Object.entries(valueA) },
+		{ entries: () => Object.entries(valueB) }
+	);
 };
 
 export const shallowObjectCompare = (objA: Record<string, unknown>, objB: Record<string, unknown>) => {

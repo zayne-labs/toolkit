@@ -9,7 +9,7 @@ export { useCopyToClipboard } from "./useCopyToClipboard";
 export * from "./useDebounce";
 export { useDisclosure } from "./useDisclosure";
 export { useIsServer } from "./useIsServer";
-export { useShallowCompare } from "./useShallowCompare";
+export * from "./useShallowCompare";
 export * from "./useLocationState";
 export { usePresence } from "./usePresence/usePresence";
 export { useScrollObserver } from "./useScrollObserver";

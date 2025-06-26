@@ -17,7 +17,7 @@ export { parseJSON } from "./parseJSON";
 export * from "./pickKeys";
 export * from "./promise";
 export * from "./setAnimationInterval";
-export * from "./shallow";
+export * from "./shallowCompare";
 export { syncStateWithStorage } from "./syncStateWithStorage";
 export * from "./throttle";
 export * from "./wait";
