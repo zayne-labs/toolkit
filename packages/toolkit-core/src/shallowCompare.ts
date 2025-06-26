@@ -14,15 +14,17 @@ const hasIterableEntries = (value: Iterable<unknown>): value is Iterable<unknown
 };
 
 const compareEntries = (valueA: RecordWithEntries, valueB: RecordWithEntries) => {
-	const mapA = valueA instanceof Map ? valueA : new Map(valueA.entries());
-	const mapB = valueB instanceof Map ? valueB : new Map(valueB.entries());
+	const mapA = valueA instanceof Map ? (valueA as Map<unknown, unknown>) : new Map(valueA.entries());
+	const mapB = valueB instanceof Map ? (valueB as Map<unknown, unknown>) : new Map(valueB.entries());
 
 	if (mapA.size !== mapB.size) {
 		return false;
 	}
 
-	for (const [key, value] of mapA) {
-		if (!Object.is(value, mapB.get(key))) {
+	for (const [keyInA, valueInA] of mapA) {
+		const valueInB = mapB.get(keyInA);
+
+		if (!Object.is(valueInA, valueInB)) {
 			return false;
 		}
 	}
