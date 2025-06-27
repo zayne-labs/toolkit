@@ -1,7 +1,7 @@
+import type { StoreApi } from "@zayne-labs/toolkit-core";
 import type { SelectorFn } from "@zayne-labs/toolkit-type-helpers";
 import { createElement } from "react";
-import { type CustomContextOptions, createCustomContext, useConstant, useStore } from "../hooks";
-import type { StoreApi } from "@zayne-labs/toolkit-core";
+import { type CustomContextOptions, createCustomContext, useStore } from "../hooks";
 
 const createZustandContext = <
 	TState extends Record<string, unknown>,
@@ -19,9 +19,7 @@ const createZustandContext = <
 	function ZustandStoreContextProvider(props: ZustandStoreContextProviderProps) {
 		const { children, store } = props;
 
-		const zustandStore = useConstant(() => store);
-
-		return createElement(Provider, { value: zustandStore }, children);
+		return createElement(Provider, { value: store }, children);
 	}
 
 	const useZustandStoreContext = <TResult = TState>(selector?: SelectorFn<TState, TResult>): TResult => {
