@@ -60,7 +60,7 @@ export type UnionDiscriminator<
 
 export type UnionVariant = "keys" | "values";
 
-export type ExtractUnion<TObject, TVariant extends UnionVariant = "values"> =
+export type ExtractUnion<TObject, TVariant extends UnionVariant = "keys"> =
 	TObject extends Array<infer TUnion> | ReadonlyArray<infer TUnion> | Set<infer TUnion> ? TUnion
 	: TObject extends Record<infer TKeys, infer TValues> ?
 		TVariant extends "keys" ?

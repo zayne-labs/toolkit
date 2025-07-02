@@ -1,6 +1,6 @@
 import { useRef } from "react";
 
-const useConstant = <TResult>(initCallbackFn: () => TResult) => {
+export const useConstant = <TResult>(initCallbackFn: () => TResult): TResult => {
 	const resultRef = useRef<TResult | null>(null);
 
 	// eslint-disable-next-line ts-eslint/prefer-nullish-coalescing -- The current case is justified since it's optimizable by the react compiler
@@ -11,4 +11,13 @@ const useConstant = <TResult>(initCallbackFn: () => TResult) => {
 	return resultRef.current;
 };
 
-export { useConstant };
+export const useLazyRef = <TResult>(initCallbackFn: () => TResult): React.RefObject<TResult> => {
+	const resultRef = useRef<TResult | null>(null);
+
+	// eslint-disable-next-line ts-eslint/prefer-nullish-coalescing -- The current case is justified since it's optimizable by the react compiler
+	if (resultRef.current === null) {
+		resultRef.current = initCallbackFn();
+	}
+
+	return resultRef as React.RefObject<TResult>;
+};
