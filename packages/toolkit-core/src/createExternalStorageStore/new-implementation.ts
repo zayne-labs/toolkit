@@ -1,9 +1,9 @@
+import { isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
 import { createStore } from "@/createStore";
 import { on } from "@/on";
 import { parseJSON } from "@/parseJSON";
-import { isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
 import type { StorageOptions, StorageStoreApi } from "./types";
-import { dispatchStorageEvent } from "./utils";
+import { dispatchStorageEvent, safeParser } from "./utils";
 
 const createExternalStorageStore = <TState>(
 	options: StorageOptions<TState> = {} as never
@@ -13,7 +13,7 @@ const createExternalStorageStore = <TState>(
 		initialValue = null as never,
 		key,
 		logger = console.info,
-		parser = parseJSON<TState>,
+		parser = parseJSON<TState> as never,
 		partialize,
 		serializer = JSON.stringify,
 		storageArea = "localStorage",
@@ -24,14 +24,8 @@ const createExternalStorageStore = <TState>(
 
 	let rawStorageValue = selectedStorage.getItem(key);
 
-	const safeParser = (value: string | null) => {
-		try {
-			return parser(value) as TState;
-		} catch (error) {
-			logger(error);
-			return null as never;
-		}
-	};
+	const internalSafeParser = (value: Parameters<typeof safeParser>[0]) =>
+		safeParser(value, parser, logger);
 
 	const getInitialStorageValue = () => {
 		if (!rawStorageValue) {
@@ -48,7 +42,8 @@ const createExternalStorageStore = <TState>(
 		}
 	};
 
-	const initialStoreState = rawStorageValue ? safeParser(rawStorageValue) : getInitialStorageValue();
+	const initialStoreState =
+		rawStorageValue ? internalSafeParser(rawStorageValue) : getInitialStorageValue();
 
 	const internalStoreApi = createStore(() => initialStoreState);
 
@@ -101,7 +96,7 @@ const createExternalStorageStore = <TState>(
 			// Return early if event is not for our key/storage
 			if (event.key !== key || event.storageArea !== selectedStorage) return;
 
-			internalStoreApi.setState(safeParser(event.newValue));
+			internalStoreApi.setState(internalSafeParser(event.newValue));
 			rawStorageValue = event.newValue;
 
 			unsubscribe = internalStoreApi.subscribe(onStoreChange, { fireListenerImmediately: true });

@@ -2,7 +2,7 @@ export { checkIsDeviceMobile } from "./checkIsDeviceMobile";
 export * from "./common-utils";
 export * from "./constants";
 export { copyToClipboard } from "./copyToClipboard";
-export * from "./createExternalStore";
+export * from "./createExternalStorageStore";
 export * from "./createImagePreview";
 export * from "./createLocationStore";
 export * from "./createScrollObserver";

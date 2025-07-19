@@ -77,3 +77,16 @@ export const isAsyncFunction = <TAsyncFunction extends AnyAsyncFunction>(
 export const isFile = (value: unknown): value is File => value instanceof File;
 
 export const isIterable = <TIterable>(obj: object): obj is Iterable<TIterable> => Symbol.iterator in obj;
+
+export const isJsonString = (value: unknown): value is string => {
+	if (!isString(value)) {
+		return false;
+	}
+
+	try {
+		JSON.parse(value);
+		return true;
+	} catch {
+		return false;
+	}
+};

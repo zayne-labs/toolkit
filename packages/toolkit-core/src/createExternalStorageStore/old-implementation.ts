@@ -1,8 +1,8 @@
+import { isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
 import { on } from "@/on";
 import { parseJSON } from "@/parseJSON";
-import { isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
 import type { StorageOptions, StorageStoreApi } from "./types";
-import { type DispatchOptions, dispatchStorageEvent } from "./utils";
+import { type DispatchOptions, dispatchStorageEvent, safeParser } from "./utils";
 
 const createExternalStorageStore = <TState>(
 	options: StorageOptions<TState> = {} as never
@@ -12,7 +12,7 @@ const createExternalStorageStore = <TState>(
 		initialValue = null as never,
 		key,
 		logger = console.info,
-		parser = parseJSON<TState>,
+		parser = parseJSON<TState> as never,
 		partialize = (state) => state,
 		serializer = JSON.stringify,
 		storageArea = "localStorage",
@@ -38,16 +38,10 @@ const createExternalStorageStore = <TState>(
 		}
 	};
 
-	const safeParser = (value: string | null) => {
-		try {
-			return parser(value) as TState;
-		} catch (error) {
-			logger(error);
-			return null as never;
-		}
-	};
+	const internalSafeParser = (value: Parameters<typeof safeParser>[0]) =>
+		safeParser(value, parser, logger);
 
-	const initialState = rawStorageValue ? safeParser(rawStorageValue) : getInitialStorageValue();
+	const initialState = rawStorageValue ? internalSafeParser(rawStorageValue) : getInitialStorageValue();
 
 	let currentStorageState = initialState;
 
@@ -94,9 +88,9 @@ const createExternalStorageStore = <TState>(
 
 			if (actualEvent.key !== key || actualEvent.storageArea !== selectedStorage) return;
 
-			const previousState = safeParser(actualEvent.oldValue);
+			const previousState = internalSafeParser(actualEvent.oldValue);
 
-			currentStorageState = safeParser(actualEvent.newValue);
+			currentStorageState = internalSafeParser(actualEvent.newValue);
 
 			rawStorageValue = actualEvent.newValue;
 

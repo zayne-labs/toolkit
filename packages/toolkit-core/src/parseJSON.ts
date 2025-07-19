@@ -1,4 +1,6 @@
 /* eslint-disable unicorn/filename-case -- leave as is */
+import { isString } from "@zayne-labs/toolkit-type-helpers";
+
 type ParseJSON = {
 	<TResult>(value: string): TResult;
 	<TResult>(value: string | null | undefined): TResult | null;
@@ -7,7 +9,7 @@ type ParseJSON = {
 
 // Implementation
 const parseJSON: ParseJSON = <TResult>(value: unknown, defaultValue = null) => {
-	if (typeof value !== "string") {
+	if (!isString(value)) {
 		return defaultValue;
 	}
 
