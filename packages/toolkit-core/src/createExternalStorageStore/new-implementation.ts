@@ -20,7 +20,7 @@ const createExternalStorageStore = <TState>(
 		syncStateAcrossTabs = true,
 	} = options;
 
-	const selectedStorage = window[storageArea];
+	const { [storageArea]: selectedStorage } = globalThis;
 
 	let rawStorageValue = selectedStorage.getItem(key);
 
@@ -102,8 +102,7 @@ const createExternalStorageStore = <TState>(
 			unsubscribe = internalStoreApi.subscribe(onStoreChange, { fireListenerImmediately: true });
 		};
 
-		// eslint-disable-next-line unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window
-		const cleanup = on("storage", window, handleStorageChange);
+		const cleanup = on("storage", globalThis, handleStorageChange);
 
 		return () => {
 			cleanup();

@@ -19,7 +19,7 @@ const createExternalStorageStore = <TState>(
 		syncStateAcrossTabs = true,
 	} = options;
 
-	const selectedStorage = window[storageArea];
+	const { [storageArea]: selectedStorage } = globalThis;
 
 	let rawStorageValue = selectedStorage.getItem(key);
 
@@ -97,15 +97,9 @@ const createExternalStorageStore = <TState>(
 			onStoreChange(currentStorageState, previousState);
 		};
 
-		const storageStoreCleanup = on(
-			"storage-store-change" as never,
-			// eslint-disable-next-line unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window
-			window,
-			handleStorageChange
-		);
+		const storageStoreCleanup = on("storage-store-change" as never, globalThis, handleStorageChange);
 
-		// eslint-disable-next-line unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window
-		const storageCleanup = syncStateAcrossTabs ? on("storage", window, handleStorageChange) : null;
+		const storageCleanup = syncStateAcrossTabs ? on("storage", globalThis, handleStorageChange) : null;
 
 		return () => {
 			storageStoreCleanup();

@@ -24,16 +24,16 @@ const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreA
 	// TODO - Apply shallow equality here
 	const { equalityFn = Object.is } = options;
 
-	const getSearchParam = () => new URLSearchParams(isBrowser() ? window.location.search : "");
+	const getSearchParam = () => new URLSearchParams(isBrowser() ? globalThis.location.search : "");
 
 	const initialSearchParam = getSearchParam();
 
 	const initialState = {
-		hash: isBrowser() ? window.location.hash : "",
-		pathname: isBrowser() ? window.location.pathname : "",
+		hash: isBrowser() ? globalThis.location.hash : "",
+		pathname: isBrowser() ? globalThis.location.pathname : "",
 		search: initialSearchParam,
 		searchString: initialSearchParam.toString(),
-		state: isBrowser() ? (window.history.state as LocationInfo["state"]) : null,
+		state: isBrowser() ? (globalThis.history.state as LocationInfo["state"]) : null,
 	} satisfies LocationInfo;
 
 	let currentLocationState: LocationInfo = initialState;
@@ -47,7 +47,7 @@ const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreA
 	 * @see https://stackoverflow.com/a/37492075/18813022
 	 */
 	const triggerPopstateEvent: LocationStoreApi["triggerPopstateEvent"] = (nextLocationState) => {
-		window.dispatchEvent(new PopStateEvent("popstate", { state: nextLocationState }));
+		globalThis.dispatchEvent(new PopStateEvent("popstate", { state: nextLocationState }));
 	};
 
 	const setState = (newURL: string | PartialURLInfo, navigationOptions?: NavigationOptions) => {
@@ -77,7 +77,7 @@ const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreA
 
 		if (!nextUrlString) return;
 
-		window.history.pushState(historyState, "", nextUrlString);
+		globalThis.history.pushState(historyState, "", nextUrlString);
 	};
 
 	const replace: LocationStoreApi["replace"] = (newURL, navigationOptions) => {
@@ -85,18 +85,18 @@ const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreA
 
 		if (!nextUrlString) return;
 
-		window.history.replaceState(historyState, "", nextUrlString);
+		globalThis.history.replaceState(historyState, "", nextUrlString);
 	};
 
 	const getCurrentLocationObject = () => {
 		const currentSearchParams = getSearchParam();
 
 		return {
-			hash: window.location.hash,
-			pathname: window.location.pathname,
+			hash: globalThis.location.hash,
+			pathname: globalThis.location.pathname,
 			search: currentSearchParams,
 			searchString: currentSearchParams.toString(),
-			state: window.history.state as LocationInfo["state"],
+			state: globalThis.history.state as LocationInfo["state"],
 		};
 	};
 

@@ -1,6 +1,8 @@
 import type { NonEmptyArray } from "@zayne-labs/toolkit-type-helpers";
 
-export type PossibleNodes = Document | Element | HTMLElement | MediaQueryList | Window | null;
+type WindowOrGlobalThis = typeof globalThis;
+
+export type PossibleNodes = Document | Element | HTMLElement | MediaQueryList | WindowOrGlobalThis | null;
 
 export type ElementOrSelector = string | PossibleNodes;
 
@@ -23,7 +25,7 @@ export type AddHtmlEvents<
 
 export type AddWindowEvents<
 	TEvent extends keyof WindowEventMap = keyof WindowEventMap,
-	TNode extends Window = Window,
+	TNode extends WindowOrGlobalThis = WindowOrGlobalThis,
 > = [
 	event: TEvent,
 	element: TNode,
@@ -98,7 +100,7 @@ export interface ON {
 	<TEvent extends keyof MediaQueryListEventMap, TNode extends MediaQueryList>(
 		...params: AddMediaEvents<TEvent, TNode>
 	): CleanupFn;
-	<TEvent extends keyof WindowEventMap, TNode extends Window>(
+	<TEvent extends keyof WindowEventMap, TNode extends WindowOrGlobalThis>(
 		...params: AddWindowEvents<TEvent, TNode>
 	): CleanupFn;
 }
@@ -113,7 +115,7 @@ export interface OFF {
 	<TEvent extends keyof MediaQueryListEventMap, TNode extends MediaQueryList>(
 		...params: AddMediaEvents<TEvent, TNode>
 	): void;
-	<TEvent extends keyof WindowEventMap, TNode extends Window>(
+	<TEvent extends keyof WindowEventMap, TNode extends WindowOrGlobalThis>(
 		...params: AddWindowEvents<TEvent, TNode>
 	): void;
 }

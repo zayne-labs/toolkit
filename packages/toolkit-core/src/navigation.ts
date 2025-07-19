@@ -81,14 +81,12 @@ export const formatUrl = <TUrl extends string | PartialURLInfo>(url: TUrl): Form
 	return { urlObject, urlString } as never;
 };
 
-/* eslint-disable unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window */
-
 export const pushState = (url: string | PartialURLInfo, options?: { state?: PartialURLInfo["state"] }) => {
 	const { urlObject, urlString } = formatUrl(url);
 
 	const { state = urlObject?.state } = options ?? {};
 
-	window.history.pushState(state, "", urlString);
+	globalThis.history.pushState(state, "", urlString);
 };
 
 export const replaceState = (
@@ -99,13 +97,11 @@ export const replaceState = (
 
 	const { state = urlObject?.state } = options ?? {};
 
-	window.history.replaceState(state, "", urlString);
+	globalThis.history.replaceState(state, "", urlString);
 };
 
 export const hardNavigate = (url: string | Partial<PartialURLInfo> | URL, type?: "assign" | "replace") => {
 	const { urlString } = formatUrl(url);
 
-	window.location[type ?? "assign"](urlString);
+	globalThis.location[type ?? "assign"](urlString);
 };
-
-/* eslint-enable unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window */
