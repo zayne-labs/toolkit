@@ -3,8 +3,17 @@ import type { StorageOptions } from "./types";
 
 export type DispatchOptions = StorageEventInit & {
 	key: string;
-	storageArea: Storage;
+	storageArea: Storage | undefined;
 };
+
+export const getStorage = <TValue>(
+	storageArea: StorageOptions<TValue>["storageArea"]
+): Storage | undefined => {
+	const selectedStorage = globalThis[storageArea ?? `localStorage`];
+
+	return selectedStorage;
+};
+
 export const dispatchStorageEvent = (dispatchOptions: DispatchOptions) => {
 	const { url = globalThis.location.href, ...restOfOptions } = dispatchOptions;
 

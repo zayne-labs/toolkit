@@ -2,7 +2,7 @@ import { isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
 import { on } from "@/on";
 import { parseJSON } from "@/parseJSON";
 import type { StorageOptions, StorageStoreApi } from "./types";
-import { type DispatchOptions, dispatchStorageEvent, safeParser } from "./utils";
+import { type DispatchOptions, dispatchStorageEvent, getStorage, safeParser } from "./utils";
 
 const createExternalStorageStore = <TState>(
 	options: StorageOptions<TState> = {} as never
@@ -19,9 +19,9 @@ const createExternalStorageStore = <TState>(
 		syncStateAcrossTabs = true,
 	} = options;
 
-	const { [storageArea]: selectedStorage } = globalThis;
+	const selectedStorage = getStorage(storageArea);
 
-	let rawStorageValue = selectedStorage.getItem(key);
+	let rawStorageValue = selectedStorage?.getItem(key);
 
 	const getInitialStorageValue = () => {
 		try {
@@ -72,7 +72,7 @@ const createExternalStorageStore = <TState>(
 
 		const oldValue = rawStorageValue;
 
-		selectedStorage.setItem(key, newValue);
+		selectedStorage?.setItem(key, newValue);
 
 		dispatchStorageEvent({
 			key,
@@ -130,7 +130,7 @@ const createExternalStorageStore = <TState>(
 	};
 
 	const removeState = () => {
-		selectedStorage.removeItem(key);
+		selectedStorage?.removeItem(key);
 
 		dispatchStorageEvent({ key, storageArea: selectedStorage });
 	};

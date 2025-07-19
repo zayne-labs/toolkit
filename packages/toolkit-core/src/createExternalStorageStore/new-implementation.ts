@@ -3,7 +3,7 @@ import { createStore } from "@/createStore";
 import { on } from "@/on";
 import { parseJSON } from "@/parseJSON";
 import type { StorageOptions, StorageStoreApi } from "./types";
-import { dispatchStorageEvent, safeParser } from "./utils";
+import { dispatchStorageEvent, getStorage, safeParser } from "./utils";
 
 const createExternalStorageStore = <TState>(
 	options: StorageOptions<TState> = {} as never
@@ -20,9 +20,9 @@ const createExternalStorageStore = <TState>(
 		syncStateAcrossTabs = true,
 	} = options;
 
-	const { [storageArea]: selectedStorage } = globalThis;
+	const selectedStorage = getStorage(storageArea);
 
-	let rawStorageValue = selectedStorage.getItem(key);
+	let rawStorageValue = selectedStorage?.getItem(key);
 
 	const internalSafeParser = (value: Parameters<typeof safeParser>[0]) =>
 		safeParser(value, parser, logger);
@@ -67,7 +67,7 @@ const createExternalStorageStore = <TState>(
 
 		const oldValue = rawStorageValue;
 
-		selectedStorage.setItem(key, newValue);
+		selectedStorage?.setItem(key, newValue);
 
 		dispatchStorageEvent({
 			key,
@@ -133,7 +133,7 @@ const createExternalStorageStore = <TState>(
 	};
 
 	const removeState = () => {
-		selectedStorage.removeItem(key);
+		selectedStorage?.removeItem(key);
 
 		dispatchStorageEvent({ key, storageArea: selectedStorage });
 	};
