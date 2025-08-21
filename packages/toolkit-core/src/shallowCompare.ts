@@ -24,7 +24,7 @@ const compareEntries = (valueA: RecordWithEntries, valueB: RecordWithEntries) =>
 	for (const [keyInA, valueInA] of mapA) {
 		const valueInB = mapB.get(keyInA);
 
-		if (!Object.is(valueInA, valueInB)) {
+		if (!mapB.has(keyInA) || !Object.is(valueInA, valueInB)) {
 			return false;
 		}
 	}

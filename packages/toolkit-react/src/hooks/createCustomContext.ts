@@ -3,12 +3,6 @@ import { createContext, use } from "react";
 
 export class ContextError extends Error {
 	override name = "ContextError";
-
-	constructor(...args: Parameters<typeof Error>) {
-		super(...args);
-
-		Error.captureStackTrace(this, this.constructor);
-	}
 }
 
 export const getErrorMessage = (hook: string, provider: string) => {

@@ -1,6 +1,6 @@
 import type { StoreApi } from "@zayne-labs/toolkit-core";
 import type { SelectorFn } from "@zayne-labs/toolkit-type-helpers";
-import { useDebugValue, useSyncExternalStore } from "react";
+import { useCallback, useDebugValue, useSyncExternalStore } from "react";
 
 const identity = <TState>(value: TState) => value;
 
@@ -10,8 +10,8 @@ const useStore = <TState, TSlice = TState>(
 ) => {
 	const slice = useSyncExternalStore(
 		store.subscribe,
-		() => selector(store.getState()),
-		() => selector(store.getInitialState())
+		useCallback(() => selector(store.getState()), [store, selector]),
+		useCallback(() => selector(store.getInitialState()), [store, selector])
 	);
 
 	useDebugValue(slice);
