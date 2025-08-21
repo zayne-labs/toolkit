@@ -13,7 +13,7 @@ export type StateSetter<TSetter = unknown> = React.Dispatch<React.SetStateAction
 export type CssWithCustomProperties<TExtra extends Record<string, string> = NonNullable<unknown>> =
 	React.CSSProperties & Record<`--${string}`, string> & TExtra; // Allows Ts support for inline css variables
 
-type DefaultPossibleMessages = {
+export type DefaultRenderErrorMessages = {
 	children: "Hey, Sorry but the children prop is redundant since you're currently using the render prop to do the same thing";
 	renderItem: "Hey, Sorry but the renderItem prop is redundant since you're currently using the children prop to do the same thing";
 };
@@ -26,5 +26,5 @@ type DefaultPossibleMessages = {
  */
 export type DiscriminatedRenderProps<
 	TRenderPropType,
-	TErrorMessages extends Record<"children" | "renderItem", string> = DefaultPossibleMessages,
-> = UnionDiscriminator<[{ children: TRenderPropType }, { render: TRenderPropType }], TErrorMessages>;
+	TErrorMessages extends Record<keyof DefaultRenderErrorMessages, string> = DefaultRenderErrorMessages,
+> = UnionDiscriminator<[{ children: TRenderPropType }, { renderItem: TRenderPropType }], TErrorMessages>;
