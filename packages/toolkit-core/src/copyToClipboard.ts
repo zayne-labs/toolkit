@@ -1,3 +1,5 @@
+import { isString, type AnyString } from "@zayne-labs/toolkit-type-helpers";
+
 const fallBackCopy = (text: string) => {
 	const tempTextArea = document.createElement("textarea");
 	tempTextArea.value = text;
@@ -8,26 +10,34 @@ const fallBackCopy = (text: string) => {
 	tempTextArea.remove();
 };
 
-const copyToClipboard = async (text: string) => {
-	if (text === "") return;
+type CopyToClipboardOptions = {
+	mimeType?: "text/plain" | AnyString;
+	onError?: (error: unknown) => void;
+	onSuccess?: () => void;
+};
+
+type AllowedClipboardItem = string | Blob;
+
+const copyToClipboard = async (
+	valueToCopy: AllowedClipboardItem | Promise<AllowedClipboardItem>,
+	options?: CopyToClipboardOptions
+) => {
+	const { mimeType = "text/plain", onError, onSuccess } = options ?? {};
+
+	const clipboardItem = new ClipboardItem({ [mimeType]: valueToCopy });
 
 	try {
-		// eslint-disable-next-line ts-eslint/no-unnecessary-condition -- navigator can be undefined sometimes
-		if (!navigator?.clipboard?.writeText) {
-			throw new Error("writeText not supported");
+		if (!ClipboardItem.supports(mimeType)) {
+			throw new Error(`MIME type "${mimeType}" is not supported`);
 		}
 
-		await navigator.clipboard.writeText(text);
+		await navigator.clipboard.write([clipboardItem]);
+
+		onSuccess?.();
 	} catch (error) {
-		if (error instanceof DOMException && error.name === "NotAllowedError") {
-			console.error("Copy to clipboard is not allowed", error.message);
-			fallBackCopy(text);
-
-			return;
-		}
-
-		console.error("Copy to clipboard failed", error);
-		fallBackCopy(text);
+		onError?.(error);
+		console.error((error as Error | undefined)?.message ?? "Copy to clipboard failed", error);
+		isString(valueToCopy) && fallBackCopy(valueToCopy);
 	}
 };
 
