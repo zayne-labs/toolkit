@@ -113,13 +113,13 @@ export interface FileValidationSettings {
 	 * Custom validation function that runs after built-in validation
 	 * Return an object with code/message to reject the file, or null/undefined to accept
 	 */
-	validator?: (context: {
-		file: File;
-	}) =>
+	validator?: (context: { file: File }) =>
 		| { code: FileValidationErrorContext["code"]; message?: FileValidationErrorContext["message"] }
 		| { code?: FileValidationErrorContext["code"]; message: FileValidationErrorContext["message"] }
 		| null
-		| undefined;
+		| undefined
+		// eslint-disable-next-line ts-eslint/no-invalid-void-type -- Allow
+		| void;
 }
 
 export interface FileValidationHooks {
