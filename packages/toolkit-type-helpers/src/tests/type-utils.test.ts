@@ -1,5 +1,5 @@
-import type { Equal, Expect, Writeable } from "@/type-utils";
 import { expectTypeOf, test } from "vitest";
+import type { Equal, Expect, Writeable } from "../type-utils";
 
 // Basic Type Level Tests
 type IgnoredTypeTestsForWritable = [

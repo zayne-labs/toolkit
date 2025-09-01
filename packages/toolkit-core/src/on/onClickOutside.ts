@@ -1,4 +1,4 @@
-import { toArray } from "@/common-utils";
+import { toArray } from "../common-utils";
 import { on } from "./on";
 
 export const onClickOutside = <TElement extends HTMLElement>(

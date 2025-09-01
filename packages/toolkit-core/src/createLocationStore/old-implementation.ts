@@ -1,7 +1,7 @@
-import { on } from "@/on";
 import { isBrowser } from "../constants";
 import type { EqualityFn, StoreApi } from "../createStore";
-import { type PartialURLInfo, type URLInfoObject, formatUrl } from "../navigation";
+import { formatUrl, type PartialURLInfo, type URLInfoObject } from "../navigation";
+import { on } from "../on";
 
 export type LocationInfo = URLInfoObject;
 

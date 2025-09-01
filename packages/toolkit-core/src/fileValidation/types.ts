@@ -37,13 +37,40 @@ export interface FileValidationResult {
 	validFiles: File[];
 }
 
-export type FileMeta = {
+export interface BaseFileMeta {
+	/**
+	 * Unique identifier for the file
+	 */
 	id: string;
+}
+
+export interface FileMetaWithURL extends BaseFileMeta {
+	/**
+	 * Name of the file
+	 */
 	name: string;
+	/**
+	 * Size of the file in bytes, undefined if size cannot be determined
+	 */
 	size: number | undefined;
+	/**
+	 * MIME type of the file
+	 */
 	type: string;
+	/**
+	 * URL to access the file
+	 */
 	url: string;
-};
+}
+
+export interface FileMetaWithFileObject extends BaseFileMeta {
+	/**
+	 * File object
+	 */
+	file: File;
+}
+
+export type FileMeta = UnionDiscriminator<[FileMetaWithURL, FileMetaWithFileObject], null>;
 
 type PossibleErrorCodes = UnmaskType<
 	| "custom-validation-failed" // Custom validation failed

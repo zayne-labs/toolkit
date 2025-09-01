@@ -1,6 +1,6 @@
 import { isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
-import { on } from "@/on";
-import { parseJSON } from "@/parseJSON";
+import { on } from "../on";
+import { parseJSON } from "../parseJSON";
 import type { StorageOptions, StorageStoreApi } from "./types";
 import { type DispatchOptions, dispatchStorageEvent, getStorage, safeParser } from "./utils";
 

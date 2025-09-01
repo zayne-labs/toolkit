@@ -1,4 +1,4 @@
-import type { StoreApi } from "@/createStore";
+import type { StoreApi } from "../createStore";
 
 export type StorageOptions<TState> = {
 	/**
