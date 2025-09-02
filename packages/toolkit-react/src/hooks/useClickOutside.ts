@@ -1,33 +1,33 @@
 import { onClickOutside, toArray } from "@zayne-labs/toolkit-core";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useCallbackRef } from "./useCallbackRef";
 
-type UseClickOutsideOptions = {
+type UseClickOutsideOptions<TElement extends HTMLElement> = {
 	enabled?: boolean;
+	onClick: (event: MouseEvent | TouchEvent) => void;
+	ref?: Array<React.RefObject<TElement>> | React.RefObject<TElement>;
 };
 
-const useClickOutside = <TElement extends HTMLElement>(
-	refOrRefArray: Array<React.RefObject<TElement>> | React.RefObject<TElement>,
-	callback: (event: MouseEvent | TouchEvent) => void,
-	options?: UseClickOutsideOptions
-) => {
-	const { enabled = true } = options ?? {};
+const useClickOutside = <TElement extends HTMLElement>(options: UseClickOutsideOptions<TElement>) => {
+	const innerRef = useRef<TElement>(null);
 
-	const savedCallback = useCallbackRef(callback);
+	const { enabled = true, onClick, ref: refOrRefArray = innerRef } = options;
+
+	const savedOnClick = useCallbackRef(onClick);
 
 	useEffect(() => {
 		if (!enabled) return;
 
-		const controller = new AbortController();
-
 		const elementArray = toArray(refOrRefArray).map((ref) => ref.current);
 
-		onClickOutside(elementArray, savedCallback, { signal: controller.signal });
+		const cleanup = onClickOutside(elementArray, savedOnClick);
 
-		return () => {
-			controller.abort();
-		};
-	}, [enabled, refOrRefArray, savedCallback]);
+		return () => cleanup();
+	}, [enabled, refOrRefArray, savedOnClick]);
+
+	return {
+		ref: innerRef,
+	};
 };
 
 export { useClickOutside };
