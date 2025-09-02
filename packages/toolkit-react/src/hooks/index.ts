@@ -8,6 +8,7 @@ export * from "./useConstant";
 export { useCopyToClipboard } from "./useCopyToClipboard";
 export * from "./useDebounce";
 export { useDisclosure } from "./useDisclosure";
+export { useIsHydrated } from "./useIsHydrated";
 export { useIsServer } from "./useIsServer";
 export * from "./useLocationState";
 export { usePresence } from "./usePresence/usePresence";
