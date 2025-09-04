@@ -1,4 +1,4 @@
-import { isFile } from "@zayne-labs/toolkit-type-helpers";
+import { isBlob } from "@zayne-labs/toolkit-type-helpers";
 import type { FileMeta } from "./fileValidation/types";
 
 type PreviewOptionsForObjectURL = {
@@ -18,20 +18,22 @@ export type PreviewOptions<TPreviewType extends PreviewTypeUnion> = {
 	objectURL: PreviewOptionsForObjectURL;
 }[TPreviewType] & { previewType?: TPreviewType };
 
-type GetImagePreviewResult<TPreviewType extends PreviewTypeUnion, TFile extends File | FileMeta> =
+type AllowedFileTypes = Blob | File | FileMeta;
+
+type GetFileUrlResult<TPreviewType extends PreviewTypeUnion, TFile extends AllowedFileTypes> =
 	TFile extends FileMeta ? string | undefined
 	: PreviewTypeUnion extends TPreviewType ? string | undefined
 	: TPreviewType extends "objectURL" ? string | undefined
 	: TPreviewType extends "base64URL" ? null
 	: never;
 
-const createImagePreview = <TFile extends File | FileMeta, TPreviewType extends PreviewTypeUnion>(
+const createFileUrl = <TFile extends AllowedFileTypes, TPreviewType extends PreviewTypeUnion>(
 	file: TFile,
 	options?: PreviewOptions<TPreviewType>
-): GetImagePreviewResult<TPreviewType, TFile> => {
+): GetFileUrlResult<TPreviewType, TFile> => {
 	const { onError, onSuccess, previewType = "objectURL" } = options ?? {};
 
-	if (!isFile(file)) {
+	if (!isBlob(file)) {
 		return file.url as never;
 	}
 
@@ -66,4 +68,4 @@ const createImagePreview = <TFile extends File | FileMeta, TPreviewType extends 
 	return null as never;
 };
 
-export { createImagePreview };
+export { createFileUrl };

@@ -74,7 +74,9 @@ export const isAsyncFunction = <TAsyncFunction extends AnyAsyncFunction>(
 	return isFunction(value) && value.constructor.name === "AsyncFunction";
 };
 
-export const isFile = (value: unknown): value is File => value instanceof File;
+export const isFile = (value: unknown) => value instanceof File;
+
+export const isBlob = (value: unknown) => value instanceof Blob;
 
 export const isIterable = <TIterable>(obj: object): obj is Iterable<TIterable> => Symbol.iterator in obj;
 
