@@ -13,4 +13,4 @@ export type {
 	FileValidationSuccessBatchContext,
 	FileValidationSuccessSingleContext,
 } from "./types";
-export { formatBytes, toBytes } from "./utils";
+export { formatBytes, generateFileID, toBytes } from "./utils";

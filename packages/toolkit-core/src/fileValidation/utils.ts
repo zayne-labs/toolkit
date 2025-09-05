@@ -23,20 +23,26 @@ export const isValidFileType = (
 	});
 };
 
+export const generateFileID = (file: FileOrFileMeta): string => {
+	if (isFile(file)) {
+		const fileID = `${file.name}-(${file.size})`;
+
+		return fileID;
+	}
+
+	return file.id;
+};
+
 export const isDuplicateFile = (
 	file: FileOrFileMeta,
 	existingFiles: NonNullable<FileValidationOptions["existingFiles"]>
 ) => {
+	const fileID = generateFileID(file);
+
 	return existingFiles.some((existingFile) => {
-		if (isFile(existingFile)) {
-			return existingFile.name === file.name && existingFile.size === file.size;
-		}
+		const existingFileID = generateFileID(existingFile);
 
-		if (isNumber(existingFile.size)) {
-			return existingFile.name === file.name && existingFile.size === file.size;
-		}
-
-		return existingFile.name === file.name;
+		return fileID === existingFileID;
 	});
 };
 
