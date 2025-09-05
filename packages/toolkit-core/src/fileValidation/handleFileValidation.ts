@@ -1,5 +1,9 @@
 import { executeValidation } from "./executeValidation";
-import type { FileValidationErrorContext, FileValidationOptions, FileValidationResult } from "./types";
+import type {
+	FileValidationErrorSingleContext,
+	FileValidationOptions,
+	FileValidationResult,
+} from "./types";
 
 /**
  * @description Validates files synchronously against the provided settings
@@ -9,7 +13,7 @@ import type { FileValidationErrorContext, FileValidationOptions, FileValidationR
 export const handleFileValidation = (options: FileValidationOptions): FileValidationResult => {
 	const validFiles: File[] = [];
 
-	const errors: FileValidationErrorContext[] = [];
+	const errors: FileValidationErrorSingleContext[] = [];
 
 	void executeValidation({ ...options, errors, validFiles });
 
@@ -29,7 +33,7 @@ export const handleFileValidationAsync = async (
 ): Promise<FileValidationResult> => {
 	const validFiles: File[] = [];
 
-	const errors: FileValidationErrorContext[] = [];
+	const errors: FileValidationErrorSingleContext[] = [];
 
 	await executeValidation({ ...options, errors, validFiles });
 

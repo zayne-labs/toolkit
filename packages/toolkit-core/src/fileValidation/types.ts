@@ -74,7 +74,7 @@ type PossibleErrorCodes = UnmaskType<
 	| AnyString
 >;
 
-export interface FileValidationErrorContext {
+export interface FileValidationErrorSingleContext {
 	/**
 	 * Name of the validation setting that caused the error
 	 */
@@ -97,10 +97,10 @@ export interface FileValidationErrorBatchContext {
 	/**
 	 * Array of validation errors that occurred
 	 */
-	errors: FileValidationErrorContext[];
+	errors: FileValidationErrorSingleContext[];
 }
 
-export interface FileValidationSuccessContext {
+export interface FileValidationSuccessSingleContext {
 	/**
 	 * Success message to display to user
 	 */
@@ -111,7 +111,8 @@ export interface FileValidationSuccessContext {
 	validFile: FileOrFileMeta;
 }
 
-export interface FileValidationSuccessBatchContext extends Pick<FileValidationSuccessContext, "message"> {
+export interface FileValidationSuccessBatchContext
+	extends Pick<FileValidationSuccessSingleContext, "message"> {
 	/**
 	 * Array of files that passed validation
 	 */
@@ -148,8 +149,14 @@ export interface FileValidationSettings {
 	 * Return an object with code/message to reject the file, or null/undefined to accept
 	 */
 	validator?: (context: { file: FileOrFileMeta }) =>
-		| { code: FileValidationErrorContext["code"]; message?: FileValidationErrorContext["message"] }
-		| { code?: FileValidationErrorContext["code"]; message: FileValidationErrorContext["message"] }
+		| {
+				code: FileValidationErrorSingleContext["code"];
+				message?: FileValidationErrorSingleContext["message"];
+		  }
+		| {
+				code?: FileValidationErrorSingleContext["code"];
+				message: FileValidationErrorSingleContext["message"];
+		  }
 		| null
 		| undefined
 		// eslint-disable-next-line ts-eslint/no-invalid-void-type -- Allow
@@ -158,21 +165,21 @@ export interface FileValidationSettings {
 
 export interface FileValidationHooks {
 	/**
-	 * Called when an individual file fails validation
-	 */
-	onError?: (context: FileValidationErrorContext) => void;
-	/**
 	 * Called after all validation is complete if any files failed
 	 */
-	onErrorBatch?: (context: FileValidationErrorBatchContext) => void;
+	onError?: (context: FileValidationErrorBatchContext) => void;
 	/**
-	 * Called when an individual file passes validation
+	 * Called when an individual file fails validation
 	 */
-	onSuccess?: (context: FileValidationSuccessContext) => void;
+	onErrorSingle?: (context: FileValidationErrorSingleContext) => void;
 	/**
 	 * Called after all validation is complete if any files passed
 	 */
-	onSuccessBatch?: (context: FileValidationSuccessBatchContext) => void;
+	onSuccess?: (context: FileValidationSuccessBatchContext) => void;
+	/**
+	 * Called when an individual file passes validation
+	 */
+	onSuccessSingle?: (context: FileValidationSuccessSingleContext) => void;
 }
 
 type ToAwaitableFn<TFunction> =

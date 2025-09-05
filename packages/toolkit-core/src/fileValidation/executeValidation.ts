@@ -1,11 +1,11 @@
 import { isNumber } from "@zayne-labs/toolkit-type-helpers";
 import type {
 	FileValidationErrorBatchContext,
-	FileValidationErrorContext,
+	FileValidationErrorSingleContext,
 	FileValidationOptions,
 	FileValidationResult,
 	FileValidationSuccessBatchContext,
-	FileValidationSuccessContext,
+	FileValidationSuccessSingleContext,
 } from "./types";
 import { formatBytes, isDuplicateFile, isMaxFileCountReached, isValidFileType, toBytes } from "./utils";
 
@@ -33,11 +33,11 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 				code: "too-many-files",
 				file,
 				message: `You can only upload a maximum of ${maxFileCount} files`,
-			} satisfies FileValidationErrorContext;
+			} satisfies FileValidationErrorSingleContext;
 
 			errors.push(context);
 
-			await hooks?.onError?.(context);
+			await hooks?.onErrorSingle?.(context);
 
 			break;
 		}
@@ -50,11 +50,11 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 				code: "invalid-file-type",
 				file,
 				message: `File "${file.name}" is not an accepted file type. File must be of type: ${acceptedFilesString}`,
-			} satisfies FileValidationErrorContext;
+			} satisfies FileValidationErrorSingleContext;
 
 			errors.push(context);
 
-			await hooks?.onError?.(context);
+			await hooks?.onErrorSingle?.(context);
 
 			continue;
 		}
@@ -65,11 +65,11 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 				code: "file-too-large",
 				file,
 				message: `File "${file.name}" exceeds the maximum size of ${formatBytes(maxFileSizeInBytes)}`,
-			} satisfies FileValidationErrorContext;
+			} satisfies FileValidationErrorSingleContext;
 
 			errors.push(context);
 
-			await hooks?.onError?.(context);
+			await hooks?.onErrorSingle?.(context);
 
 			continue;
 		}
@@ -80,11 +80,11 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 				code: "duplicate-file",
 				file,
 				message: `File: "${file.name}" has already been uploaded`,
-			} satisfies FileValidationErrorContext;
+			} satisfies FileValidationErrorSingleContext;
 
 			errors.push(context);
 
-			await hooks?.onError?.(context);
+			await hooks?.onErrorSingle?.(context);
 
 			continue;
 		}
@@ -97,11 +97,11 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 				code: validatorResult.code ?? "custom-validation-failed",
 				file,
 				message: validatorResult.message ?? `File "${file.name}" failed custom validation`,
-			} satisfies FileValidationErrorContext;
+			} satisfies FileValidationErrorSingleContext;
 
 			errors.push(context);
 
-			await hooks?.onError?.(context);
+			await hooks?.onErrorSingle?.(context);
 
 			continue;
 		}
@@ -109,18 +109,18 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 		const context = {
 			message: `Uploaded file-(${file.name}) successfully!`,
 			validFile: file,
-		} satisfies FileValidationSuccessContext;
+		} satisfies FileValidationSuccessSingleContext;
 
 		validFiles.push(file);
 
-		await hooks?.onSuccess?.(context);
+		await hooks?.onSuccessSingle?.(context);
 	}
 	/* eslint-enable no-await-in-loop -- Required for async validation */
 
 	if (errors.length > 0) {
 		const context = { errors } satisfies FileValidationErrorBatchContext;
 
-		await hooks?.onErrorBatch?.(context);
+		await hooks?.onError?.(context);
 	}
 
 	if (validFiles.length > 0) {
@@ -129,7 +129,7 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 			validFiles,
 		} satisfies FileValidationSuccessBatchContext;
 
-		await hooks?.onSuccessBatch?.(context);
+		await hooks?.onSuccess?.(context);
 	}
 };
 

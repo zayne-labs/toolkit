@@ -2,13 +2,13 @@ export * from "./handleFileValidation";
 export type {
 	FileMeta,
 	FileOrFileMeta,
-	FileValidationErrorContext,
+	FileValidationErrorSingleContext,
 	FileValidationHooks,
 	FileValidationHooksAsync,
 	FileValidationOptions,
 	FileValidationResult,
 	FileValidationSettings,
 	FileValidationSettingsAsync,
-	FileValidationSuccessContext,
+	FileValidationSuccessSingleContext,
 } from "./types";
 export { formatBytes, toBytes } from "./utils";
