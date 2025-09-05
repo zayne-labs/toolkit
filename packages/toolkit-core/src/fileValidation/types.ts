@@ -78,7 +78,7 @@ export interface FileValidationErrorSingleContext {
 	/**
 	 * Name of the validation setting that caused the error
 	 */
-	cause: keyof FileValidationSettings;
+	cause: "none" | keyof FileValidationSettings;
 	/**
 	 * Error code identifying the type of validation failure
 	 */
