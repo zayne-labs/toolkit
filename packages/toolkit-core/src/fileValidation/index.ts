@@ -11,3 +11,4 @@ export type {
 	FileValidationSettingsAsync,
 	FileValidationSuccessContext,
 } from "./types";
+export { formatBytes, toBytes } from "./utils";
