@@ -7,11 +7,13 @@ import type {
 	UnmaskType,
 } from "@zayne-labs/toolkit-type-helpers";
 
+export type FileOrFileMeta = File | FileMeta;
+
 export interface FileValidationOptions<TVariant extends "async" | "sync" = "sync"> {
 	/**
 	 * Array of existing files to check against for duplicates and maxFileCount
 	 */
-	existingFiles?: Array<File | FileMeta>;
+	existingFiles?: FileOrFileMeta[];
 	/**
 	 * Callbacks for handling validation events
 	 */
@@ -19,7 +21,7 @@ export interface FileValidationOptions<TVariant extends "async" | "sync" = "sync
 	/**
 	 * Files to validate
 	 */
-	newFiles: Array<File | undefined> | FileList | undefined;
+	newFiles: Array<FileOrFileMeta | undefined> | FileList | undefined;
 	/**
 	 * Settings to configure validation behavior
 	 */
@@ -34,7 +36,7 @@ export interface FileValidationResult {
 	/**
 	 * Array of files that passed validation
 	 */
-	validFiles: File[];
+	validFiles: FileOrFileMeta[];
 }
 
 export interface BaseFileMeta {
@@ -93,7 +95,7 @@ export interface FileValidationErrorContext {
 	/**
 	 * The file that failed validation
 	 */
-	file: File;
+	file: FileOrFileMeta;
 	/**
 	 * Human-readable error message
 	 */
@@ -108,7 +110,7 @@ export interface FileValidationSuccessContext {
 	/**
 	 * Array of files that passed validation
 	 */
-	validFiles: File[];
+	validFiles: FileOrFileMeta[];
 }
 
 export interface FileValidationSettings {
@@ -140,7 +142,7 @@ export interface FileValidationSettings {
 	 * Custom validation function that runs after built-in validation
 	 * Return an object with code/message to reject the file, or null/undefined to accept
 	 */
-	validator?: (context: { file: File }) =>
+	validator?: (context: { file: FileOrFileMeta }) =>
 		| { code: FileValidationErrorContext["code"]; message?: FileValidationErrorContext["message"] }
 		| { code?: FileValidationErrorContext["code"]; message: FileValidationErrorContext["message"] }
 		| null

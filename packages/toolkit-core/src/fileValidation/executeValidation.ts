@@ -1,3 +1,4 @@
+import { isNumber } from "@zayne-labs/toolkit-type-helpers";
 import type { FileValidationErrorContext, FileValidationOptions, FileValidationResult } from "./types";
 import { formatBytes, isDuplicateFile, isMaxFileCountReached, isValidFileType, toBytes } from "./utils";
 
@@ -53,7 +54,7 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 			continue;
 		}
 
-		if (maxFileSizeInBytes && file.size > maxFileSizeInBytes) {
+		if (maxFileSizeInBytes && isNumber(file.size) && file.size > maxFileSizeInBytes) {
 			const context = {
 				cause: "maxFileSize",
 				code: "file-too-large",

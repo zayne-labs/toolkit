@@ -1,8 +1,8 @@
 import { defineEnum, isFile, isNumber, isString } from "@zayne-labs/toolkit-type-helpers";
-import type { FileValidationOptions, FileValidationSettings } from "./types";
+import type { FileOrFileMeta, FileValidationOptions, FileValidationSettings } from "./types";
 
 export const isValidFileType = (
-	file: File,
+	file: FileOrFileMeta,
 	allowedFileTypes: Required<Required<FileValidationOptions>["settings"]>["allowedFileTypes"]
 ) => {
 	return allowedFileTypes.some((type) => {
@@ -11,7 +11,7 @@ export const isValidFileType = (
 			return file.type === type;
 		}
 
-		const fileExtension = file.name.includes(".") ? file.name.split(".").at(-1)?.toLowerCase() : null;
+		const fileExtension = file.name?.includes(".") ? file.name.split(".").at(-1)?.toLowerCase() : null;
 
 		if (!fileExtension) {
 			return false;
@@ -24,7 +24,7 @@ export const isValidFileType = (
 };
 
 export const isDuplicateFile = (
-	file: File,
+	file: FileOrFileMeta,
 	existingFiles: NonNullable<FileValidationOptions["existingFiles"]>
 ) => {
 	return existingFiles.some((existingFile) => {

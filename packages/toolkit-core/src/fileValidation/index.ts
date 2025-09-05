@@ -1,6 +1,7 @@
 export * from "./handleFileValidation";
 export type {
 	FileMeta,
+	FileOrFileMeta,
 	FileValidationErrorContext,
 	FileValidationHooks,
 	FileValidationHooksAsync,
