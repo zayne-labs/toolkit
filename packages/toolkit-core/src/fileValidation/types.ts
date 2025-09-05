@@ -2,7 +2,6 @@ import type {
 	AnyFunction,
 	AnyString,
 	Awaitable,
-	Prettify,
 	UnionDiscriminator,
 	UnmaskType,
 } from "@zayne-labs/toolkit-type-helpers";
@@ -28,16 +27,8 @@ export interface FileValidationOptions<TVariant extends "async" | "sync" = "sync
 	settings?: TVariant extends "sync" ? FileValidationSettings : FileValidationSettingsAsync;
 }
 
-export interface FileValidationResult {
-	/**
-	 * Array of validation errors that occurred
-	 */
-	errors: FileValidationErrorContext[];
-	/**
-	 * Array of files that passed validation
-	 */
-	validFiles: FileOrFileMeta[];
-}
+export type FileValidationResult = Pick<FileValidationErrorBatchContext, "errors">
+	& Pick<FileValidationSuccessBatchContext, "validFiles">;
 
 export interface BaseFileMeta {
 	/**
@@ -102,11 +93,25 @@ export interface FileValidationErrorContext {
 	message: string;
 }
 
+export interface FileValidationErrorBatchContext {
+	/**
+	 * Array of validation errors that occurred
+	 */
+	errors: FileValidationErrorContext[];
+}
+
 export interface FileValidationSuccessContext {
 	/**
 	 * Success message to display to user
 	 */
 	message: string;
+	/**
+	 * Array of files that passed validation
+	 */
+	validFile: FileOrFileMeta;
+}
+
+export interface FileValidationSuccessBatchContext extends Pick<FileValidationSuccessContext, "message"> {
 	/**
 	 * Array of files that passed validation
 	 */
@@ -159,11 +164,15 @@ export interface FileValidationHooks {
 	/**
 	 * Called after all validation is complete if any files failed
 	 */
-	onErrorCollection?: (context: Prettify<Pick<FileValidationResult, "errors">>) => void;
+	onErrorBatch?: (context: FileValidationErrorBatchContext) => void;
+	/**
+	 * Called when an individual file passes validation
+	 */
+	onSuccess?: (context: FileValidationSuccessContext) => void;
 	/**
 	 * Called after all validation is complete if any files passed
 	 */
-	onSuccess?: (context: FileValidationSuccessContext) => void;
+	onSuccessBatch?: (context: FileValidationSuccessBatchContext) => void;
 }
 
 type ToAwaitableFn<TFunction> =

@@ -1,5 +1,12 @@
 import { isNumber } from "@zayne-labs/toolkit-type-helpers";
-import type { FileValidationErrorContext, FileValidationOptions, FileValidationResult } from "./types";
+import type {
+	FileValidationErrorBatchContext,
+	FileValidationErrorContext,
+	FileValidationOptions,
+	FileValidationResult,
+	FileValidationSuccessBatchContext,
+	FileValidationSuccessContext,
+} from "./types";
 import { formatBytes, isDuplicateFile, isMaxFileCountReached, isValidFileType, toBytes } from "./utils";
 
 /**
@@ -13,8 +20,6 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 	const { allowedFileTypes, maxFileCount, maxFileSize, rejectDuplicateFiles, validator } = settings ?? {};
 
 	const maxFileSizeInBytes = toBytes(maxFileSize);
-
-	const { onError, onErrorCollection, onSuccess } = hooks ?? {};
 
 	//	== Loop through the uploaded fileList and validate each file
 
@@ -32,7 +37,7 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 
 			errors.push(context);
 
-			await onError?.(context);
+			await hooks?.onError?.(context);
 
 			break;
 		}
@@ -49,7 +54,7 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 
 			errors.push(context);
 
-			await onError?.(context);
+			await hooks?.onError?.(context);
 
 			continue;
 		}
@@ -64,7 +69,7 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 
 			errors.push(context);
 
-			await onError?.(context);
+			await hooks?.onError?.(context);
 
 			continue;
 		}
@@ -79,7 +84,7 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 
 			errors.push(context);
 
-			await onError?.(context);
+			await hooks?.onError?.(context);
 
 			continue;
 		}
@@ -96,24 +101,35 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 
 			errors.push(context);
 
-			await onError?.(context);
+			await hooks?.onError?.(context);
 
 			continue;
 		}
 
+		const context = {
+			message: `Uploaded file-(${file.name}) successfully!`,
+			validFile: file,
+		} satisfies FileValidationSuccessContext;
+
 		validFiles.push(file);
+
+		await hooks?.onSuccess?.(context);
 	}
 	/* eslint-enable no-await-in-loop -- Required for async validation */
 
-	// Handle final callbacks
 	if (errors.length > 0) {
-		await onErrorCollection?.({ errors });
+		const context = { errors } satisfies FileValidationErrorBatchContext;
+
+		await hooks?.onErrorBatch?.(context);
 	}
 
 	if (validFiles.length > 0) {
-		const message = `Uploaded ${validFiles.length} file${validFiles.length > 1 ? "s" : ""}!`;
+		const context = {
+			message: `Uploaded ${validFiles.length} ${validFiles.length > 1 ? "files" : "file"} successfully!`,
+			validFiles,
+		} satisfies FileValidationSuccessBatchContext;
 
-		await onSuccess?.({ message, validFiles });
+		await hooks?.onSuccessBatch?.(context);
 	}
 };
 
