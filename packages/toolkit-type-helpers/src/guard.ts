@@ -17,7 +17,8 @@ export const isArray = <TArray>(value: unknown): value is TArray[] => Array.isAr
 
 export const isFormData = (value: unknown) => value instanceof FormData;
 
-export const isObject = (value: unknown) => typeof value === "object" && value !== null;
+export const isObject = <TObject extends object>(value: unknown): value is TObject =>
+	typeof value === "object" && value !== null;
 
 export const isObjectAndNotArray = <TObject = UnknownObject>(value: unknown): value is TObject => {
 	return isObject(value) && !isArray(value);
