@@ -1,8 +1,7 @@
 import { type AnimationIntervalOptions, setAnimationInterval } from "@zayne-labs/toolkit-core";
 import type { Prettify } from "@zayne-labs/toolkit-type-helpers";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useCallbackRef } from "./useCallbackRef";
-import { useConstant } from "./useConstant";
 
 type AnimationOptions = Prettify<
 	AnimationIntervalOptions & {
@@ -16,8 +15,10 @@ const useAnimationInterval = (options: AnimationOptions) => {
 
 	const latestCallback = useCallbackRef(onAnimation);
 
-	// prettier-ignore
-	const { start, stop } = useConstant(() => setAnimationInterval(latestCallback, intervalDuration, { once }));
+	const { start, stop } = useMemo(
+		() => setAnimationInterval(latestCallback, intervalDuration, { once }),
+		[intervalDuration, latestCallback, once]
+	);
 
 	useEffect(() => {
 		if (intervalDuration === null) return;

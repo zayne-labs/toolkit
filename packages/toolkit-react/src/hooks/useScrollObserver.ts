@@ -1,16 +1,15 @@
-import { type ScrollObserverOptions, createScrollObserver } from "@zayne-labs/toolkit-core";
-import { type RefCallback, useState } from "react";
+import { createScrollObserver, type ScrollObserverOptions } from "@zayne-labs/toolkit-core";
+import { type RefCallback, useMemo, useState } from "react";
 import { useCallbackRef } from "./useCallbackRef";
-import { useConstant } from "./useConstant";
 
 const useScrollObserver = <TElement extends HTMLElement>(options: ScrollObserverOptions = {}) => {
-	const { onIntersection, rootMargin = "10px 0px 0px 0px", ...restOfOptions } = options;
+	const { onIntersection, root, rootMargin = "10px 0px 0px 0px", threshold } = options;
 
 	const [isScrolled, setIsScrolled] = useState(false);
 
 	const savedOnIntersection = useCallbackRef(onIntersection);
 
-	const { handleObservation } = useConstant(() => {
+	const { handleObservation } = useMemo(() => {
 		return createScrollObserver({
 			onIntersection: (entry, observer) => {
 				const newIsScrolledState = !entry.isIntersecting;
@@ -22,10 +21,11 @@ const useScrollObserver = <TElement extends HTMLElement>(options: ScrollObserver
 
 				savedOnIntersection(entry, observer);
 			},
+			root,
 			rootMargin,
-			...restOfOptions,
+			threshold,
 		});
-	});
+	}, [root, rootMargin, savedOnIntersection, threshold]);
 
 	const observedElementRef: RefCallback<TElement> = useCallbackRef((element) => {
 		const cleanupFn = handleObservation(element);

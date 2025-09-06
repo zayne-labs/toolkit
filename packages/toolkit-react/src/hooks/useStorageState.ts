@@ -4,7 +4,8 @@ import {
 	type StorageStoreApi,
 } from "@zayne-labs/toolkit-core";
 import type { SelectorFn } from "@zayne-labs/toolkit-type-helpers";
-import { useConstant } from "./useConstant";
+import { useMemo } from "react";
+import { useCallbackRef } from "./useCallbackRef";
 import { useStore } from "./useStore";
 
 type UseStorageResult<TState, TSlice = TState> = [state: TSlice, actions: StorageStoreApi<TState>];
@@ -39,11 +40,38 @@ export const useStorageState = <TValue, TSlice = TValue>(
 	initialValue?: TValue,
 	options?: UseStorageStateOptions<TValue> & { select?: SelectorFn<TValue, TSlice> }
 ): UseStorageResult<TValue, TSlice> => {
-	const { select, ...restOfOptions } = options ?? {};
+	const { equalityFn, logger, parser, partialize, select, serializer, storageArea, syncStateAcrossTabs } =
+		options ?? {};
 
-	const externalStore = useConstant(() => {
-		return createExternalStorageStore({ initialValue, key, ...restOfOptions });
-	});
+	const savedEquality = useCallbackRef(equalityFn);
+	const savedLogger = useCallbackRef(logger);
+	const savedParser = useCallbackRef(parser);
+	const savedPartialize = useCallbackRef(partialize);
+	const savedSerializer = useCallbackRef(serializer);
+
+	const externalStore = useMemo(() => {
+		return createExternalStorageStore({
+			equalityFn: savedEquality,
+			initialValue,
+			key,
+			logger: savedLogger,
+			parser: savedParser,
+			partialize: savedPartialize,
+			serializer: savedSerializer,
+			storageArea,
+			syncStateAcrossTabs,
+		});
+	}, [
+		initialValue,
+		key,
+		savedEquality,
+		savedLogger,
+		savedParser,
+		savedPartialize,
+		savedSerializer,
+		storageArea,
+		syncStateAcrossTabs,
+	]);
 
 	const stateInStorage = useStore(externalStore as never, select as never);
 

@@ -5,7 +5,8 @@ import {
 	type LocationStoreOptions,
 } from "@zayne-labs/toolkit-core";
 import type { SelectorFn } from "@zayne-labs/toolkit-type-helpers";
-import { useConstant } from "./useConstant";
+import { useMemo } from "react";
+import { useCallbackRef } from "./useCallbackRef";
 import { useStore } from "./useStore";
 
 type UseLocationResult<TSlice> = [state: TSlice, actions: LocationStoreApi];
@@ -33,9 +34,16 @@ export const createUseLocationState = (options?: LocationStoreOptions) => {
 
 export const useLocationState = <TSlice = LocationInfo>(
 	selector?: SelectorFn<LocationInfo, TSlice>,
-	options?: LocationStoreOptions
+	options: LocationStoreOptions = {}
 ): UseLocationResult<TSlice> => {
-	const locationStore = useConstant(() => createLocationStore(options));
+	const { equalityFn } = options;
+
+	const savedEqualityFn = useCallbackRef(equalityFn);
+
+	const locationStore = useMemo(
+		() => createLocationStore({ equalityFn: savedEqualityFn }),
+		[savedEqualityFn]
+	);
 
 	const stateSlice = useStore(locationStore as never, selector);
 
