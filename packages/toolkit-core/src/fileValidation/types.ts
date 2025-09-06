@@ -66,6 +66,7 @@ export interface FileMetaWithFileObject extends BaseFileMeta {
 export type FileMeta = UnionDiscriminator<[FileMetaWithURL, FileMetaWithFileObject], null>;
 
 type PossibleErrorCodes = UnmaskType<
+	| "custom-error" // Custom error
 	| "custom-validation-failed" // Custom validation failed
 	| "duplicate-file" // File already exists when disallowDuplicates=true
 	| "file-too-large" // File exceeds maxFileSize
@@ -76,9 +77,9 @@ type PossibleErrorCodes = UnmaskType<
 
 export interface FileValidationErrorSingleContext {
 	/**
-	 * Name of the validation setting that caused the error
+	 * Name of the validation setting or custom error that led to the error
 	 */
-	cause: "none" | keyof FileValidationSettings;
+	cause: AnyString | keyof FileValidationSettings;
 	/**
 	 * Error code identifying the type of validation failure
 	 */
