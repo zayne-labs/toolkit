@@ -37,7 +37,7 @@ export interface BaseFileMeta {
 	id: string;
 }
 
-export interface FileMetaWithURL extends BaseFileMeta {
+export interface FileMetaWithURL {
 	/**
 	 * Name of the file
 	 */
@@ -56,17 +56,16 @@ export interface FileMetaWithURL extends BaseFileMeta {
 	url: string;
 }
 
-export interface FileMetaWithFileObject extends BaseFileMeta {
+export interface FileMetaWithFileObject {
 	/**
 	 * File object
 	 */
 	file: File;
 }
 
-export type FileMeta = UnionDiscriminator<[FileMetaWithURL, FileMetaWithFileObject], null>;
+export type FileMeta = BaseFileMeta & UnionDiscriminator<[FileMetaWithURL, FileMetaWithFileObject], null>;
 
 type PossibleErrorCodes = UnmaskType<
-	| "custom-error" // Custom error
 	| "custom-validation-failed" // Custom validation failed
 	| "duplicate-file" // File already exists when disallowDuplicates=true
 	| "file-too-large" // File exceeds maxFileSize
@@ -75,11 +74,7 @@ type PossibleErrorCodes = UnmaskType<
 	| AnyString
 >;
 
-export interface FileValidationErrorSingleContext {
-	/**
-	 * Name of the validation setting or custom error that led to the error
-	 */
-	cause: AnyString | keyof FileValidationSettings;
+interface BaseFileValidationErrorSingleContext {
 	/**
 	 * Error code identifying the type of validation failure
 	 */
@@ -93,6 +88,12 @@ export interface FileValidationErrorSingleContext {
 	 */
 	message: string;
 }
+
+export type FileValidationErrorSingleContext = BaseFileValidationErrorSingleContext
+	& UnionDiscriminator<
+		[{ cause: "custom-error"; originalError: unknown }, { cause: keyof FileValidationSettings }],
+		null
+	>;
 
 export interface FileValidationErrorBatchContext {
 	/**

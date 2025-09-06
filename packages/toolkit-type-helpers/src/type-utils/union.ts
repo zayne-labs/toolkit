@@ -29,7 +29,11 @@ type AllowOnlyFirst<TFirstType, TSecondType, TErrorMessages extends ErrorMessage
  * @template TAccumulator Accumulator for the resulting merged type
  */
 type MergeTypes<TArrayOfTypes extends unknown[], TAccumulator = NonNullable<unknown>> =
-	TArrayOfTypes extends [infer TFirstType, ...infer TRest] ? MergeTypes<TRest, TAccumulator & TFirstType>
+	TArrayOfTypes extends [infer TFirstType, ...infer TRestOfTypes] ?
+		MergeTypes<
+			TRestOfTypes,
+			{ [Key in keyof TAccumulator | keyof TFirstType]: (TAccumulator & TFirstType)[Key] }
+		>
 	:	TAccumulator;
 
 /**
@@ -48,9 +52,9 @@ export type UnionDiscriminator<
 	TAccumulator = never,
 	TMergedProperties = MergeTypes<TArrayOfTypes>,
 > =
-	TArrayOfTypes extends [infer TFirstType, ...infer TRest] ?
+	TArrayOfTypes extends [infer TFirstType, ...infer TRestOfTypes] ?
 		UnionDiscriminator<
-			TRest,
+			TRestOfTypes,
 			TErrorMessages,
 			// eslint-disable-next-line perfectionist/sort-union-types -- Let TAccumulator be first
 			TAccumulator | AllowOnlyFirst<TFirstType, TMergedProperties, TErrorMessages>,
