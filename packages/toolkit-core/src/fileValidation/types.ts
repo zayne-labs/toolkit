@@ -27,8 +27,8 @@ export interface FileValidationOptions<TVariant extends "async" | "sync" = "sync
 	settings?: TVariant extends "sync" ? FileValidationSettings : FileValidationSettingsAsync;
 }
 
-export type FileValidationResult = Pick<FileValidationErrorBatchContext, "errors">
-	& Pick<FileValidationSuccessBatchContext, "validFiles">;
+export type FileValidationResult = Pick<FileValidationErrorContextBatch, "errors">
+	& Pick<FileValidationSuccessContextBatch, "validFiles">;
 
 export interface BaseFileMeta {
 	/**
@@ -74,7 +74,10 @@ type PossibleErrorCodes = UnmaskType<
 	| AnyString
 >;
 
-interface BaseFileValidationErrorSingleContext {
+export type FileValidationErrorContextEach = UnionDiscriminator<
+	[{ cause: "custom-error"; originalError: unknown }, { cause: keyof FileValidationSettings }],
+	null
+> & {
 	/**
 	 * Error code identifying the type of validation failure
 	 */
@@ -87,38 +90,32 @@ interface BaseFileValidationErrorSingleContext {
 	 * Human-readable error message
 	 */
 	message: string;
-}
+};
 
-export type FileValidationErrorSingleContext = BaseFileValidationErrorSingleContext
-	& UnionDiscriminator<
-		[{ cause: "custom-error"; originalError: unknown }, { cause: keyof FileValidationSettings }],
-		null
-	>;
-
-export interface FileValidationErrorBatchContext {
+export interface FileValidationErrorContextBatch {
 	/**
 	 * Array of validation errors that occurred
 	 */
-	errors: FileValidationErrorSingleContext[];
+	errors: FileValidationErrorContextEach[];
 }
 
-export interface FileValidationSuccessSingleContext {
+export interface FileValidationSuccessContextEach {
 	/**
 	 * Success message to display to user
 	 */
 	message: string;
 	/**
-	 * Array of files that passed validation
+	 * File that passed validation
 	 */
 	validFile: FileOrFileMeta;
 }
 
-export interface FileValidationSuccessBatchContext
-	extends Pick<FileValidationSuccessSingleContext, "message"> {
+export interface FileValidationSuccessContextBatch
+	extends Pick<FileValidationSuccessContextEach, "message"> {
 	/**
 	 * Array of files that passed validation
 	 */
-	validFiles: FileOrFileMeta[];
+	validFiles: Array<FileValidationSuccessContextEach["validFile"]>;
 }
 
 export interface FileValidationSettings {
@@ -152,12 +149,12 @@ export interface FileValidationSettings {
 	 */
 	validator?: (context: { file: FileOrFileMeta }) =>
 		| {
-				code: FileValidationErrorSingleContext["code"];
-				message?: FileValidationErrorSingleContext["message"];
+				code: FileValidationErrorContextEach["code"];
+				message?: FileValidationErrorContextEach["message"];
 		  }
 		| {
-				code?: FileValidationErrorSingleContext["code"];
-				message: FileValidationErrorSingleContext["message"];
+				code?: FileValidationErrorContextEach["code"];
+				message: FileValidationErrorContextEach["message"];
 		  }
 		| null
 		| undefined
@@ -169,19 +166,19 @@ export interface FileValidationHooks {
 	/**
 	 * Called after all validation is complete if any files failed
 	 */
-	onError?: (context: FileValidationErrorBatchContext) => void;
+	onErrorBatch?: (context: FileValidationErrorContextBatch) => void;
 	/**
 	 * Called when an individual file fails validation
 	 */
-	onErrorSingle?: (context: FileValidationErrorSingleContext) => void;
+	onErrorEach?: (context: FileValidationErrorContextEach) => void;
 	/**
 	 * Called after all validation is complete if any files passed
 	 */
-	onSuccess?: (context: FileValidationSuccessBatchContext) => void;
+	onSuccessBatch?: (context: FileValidationSuccessContextBatch) => void;
 	/**
 	 * Called when an individual file passes validation
 	 */
-	onSuccessSingle?: (context: FileValidationSuccessSingleContext) => void;
+	onSuccessEach?: (context: FileValidationSuccessContextEach) => void;
 }
 
 type ToAwaitableFn<TFunction> =

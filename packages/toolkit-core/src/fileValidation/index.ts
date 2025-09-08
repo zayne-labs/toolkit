@@ -2,15 +2,15 @@ export * from "./handleFileValidation";
 export type {
 	FileMeta,
 	FileOrFileMeta,
-	FileValidationErrorBatchContext,
-	FileValidationErrorSingleContext,
+	FileValidationErrorContextBatch,
+	FileValidationErrorContextEach,
 	FileValidationHooks,
 	FileValidationHooksAsync,
 	FileValidationOptions,
 	FileValidationResult,
 	FileValidationSettings,
 	FileValidationSettingsAsync,
-	FileValidationSuccessBatchContext,
-	FileValidationSuccessSingleContext,
+	FileValidationSuccessContextBatch,
+	FileValidationSuccessContextEach,
 } from "./types";
 export { formatBytes, generateFileID, toBytes } from "./utils";
