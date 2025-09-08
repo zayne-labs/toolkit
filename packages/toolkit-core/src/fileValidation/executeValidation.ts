@@ -32,7 +32,7 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 				cause: "maxFileCount",
 				code: "too-many-files",
 				file,
-				message: `You can only upload a maximum of ${maxFileCount} files`,
+				message: `You can only upload a up to ${maxFileCount} files. File "${file.name}" has been rejected`,
 			} satisfies FileValidationErrorSingleContext;
 
 			errors.push(context);
