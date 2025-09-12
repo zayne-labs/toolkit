@@ -1,7 +1,7 @@
 import { isFunction } from "@zayne-labs/toolkit-type-helpers";
-import { type RefCallback, useCallback } from "react";
+import type { RefCallback } from "react";
 
-type PossibleRef<TRef extends HTMLElement> = React.Ref<TRef> | undefined;
+export type PossibleRef<TRef extends HTMLElement> = React.Ref<TRef> | undefined;
 
 /**
  * @description Set a given ref to a given value.
@@ -37,11 +37,4 @@ export const composeRefs = <TRef extends HTMLElement>(
 	};
 
 	return mergedRefCallBack;
-};
-
-export const useComposeRefs = <TRef extends HTMLElement>(...refs: Array<PossibleRef<TRef>>) => {
-	// eslint-disable-next-line react-hooks/exhaustive-deps -- Allow
-	const mergedRef = useCallback(() => composeRefs(...refs), refs);
-
-	return mergedRef;
 };
