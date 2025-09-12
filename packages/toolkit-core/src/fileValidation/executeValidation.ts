@@ -79,7 +79,7 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 				cause: "rejectDuplicateFiles",
 				code: "duplicate-file",
 				file,
-				message: `File: "${file.name}" has already been uploaded`,
+				message: `File "${file.name}" has already been uploaded`,
 			} satisfies FileValidationErrorContextEach;
 
 			errors.push(context);
@@ -107,7 +107,7 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 		}
 
 		const context = {
-			message: `Uploaded file-(${file.name}) successfully!`,
+			message: `Processed file-(${file.name}) successfully!`,
 			validFile: file,
 		} satisfies FileValidationSuccessContextEach;
 
@@ -125,7 +125,7 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 
 	if (validFiles.length > 0) {
 		const context = {
-			message: `Uploaded ${validFiles.length} ${validFiles.length > 1 ? "files" : "file"} successfully!`,
+			message: `Processed ${validFiles.length} ${validFiles.length === 1 ? "file" : "files"} successfully!`,
 			validFiles,
 		} satisfies FileValidationSuccessContextBatch;
 
