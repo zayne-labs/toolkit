@@ -7,10 +7,10 @@ const onUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
 
 	const result = handleFileValidation({
 		hooks: {
-			onError: (ctx) => {
+			onErrorEach: (ctx) => {
 				console.error(ctx);
 			},
-			onSuccess: (ctx) => {
+			onSuccessBatch: (ctx) => {
 				console.info(ctx);
 			},
 		},

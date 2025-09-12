@@ -5,7 +5,7 @@ import {
 	type GetSlotComponentProps,
 	getMultipleSlots,
 	getSlotMap,
-} from "@zayne-labs/ui-react/utils";
+} from "@zayne-labs/toolkit-react/utils";
 
 const scopedCss = css`
 	@scope {
