@@ -1,13 +1,4 @@
-import { defineEnum } from "@zayne-labs/toolkit-type-helpers";
 import { createContext, use } from "react";
-
-export class ContextError extends Error {
-	override name = "ContextError";
-}
-
-export const getErrorMessage = (hook: string, provider: string) => {
-	return `${hook} returned "null". Did you forget to wrap the necessary components within ${provider}?`;
-};
 
 export type CustomContextOptions<TContextValue, TStrict extends boolean> = {
 	defaultValue?: TContextValue | null;
@@ -19,10 +10,11 @@ export type CustomContextOptions<TContextValue, TStrict extends boolean> = {
 	strict?: TStrict;
 };
 
-type UseCustomContextResult<TContextValue, TStrict extends boolean> =
-	TStrict extends true ? TContextValue : TContextValue | null;
+export type UseCustomContext<TContextValue, TStrict extends boolean> = () => TStrict extends true ?
+	TContextValue
+:	TContextValue | null;
 
-const createCustomContext = <TContextValue, TStrict extends boolean = true>(
+export const createCustomContext = <TContextValue = null, TStrict extends boolean = true>(
 	options: CustomContextOptions<TContextValue, TStrict> = {}
 ) => {
 	const {
@@ -35,11 +27,11 @@ const createCustomContext = <TContextValue, TStrict extends boolean = true>(
 		strict = true,
 	} = options;
 
-	const Context = createContext<TContextValue | null>(defaultValue);
+	const Context = createContext<TContextValue>(defaultValue as TContextValue);
 
 	Context.displayName = name;
 
-	const useCustomContext = (): UseCustomContextResult<TContextValue, TStrict> => {
+	const useCustomContext: UseCustomContext<TContextValue, TStrict> = () => {
 		const contextValue = use(Context);
 
 		const extendedContextValue = extension?.(contextValue) ?? contextValue;
@@ -51,7 +43,16 @@ const createCustomContext = <TContextValue, TStrict extends boolean = true>(
 		return extendedContextValue as NonNullable<typeof extendedContextValue>;
 	};
 
-	return defineEnum([Context, useCustomContext]);
+	return [Context, useCustomContext] as [
+		Provider: typeof Context,
+		useCustomContext: typeof useCustomContext,
+	];
 };
 
-export { createCustomContext };
+export class ContextError extends Error {
+	override name = "ContextError";
+}
+
+export const getErrorMessage = (hook: string, provider: string) => {
+	return `${hook} returned "null". Did you forget to wrap the necessary components within ${provider}?`;
+};
