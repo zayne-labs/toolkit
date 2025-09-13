@@ -1,14 +1,14 @@
 import { toArray } from "@zayne-labs/toolkit-core";
-import type { InferProps } from "@zayne-labs/toolkit-react/utils";
 import {
 	type CallbackFn,
 	type EmptyObject,
+	isFunction,
 	type Prettify,
 	type UnionToIntersection,
 	type UnknownObject,
-	isFunction,
 } from "@zayne-labs/toolkit-type-helpers";
-import { Fragment as ReactFragment, isValidElement } from "react";
+import { isValidElement, Fragment as ReactFragment } from "react";
+import type { InferProps } from "../types";
 
 type GetSlotName<TSlotComponentProps extends GetSlotComponentProps> =
 	string extends TSlotComponentProps["name"] ? never
