@@ -4,6 +4,7 @@ export { useAnimateElementRefs } from "./useAnimateElementRefs";
 export { useAnimationInterval } from "./useAnimationInterval";
 export { useCallbackRef } from "./useCallbackRef";
 export { useClickOutside } from "./useClickOutside";
+export { useComposeRefs } from "./useComposeRefs";
 export * from "./useConstant";
 export { useCopyToClipboard } from "./useCopyToClipboard";
 export * from "./useDebounce";
