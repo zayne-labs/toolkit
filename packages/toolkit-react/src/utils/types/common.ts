@@ -1,12 +1,19 @@
 import type { UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
 
-export type ForwardedRefType<TComponent extends HTMLElement | React.ElementType> =
-	TComponent extends React.ElementType ? React.ForwardedRef<React.Ref<TComponent>>
-	:	React.ForwardedRef<TComponent>;
+type ValidElementType = HTMLElement | React.ElementType;
 
-export type InferProps<TComponent extends HTMLElement | React.ElementType> =
-	TComponent extends React.ElementType ? React.ComponentPropsWithRef<TComponent>
-	:	React.HTMLAttributes<TComponent>;
+export type ForwardedRefType<TElement extends ValidElementType> =
+	TElement extends React.ElementType ? React.ForwardedRef<React.Ref<TElement>>
+	:	React.ForwardedRef<TElement>;
+
+export type InferPropsLax<TElement extends ValidElementType> =
+	TElement extends React.ElementType ? React.ComponentProps<TElement> : React.HTMLAttributes<TElement>;
+
+type RemoveStringSignature<TObject extends object> = {
+	[Key in keyof TObject as string extends Key ? never : Key]: TObject[Key];
+};
+
+export type InferProps<TElement extends ValidElementType> = RemoveStringSignature<InferPropsLax<TElement>>;
 
 export type StateSetter<TSetter = unknown> = React.Dispatch<React.SetStateAction<TSetter>>;
 
