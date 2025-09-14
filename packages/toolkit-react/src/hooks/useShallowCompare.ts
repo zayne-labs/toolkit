@@ -3,11 +3,17 @@ import type { SelectorFn } from "@zayne-labs/toolkit-type-helpers";
 import { useRef } from "react";
 import { useCallbackRef } from "./useCallbackRef";
 
-export const useShallowCompSelector = <TState, TResult>(selector: SelectorFn<TState, TResult>) => {
+export const useShallowCompSelector = <TState, TResult>(
+	selector: SelectorFn<TState, TResult> | undefined
+) => {
 	const prevStateRef = useRef<TResult>(undefined as never);
 
 	const shallowSelector = useCallbackRef((state: TState) => {
-		const nextState = selector(state);
+		const nextState = selector?.(state);
+
+		if (!nextState) {
+			return prevStateRef.current;
+		}
 
 		if (shallowCompare(prevStateRef.current, nextState)) {
 			return prevStateRef.current;
