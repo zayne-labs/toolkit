@@ -21,10 +21,12 @@ export type PreviewOptions<TPreviewType extends PreviewTypeUnion> = {
 type AllowedFileTypes = Blob | File | FileMeta;
 
 type GetFileUrlResult<TPreviewType extends PreviewTypeUnion> =
-	PreviewTypeUnion extends TPreviewType ? string | null
-	: TPreviewType extends "objectURL" ? string | null
-	: TPreviewType extends "base64URL" ? null
-	: never;
+	TPreviewType extends Extract<AllowedFileTypes, Blob> ?
+		PreviewTypeUnion extends TPreviewType ? string | null
+		: TPreviewType extends "objectURL" ? string | null
+		: TPreviewType extends "base64URL" ? null
+		: never
+	:	null;
 
 const createFileUrl = <TFile extends AllowedFileTypes, TPreviewType extends PreviewTypeUnion>(
 	file: TFile,
