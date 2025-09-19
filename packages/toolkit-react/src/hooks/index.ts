@@ -6,6 +6,7 @@ export { useCallbackRef } from "./useCallbackRef";
 export { useClickOutside } from "./useClickOutside";
 export { useComposeRefs } from "./useComposeRefs";
 export * from "./useConstant";
+export * from "./useControllable";
 export { useCopyToClipboard } from "./useCopyToClipboard";
 export * from "./useDebounce";
 export { useDisclosure } from "./useDisclosure";
