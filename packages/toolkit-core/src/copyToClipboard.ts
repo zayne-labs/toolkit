@@ -1,4 +1,4 @@
-import { isString, type AnyString } from "@zayne-labs/toolkit-type-helpers";
+import { type AnyString, isString } from "@zayne-labs/toolkit-type-helpers";
 
 const fallBackCopy = (text: string) => {
 	const tempTextArea = document.createElement("textarea");
@@ -10,19 +10,20 @@ const fallBackCopy = (text: string) => {
 	tempTextArea.remove();
 };
 
-type CopyToClipboardOptions = {
+export type CopyToClipboardOptions = {
 	mimeType?: "text/plain" | AnyString;
+	onCopied?: () => void;
 	onError?: (error: unknown) => void;
 	onSuccess?: () => void;
 };
 
-type AllowedClipboardItem = string | Blob;
+export type AllowedClipboardItems = string | Blob;
 
 const copyToClipboard = async (
-	valueToCopy: AllowedClipboardItem | Promise<AllowedClipboardItem>,
+	valueToCopy: AllowedClipboardItems | Promise<AllowedClipboardItems>,
 	options?: CopyToClipboardOptions
 ) => {
-	const { mimeType = "text/plain", onError, onSuccess } = options ?? {};
+	const { mimeType = "text/plain", onCopied, onError, onSuccess } = options ?? {};
 
 	const clipboardItem = new ClipboardItem({ [mimeType]: valueToCopy });
 
@@ -34,10 +35,15 @@ const copyToClipboard = async (
 		await navigator.clipboard.write([clipboardItem]);
 
 		onSuccess?.();
+		onCopied?.();
 	} catch (error) {
 		onError?.(error);
 		console.error((error as Error | undefined)?.message ?? "Copy to clipboard failed", error);
-		isString(valueToCopy) && fallBackCopy(valueToCopy);
+
+		if (isString(valueToCopy)) {
+			fallBackCopy(valueToCopy);
+			onCopied?.();
+		}
 	}
 };
 

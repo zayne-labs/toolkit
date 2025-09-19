@@ -4,13 +4,13 @@ import { useCallbackRef } from "../useCallbackRef";
 const useEffectOnce = (callBackFn: React.EffectCallback) => {
 	const stableCallback = useCallbackRef(callBackFn);
 
-	const effectGuard = useRef(false);
+	const effectGuardRef = useRef(false);
 
 	// == savedCallback is always stable so no worries about re-execution of this effect
 	useEffect(() => {
-		if (effectGuard.current) return;
+		if (effectGuardRef.current) return;
 
-		effectGuard.current = true;
+		effectGuardRef.current = true;
 
 		return stableCallback();
 		// eslint-disable-next-line react-hooks/exhaustive-deps -- stableCallback is stable

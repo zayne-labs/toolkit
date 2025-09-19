@@ -1,7 +1,7 @@
 "use client";
 
 import { isFunction } from "@zayne-labs/toolkit-type-helpers";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { StateSetter } from "@/utils";
 import { useCallbackRef } from "./useCallbackRef";
 
@@ -29,10 +29,10 @@ export const useControllableProp = <TProp>(options: UseControllablePropOptions<T
 };
 
 type UseControllableStateOptions<TValue> = {
-	defaultValue?: TValue | (() => TValue) | undefined;
-	onChange?: ((value: TValue) => void) | undefined;
-	shouldUpdate?: ((prevState: TValue, nextValue: TValue) => boolean) | undefined;
-	value?: TValue | undefined;
+	defaultValue?: TValue | (() => TValue);
+	onChange?: (value: TValue) => void;
+	shouldUpdate?: (prevState: TValue, nextValue: TValue) => boolean;
+	value?: TValue;
 };
 
 const defaultShouldUpdate = <TValue>(prevState: TValue, nextValue: TValue) => prevState !== nextValue;
@@ -87,20 +87,26 @@ export const useControllableState = <TValue>(options: UseControllableStateOption
 
 	const isControlled = valueProp !== undefined;
 
-	const selectedValue = isControlled ? valueProp : unControlledState;
+	const currentValue = isControlled ? valueProp : unControlledState;
 
-	const setValue: StateSetter<TValue> = useCallbackRef((newValue) => {
-		const nextValue = isFunction(newValue) ? newValue(selectedValue) : newValue;
+	const setValue: StateSetter<TValue> = useCallback(
+		(newValue) => {
+			const nextValue = isFunction(newValue) ? newValue(currentValue) : newValue;
 
-		if (!savedShouldUpdate(selectedValue, nextValue)) return;
+			if (!savedShouldUpdate(currentValue, nextValue)) return;
 
-		if (!isControlled) {
+			if (isControlled) {
+				savedOnchangeProp(nextValue);
+				return;
+			}
+
 			setUncontrolledState(nextValue);
-		}
 
-		// == Always call onChangeProp even if the value is uncontrolled, just in case the onChangeProp is used to perform side effects without necessarily updating the controlled valueProp
-		savedOnchangeProp(nextValue);
-	});
+			// == Always call onChangeProp even if the value is uncontrolled, just in case the onChangeProp is used to perform side effects without necessarily updating the controlled valueProp
+			savedOnchangeProp(nextValue);
+		},
+		[isControlled, savedOnchangeProp, savedShouldUpdate, currentValue]
+	);
 
-	return [selectedValue, setValue] as [value: typeof selectedValue, setValue: typeof setValue];
+	return [currentValue, setValue] as [value: typeof currentValue, setValue: typeof setValue];
 };
