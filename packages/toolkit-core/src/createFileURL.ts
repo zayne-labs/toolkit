@@ -26,9 +26,9 @@ type GetFileUrlResult<TPreviewType extends PreviewTypeUnion> =
 		: TPreviewType extends "objectURL" ? string | null
 		: TPreviewType extends "base64URL" ? null
 		: never
-	:	null;
+	:	string | null;
 
-const createFileUrl = <TFile extends AllowedFileTypes, TPreviewType extends PreviewTypeUnion>(
+const createFileURL = <TFile extends AllowedFileTypes, TPreviewType extends PreviewTypeUnion>(
 	file: TFile,
 	options?: PreviewOptions<TPreviewType>
 ): GetFileUrlResult<TPreviewType> => {
@@ -69,4 +69,4 @@ const createFileUrl = <TFile extends AllowedFileTypes, TPreviewType extends Prev
 	return null as never;
 };
 
-export { createFileUrl };
+export { createFileURL };

@@ -3,7 +3,7 @@ export * from "./common-utils";
 export * from "./constants";
 export * from "./copyToClipboard";
 export * from "./createExternalStorageStore";
-export * from "./createFileUrl";
+export * from "./createFileURL";
 export * from "./createLocationStore";
 export * from "./createScrollObserver";
 export * from "./createStore";
