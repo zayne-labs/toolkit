@@ -27,7 +27,7 @@ type GetFileUrlResult<TPreviewType extends PreviewTypeUnion> =
 		: TPreviewType extends "objectURL" ? string | null
 		: TPreviewType extends "base64URL" ? null
 		: never
-	:	string | null;
+	:	string | undefined;
 
 const createFileURL = <TFile extends AllowedFileTypes, TPreviewType extends PreviewTypeUnion>(
 	file: TFile,
@@ -36,7 +36,7 @@ const createFileURL = <TFile extends AllowedFileTypes, TPreviewType extends Prev
 	const { onError, onSuccess, previewType = "objectURL" } = options ?? {};
 
 	if (!isBlob(file)) {
-		return (file.url ?? null) as never;
+		return file.url as never;
 	}
 
 	if (previewType === "objectURL") {

@@ -63,7 +63,7 @@ export interface FileMetaWithFileObject {
 	file: File;
 }
 
-export type FileMeta = BaseFileMeta & UnionDiscriminator<[FileMetaWithURL, FileMetaWithFileObject], null>;
+export type FileMeta = BaseFileMeta & UnionDiscriminator<[FileMetaWithURL, FileMetaWithFileObject]>;
 
 type PossibleErrorCodes = UnmaskType<
 	| "custom-validation-failed" // Custom validation failed
@@ -75,8 +75,7 @@ type PossibleErrorCodes = UnmaskType<
 >;
 
 export type FileValidationErrorContextEach = UnionDiscriminator<
-	[{ cause: "custom-error"; originalError: unknown }, { cause: keyof FileValidationSettings }],
-	null
+	[{ cause: "custom-error"; originalError: unknown }, { cause: keyof FileValidationSettings }]
 > & {
 	/**
 	 * Error code identifying the type of validation failure
