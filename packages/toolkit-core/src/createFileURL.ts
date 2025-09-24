@@ -31,16 +31,20 @@ export type PreviewOptions<
 
 type AllowedFileTypes = Blob | File | FileMeta;
 
-type GetFileUrlResult<TPreviewType extends PreviewTypeUnion, TVariant extends "async" | "sync" = "sync"> =
-	TPreviewType extends Extract<AllowedFileTypes, Blob> ?
-		PreviewTypeUnion extends TPreviewType ? string | null
-		: TPreviewType extends "objectURL" ? string | null
-		: TPreviewType extends "base64URL" ?
-			TVariant extends "async" ?
-				string | null
-			:	null
-		:	never
-	:	string | undefined;
+type GetFileUrlResult<
+	TFile extends AllowedFileTypes,
+	TPreviewType extends PreviewTypeUnion,
+	TVariant extends "async" | "sync" = "sync",
+> =
+	AllowedFileTypes extends TFile ? never
+	: TFile extends FileMeta ? string | undefined
+	: PreviewTypeUnion extends TPreviewType ? string | null
+	: TPreviewType extends "objectURL" ? string | null
+	: TPreviewType extends "base64URL" ?
+		TVariant extends "async" ?
+			string | null
+		:	null
+	:	never;
 
 const handleCreateBase64URL = async (
 	file: Blob,
@@ -83,13 +87,13 @@ const handleCreateObjectURL = (file: Blob, options?: PreviewOptionsForObjectURL)
 	return result;
 };
 
-export const createFileURL = <TFile extends AllowedFileTypes, TPreviewType extends PreviewTypeUnion>(
+export const createFileURL = <const TFile extends AllowedFileTypes, TPreviewType extends PreviewTypeUnion>(
 	file: TFile,
 	options?: PreviewOptions<TPreviewType>
-): GetFileUrlResult<TPreviewType> => {
+): GetFileUrlResult<TFile, TPreviewType> => {
 	const { previewType = "objectURL", ...restOptions } = options ?? {};
 
-	type ResultType = GetFileUrlResult<TPreviewType>;
+	type ResultType = GetFileUrlResult<TFile, TPreviewType>;
 
 	if (!isBlob(file)) {
 		return file.url as ResultType;
@@ -117,15 +121,15 @@ export const createFileURL = <TFile extends AllowedFileTypes, TPreviewType exten
 };
 
 export const createFileURLAsync = async <
-	TFile extends AllowedFileTypes,
+	const TFile extends AllowedFileTypes,
 	TPreviewType extends PreviewTypeUnion,
 >(
 	file: TFile,
 	options?: PreviewOptions<TPreviewType, "async">
-): Promise<GetFileUrlResult<TPreviewType, "async">> => {
+): Promise<GetFileUrlResult<TFile, TPreviewType, "async">> => {
 	const { previewType = "objectURL", ...restOptions } = options ?? {};
 
-	type ResultType = GetFileUrlResult<TPreviewType, "async">;
+	type ResultType = GetFileUrlResult<TFile, TPreviewType, "async">;
 
 	if (!isBlob(file)) {
 		return file.url as ResultType;
