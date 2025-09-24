@@ -21,8 +21,11 @@ type PreviewOptionsForBase64URL<TVariant extends "async" | "sync" = "sync"> =
 
 type PreviewTypeUnion = "base64URL" | "objectURL";
 
-export type PreviewOptions<TPreviewType extends PreviewTypeUnion> = {
-	base64URL: PreviewOptionsForBase64URL;
+export type PreviewOptions<
+	TPreviewType extends PreviewTypeUnion,
+	TVariant extends "async" | "sync" = "sync",
+> = {
+	base64URL: PreviewOptionsForBase64URL<TVariant>;
 	objectURL: PreviewOptionsForObjectURL;
 }[TPreviewType] & { previewType?: TPreviewType };
 
@@ -118,7 +121,7 @@ export const createFileURLAsync = async <
 	TPreviewType extends PreviewTypeUnion,
 >(
 	file: TFile,
-	options?: PreviewOptions<TPreviewType>
+	options?: PreviewOptions<TPreviewType, "async">
 ): Promise<GetFileUrlResult<TPreviewType, "async">> => {
 	const { previewType = "objectURL", ...restOptions } = options ?? {};
 
