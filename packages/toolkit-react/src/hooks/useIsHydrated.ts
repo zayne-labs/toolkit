@@ -2,7 +2,11 @@ import { useSyncExternalStore } from "react";
 
 const noop = () => {};
 
-const emptySubscribe = () => noop;
+const noopStore = {
+	getServerSnapshot: () => true,
+	getSnapshot: () => false,
+	subscribe: () => noop,
+};
 
 /**
  * @description Return a boolean indicating if the JS has been hydrated already.
@@ -27,12 +31,14 @@ const emptySubscribe = () => noop;
  * );
  * ```
  */
-export const useIsHydrated = () => {
+const useIsHydrated = () => {
 	const isHydrated = useSyncExternalStore(
-		emptySubscribe,
-		() => true,
-		() => false
+		noopStore.subscribe,
+		noopStore.getSnapshot,
+		noopStore.getServerSnapshot
 	);
 
 	return isHydrated;
 };
+
+export { useIsHydrated };

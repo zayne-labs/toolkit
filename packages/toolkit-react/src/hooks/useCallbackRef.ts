@@ -1,5 +1,5 @@
 import type { AnyFunction } from "@zayne-labs/toolkit-type-helpers";
-import { useCallback, useLayoutEffect, useRef } from "react";
+import { useCallback, useInsertionEffect, useRef } from "react";
 
 /**
  * Returns a stable function that always points to the latest version of the callback function.
@@ -10,7 +10,7 @@ import { useCallback, useLayoutEffect, useRef } from "react";
 const useCallbackRef = <TCallback = AnyFunction>(callbackFn: TCallback | undefined) => {
 	const callbackRef = useRef(callbackFn);
 
-	useLayoutEffect(() => {
+	useInsertionEffect(() => {
 		// == Doing this instead updating it during render cuz according to Dan Abramov, render should be pure
 		callbackRef.current = callbackFn;
 	}, [callbackFn]);

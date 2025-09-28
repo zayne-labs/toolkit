@@ -30,25 +30,21 @@ export const useControllableProp = <TProp>(options: UseControllablePropOptions<T
 
 type UseControllableStateOptions<TValue> = {
 	defaultValue?: TValue | (() => TValue);
+	equalityFn?: (prevState: TValue, nextValue: TValue) => boolean;
 	onChange?: (value: TValue) => void;
-	shouldUpdate?: (prevState: TValue, nextValue: TValue) => boolean;
 	value?: TValue;
 };
 
-const defaultShouldUpdate = <TValue>(prevState: TValue, nextValue: TValue) => prevState !== nextValue;
-
 /**
  * @description React hook to manage state that can be either controlled or uncontrolled.
- *
- * Behavior:
  * - When `options.value` is provided, the hook operates in controlled mode.
  *   In this mode, `value` always equals `options.value` and `setValue` will
  *   invoke `options.onChange(next)` without mutating internal state.
  * - When `options.value` is not provided, the hook operates in uncontrolled
  *   mode, initializing internal state from `options.defaultValue` and updating
  *   it via `setValue`.
- * - All updates are gated by `options.shouldUpdate(prev, next)` which defaults
- *   to a strict inequality check (`prev !== next`).
+ * - All updates are gated by `options.equalityFn(prev, next)` which defaults
+ *   to `Object.is`.
  *
  * @param options - Configuration options for the hook.
  * @param options.value - Controlled value. If defined, the state is controlled.
@@ -57,8 +53,9 @@ const defaultShouldUpdate = <TValue>(prevState: TValue, nextValue: TValue) => pr
  * @param options.onChange - Callback fired when a new value is requested. In
  * controlled mode, this is invoked instead of updating internal state. In
  * uncontrolled mode, it is called after the internal state updates.
- * @param options.shouldUpdate - Predicate that decides whether to commit an
- * update given `prevState` and `nextValue`. Defaults to `(prev !== next)`.
+ * @param options.equalityFn - Predicate that decides whether to commit an
+ * update given `prevState` and `nextValue`. If the values are equal, the update
+ * is skipped. Defaults to `Object.is`.
  * @returns A tuple `[value, setValue]`  just like React.useState.
  *
  * @example
@@ -73,15 +70,10 @@ const defaultShouldUpdate = <TValue>(prevState: TValue, nextValue: TValue) => pr
  * });
  */
 export const useControllableState = <TValue>(options: UseControllableStateOptions<TValue>) => {
-	const {
-		defaultValue,
-		onChange: onChangeProp,
-		shouldUpdate = defaultShouldUpdate,
-		value: valueProp,
-	} = options;
+	const { defaultValue, equalityFn = Object.is, onChange: onChangeProp, value: valueProp } = options;
 
 	const savedOnchangeProp = useCallbackRef(onChangeProp);
-	const savedShouldUpdate = useCallbackRef(shouldUpdate);
+	const savedEqualityFn = useCallbackRef(equalityFn);
 
 	const [unControlledState, setUncontrolledState] = useState(defaultValue as TValue);
 
@@ -93,7 +85,7 @@ export const useControllableState = <TValue>(options: UseControllableStateOption
 		(newValue) => {
 			const nextValue = isFunction(newValue) ? newValue(currentValue) : newValue;
 
-			if (!savedShouldUpdate(currentValue, nextValue)) return;
+			if (savedEqualityFn(currentValue, nextValue)) return;
 
 			if (isControlled) {
 				savedOnchangeProp(nextValue);
@@ -101,11 +93,10 @@ export const useControllableState = <TValue>(options: UseControllableStateOption
 			}
 
 			setUncontrolledState(nextValue);
-
 			// == Always call onChangeProp even if the value is uncontrolled, just in case the onChangeProp is used to perform side effects without necessarily updating the controlled valueProp
 			savedOnchangeProp(nextValue);
 		},
-		[isControlled, savedOnchangeProp, savedShouldUpdate, currentValue]
+		[isControlled, savedOnchangeProp, savedEqualityFn, currentValue]
 	);
 
 	return [currentValue, setValue] as [value: typeof currentValue, setValue: typeof setValue];
