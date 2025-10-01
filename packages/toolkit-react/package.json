@@ -57,6 +57,9 @@
 		},
 		"react": {
 			"optional": true
+		},
+		"zustand": {
+			"optional": true
 		}
 	},
 	"dependencies": {
