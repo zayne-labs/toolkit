@@ -12,6 +12,7 @@ const sharedOptions = {
 	target: "esnext",
 	treeshake: true,
 	tsconfig: "tsconfig.json",
+	unbundle: true,
 } satisfies Options;
 
 const config = defineConfig([
