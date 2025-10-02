@@ -1,7 +1,7 @@
 import {
+	createSearchParams,
 	type LocationStoreOptions,
 	type URLSearchParamsInit,
-	createSearchParams,
 } from "@zayne-labs/toolkit-core";
 import { isFunction } from "@zayne-labs/toolkit-type-helpers";
 import { useLocationState } from "./useLocationState";
@@ -27,15 +27,17 @@ export const useSearchParams = <TSearchParams extends URLSearchParamsInit>(
 		actions[action]({ search: nextSearchParams });
 	};
 
-	setSearchParams.triggerPopstateEvent = actions.triggerPopstateEvent;
-
-	return [searchParams, setSearchParams] as const;
+	return [searchParams, setSearchParams, actions.triggerPopstateEvent] as [
+		searchParams: typeof searchParams,
+		setSearchParams: typeof setSearchParams,
+		triggerPopstateEvent: typeof actions.triggerPopstateEvent,
+	];
 };
 
 export const useSearchParamsObject = <TSearchParams extends Record<string, string>>(
 	options?: UseSearchParamsOptions
 ) => {
-	const [searchParams, setSearchParams] = useSearchParams(options);
+	const [searchParams, setSearchParams, triggerPopstateEvent] = useSearchParams(options);
 
 	const searchParamsObject = Object.fromEntries(searchParams) as TSearchParams;
 
@@ -47,7 +49,9 @@ export const useSearchParamsObject = <TSearchParams extends Record<string, strin
 		setSearchParams(params);
 	};
 
-	setSearchParamsObject.triggerPopstateEvent = setSearchParams.triggerPopstateEvent;
-
-	return [searchParamsObject, setSearchParamsObject] as const;
+	return [searchParamsObject, setSearchParamsObject, triggerPopstateEvent] as [
+		searchParamsObject: typeof searchParamsObject,
+		setSearchParamsObject: typeof setSearchParamsObject,
+		triggerPopstateEvent: typeof triggerPopstateEvent,
+	];
 };

@@ -48,17 +48,13 @@
 	},
 	"peerDependencies": {
 		"@types/react": ">=19.0.0",
-		"react": ">=19.0.0",
-		"zustand": ">=5.0.0"
+		"react": ">=19.0.0"
 	},
 	"peerDependenciesMeta": {
 		"@types/react": {
 			"optional": true
 		},
 		"react": {
-			"optional": true
-		},
-		"zustand": {
 			"optional": true
 		}
 	},
@@ -73,16 +69,15 @@
 		"@size-limit/preset-small-lib": "^11.2.0",
 		"@total-typescript/ts-reset": "^0.6.1",
 		"@types/node": "^24.6.1",
-		"@types/react": "^19.1.17",
-		"@zayne-labs/tsconfig": "0.10.3",
+		"@types/react": "^19.2.0",
+		"@zayne-labs/tsconfig": "0.10.4",
 		"concurrently": "^9.2.1",
 		"cross-env": "^10.1.0",
 		"publint": "^0.3.13",
-		"react": "^19.1.1",
+		"react": "^19.2.0",
 		"size-limit": "^11.2.0",
 		"tsdown": "^0.15.6",
-		"typescript": "5.9.3",
-		"zustand": "^5.0.8"
+		"typescript": "5.9.3"
 	},
 	"publishConfig": {
 		"access": "public",

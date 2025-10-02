@@ -1,5 +1,5 @@
 import { on } from "@zayne-labs/toolkit-core";
-import { type NonEmptyArray, isArray } from "@zayne-labs/toolkit-type-helpers";
+import { isArray, type NonEmptyArray } from "@zayne-labs/toolkit-type-helpers";
 import { useCallback, useRef } from "react";
 import { useCallbackRef } from "./useCallbackRef";
 
@@ -70,6 +70,7 @@ const useAnimateElementRefs = <TTargetElement extends string>(
 		removeAnimationClasses();
 	}, [addAnimationClasses, removeAnimationClasses]);
 
+	// eslint-disable-next-line react-hooks/refs -- Allow this for convenience
 	return { animatedElements: elementsRef.current, handleElementsAnimation };
 };
 

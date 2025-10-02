@@ -37,20 +37,19 @@ type GetFileUrlResult<
 	TVariant extends "async" | "sync" = "sync",
 > =
 	AllowedFileTypes extends TFile ? never
-	: TFile extends FileMeta ? string | undefined
-	: PreviewTypeUnion extends TPreviewType ? string | null
-	: TPreviewType extends "objectURL" ? string | null
+	: PreviewTypeUnion extends TPreviewType ? string | undefined
+	: TPreviewType extends "objectURL" ? string | undefined
 	: TPreviewType extends "base64URL" ?
 		TVariant extends "async" ?
-			string | null
+			string | undefined
 		:	null
 	:	never;
 
 const handleCreateBase64URL = async (
 	file: Blob,
 	options?: PreviewOptionsForBase64URL<"async">
-): Promise<string | null> => {
-	const { promise, reject, resolve } = createPromiseWithResolvers<string | null>();
+): Promise<string | undefined> => {
+	const { promise, reject, resolve } = createPromiseWithResolvers<string | undefined>();
 
 	const reader = new FileReader();
 
@@ -73,8 +72,8 @@ const handleCreateBase64URL = async (
 	return promise;
 };
 
-const handleCreateObjectURL = (file: Blob, options?: PreviewOptionsForObjectURL): string | null => {
-	let result: string | null = null;
+const handleCreateObjectURL = (file: Blob, options?: PreviewOptionsForObjectURL) => {
+	let result: string | undefined;
 
 	try {
 		result = URL.createObjectURL(file);

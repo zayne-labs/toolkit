@@ -8,6 +8,7 @@ export const useConstant = <TResult>(initFn: () => TResult): TResult => {
 		resultRef.current = initFn();
 	}
 
+	// eslint-disable-next-line react-hooks/refs -- Allow this for convenience
 	return resultRef.current;
 };
 

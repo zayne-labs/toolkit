@@ -1,6 +1,6 @@
 import { shallowCompare } from "@zayne-labs/toolkit-core";
 import type { SelectorFn } from "@zayne-labs/toolkit-type-helpers";
-import { useRef } from "react";
+import { useInsertionEffect, useRef } from "react";
 import { useCallbackRef } from "./useCallbackRef";
 
 export const useShallowCompSelector = <TState, TResult>(
@@ -28,9 +28,12 @@ export const useShallowCompSelector = <TState, TResult>(
 export const useShallowCompValue = <TValue>(value: TValue) => {
 	const prevValueRef = useRef<TValue>(value);
 
-	if (shallowCompare(prevValueRef.current, value)) {
-		return prevValueRef.current;
-	}
+	useInsertionEffect(() => {
+		if (shallowCompare(prevValueRef.current, value)) return;
 
-	return (prevValueRef.current = value);
+		prevValueRef.current = value;
+	});
+
+	// eslint-disable-next-line react-hooks/refs -- Allow this for convenience
+	return prevValueRef.current;
 };

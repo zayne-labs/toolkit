@@ -1,5 +1,5 @@
-import { createStore } from "@zayne-labs/toolkit-core";
-import type { Mutate, StateCreator, StoreApi, StoreMutatorIdentifier, UseBoundStore } from "zustand";
+import { createStore, type StoreApi } from "@zayne-labs/toolkit-core";
+import type { Mutate, StateCreator, StoreMutatorIdentifier, UseBoundStore } from "./types";
 
 type Create = {
 	<T, Mos extends Array<[StoreMutatorIdentifier, unknown]> = []>(
