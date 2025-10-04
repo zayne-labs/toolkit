@@ -3,7 +3,7 @@ import type { UnmaskType } from "@zayne-labs/toolkit-type-helpers";
 export type StoreStateSetter<TState, TResult = TState> = UnmaskType<(prevState: TState) => TResult>;
 
 // eslint-disable-next-line perfectionist/sort-union-types -- I want TState to be first in the union
-type StateUpdate<TState> = TState | StoreStateSetter<TState, TState>;
+type FullStateUpdate<TState> = TState | StoreStateSetter<TState, TState>;
 
 type PartialStateUpdate<TState> = Partial<TState> | StoreStateSetter<TState, Partial<TState>>;
 
@@ -13,7 +13,7 @@ type SetStateOptions = UnmaskType<{
 
 export type SetState<TState> = UnmaskType<{
 	(stateUpdate: PartialStateUpdate<TState>, options?: SetStateOptions & { shouldReplace?: false }): void;
-	(stateUpdate: StateUpdate<TState>, options?: SetStateOptions & { shouldReplace: true }): void;
+	(stateUpdate: FullStateUpdate<TState>, options?: SetStateOptions & { shouldReplace: true }): void;
 }>;
 
 export type Listener<TState> = UnmaskType<(state: TState, prevState: TState) => void>;
