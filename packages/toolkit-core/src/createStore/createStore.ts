@@ -1,5 +1,6 @@
 import { isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
 import type { EqualityFn, Listener, StateInitializer, StoreApi } from "./types";
+import { createBatchManager } from "./utils";
 
 type StoreOptions<TState> = {
 	equalityFn?: EqualityFn<TState>;
@@ -17,11 +18,23 @@ const createStore = <TState>(
 
 	const getInitialState = () => initialState;
 
-	type InternalStoreApi = StoreApi<TState>;
-
 	const { equalityFn = Object.is } = options;
 
-	const setState: InternalStoreApi["setState"] = (stateUpdate, shouldReplace) => {
+	const notifyListeners: Listener<TState> = (state, prevState) => {
+		for (const listener of listenerQueue) {
+			listener(state, prevState);
+		}
+	};
+
+	type InternalStoreApi = StoreApi<TState>;
+
+	const batchManager = createBatchManager();
+
+	let previousStateSnapShot: TState;
+
+	const setState: InternalStoreApi["setState"] = (stateUpdate, setStateOptions = {}) => {
+		const { shouldNotifyImmediately = false, shouldReplace = false } = setStateOptions;
+
 		const previousState = currentState;
 
 		const nextState = isFunction(stateUpdate) ? stateUpdate(previousState) : stateUpdate;
@@ -29,44 +42,35 @@ const createStore = <TState>(
 		if (equalityFn(nextState, previousState)) return;
 
 		currentState =
-			!shouldReplace && isObject(previousState) && isObject(nextState) ?
+			!shouldReplace && isObject(previousState) && isObject(nextState) && nextState !== previousState ?
 				{ ...previousState, ...nextState }
 			:	(nextState as TState);
 
-		for (const listener of listenerQueue) {
-			listener(currentState, previousState);
+		if (shouldNotifyImmediately) {
+			batchManager.actions.cancelExistingAndEnd();
+
+			notifyListeners(currentState, previousState);
+
+			return;
 		}
-	};
 
-	let batchQueue = new Set<Parameters<InternalStoreApi["setState"]["batched"]>>([]);
+		if (batchManager.state.isPending) return;
 
-	let isBatchAlreadyScheduled = false;
+		batchManager.actions.start();
 
-	setState.batched = (...params) => {
-		batchQueue.add(params);
-
-		if (isBatchAlreadyScheduled) return;
-
-		isBatchAlreadyScheduled = true;
+		previousStateSnapShot = previousState;
 
 		queueMicrotask(() => {
-			isBatchAlreadyScheduled = false;
+			batchManager.actions.end();
 
-			const batchedStateUpdates = batchQueue;
+			if (batchManager.state.shouldCancelExisting) {
+				batchManager.actions.resetCancelExisting();
+				return;
+			}
 
-			batchQueue = new Set([]);
+			if (equalityFn(currentState, previousStateSnapShot)) return;
 
-			setState((prevState) => {
-				let accumulatedState = prevState;
-
-				for (const [stateUpdate] of batchedStateUpdates) {
-					const nextState = isFunction(stateUpdate) ? stateUpdate(accumulatedState) : stateUpdate;
-
-					accumulatedState = { ...accumulatedState, ...nextState };
-				}
-
-				return accumulatedState;
-			});
+			notifyListeners(currentState, previousStateSnapShot);
 		});
 	};
 
@@ -106,15 +110,10 @@ const createStore = <TState>(
 		return unsubscribe;
 	};
 
-	const resetBatchQueue = () => {
-		isBatchAlreadyScheduled = false;
-		batchQueue.clear();
-	};
-
 	const resetState = () => {
-		resetBatchQueue();
+		batchManager.actions.cancelExistingAndEnd();
 
-		setState(getInitialState(), true);
+		setState(getInitialState(), { shouldReplace: true });
 	};
 
 	const api: InternalStoreApi = {

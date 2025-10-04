@@ -1,2 +1,2 @@
-export * from "./old-implementation";
+export * from "./implementation";
 export * from "./types";

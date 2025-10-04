@@ -1,4 +1,5 @@
 import { isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
+import { createBatchManager } from "@/createStore/utils";
 import { on } from "../on";
 import { parseJSON } from "../parseJSON";
 import type { StorageOptions, StorageStoreApi } from "./types";
@@ -21,7 +22,7 @@ const createExternalStorageStore = <TState>(
 
 	const selectedStorage = getStorage(storageArea);
 
-	let rawStorageValue = selectedStorage?.getItem(key);
+	const rawStorageValue = selectedStorage?.getItem(key);
 
 	const getInitialStorageValue = () => {
 		try {
@@ -57,20 +58,10 @@ const createExternalStorageStore = <TState>(
 
 	type InternalStoreApi = StorageStoreApi<TState>;
 
-	const setState: InternalStoreApi["setState"] = (stateUpdate, shouldReplace) => {
-		const previousState = currentStorageState;
+	const notifyListeners = (state: Partial<TState>, prevState: TState) => {
+		const newValue = serializer(state);
 
-		const nextState = isFunction(stateUpdate) ? stateUpdate(previousState) : stateUpdate;
-
-		if (equalityFn(nextState, previousState)) return;
-
-		const currentState = mergeCurrentStateWithNextState(nextState, shouldReplace);
-
-		const partializedState = partialize(currentState);
-
-		const newValue = serializer(partializedState);
-
-		const oldValue = rawStorageValue;
+		const oldValue = serializer(prevState);
 
 		selectedStorage?.setItem(key, newValue);
 
@@ -82,35 +73,48 @@ const createExternalStorageStore = <TState>(
 		});
 	};
 
-	let batchQueue = new Set<Parameters<InternalStoreApi["setState"]["batched"]>>([]);
+	const batchManager = createBatchManager();
 
-	let isBatchAlreadyScheduled = false;
+	let previousStateSnapShot: TState;
 
-	setState.batched = (...params) => {
-		batchQueue.add(params);
+	const setState: InternalStoreApi["setState"] = (stateUpdate, setStateOptions = {}) => {
+		const { shouldNotifyImmediately = false, shouldReplace = false } = setStateOptions;
 
-		if (isBatchAlreadyScheduled) return;
+		const previousState = currentStorageState;
 
-		isBatchAlreadyScheduled = true;
+		const nextState = isFunction(stateUpdate) ? stateUpdate(previousState) : stateUpdate;
+
+		if (equalityFn(nextState, previousState)) return;
+
+		const mergedState = mergeCurrentStateWithNextState(nextState, shouldReplace);
+
+		const currentState = partialize(mergedState);
+
+		if (shouldNotifyImmediately) {
+			batchManager.actions.cancelExistingAndEnd();
+
+			notifyListeners(currentState, previousState);
+
+			return;
+		}
+
+		if (batchManager.state.isPending) return;
+
+		batchManager.actions.start();
+
+		previousStateSnapShot = previousState;
 
 		queueMicrotask(() => {
-			isBatchAlreadyScheduled = false;
+			batchManager.actions.end();
 
-			const batchedStateUpdates = batchQueue;
+			if (batchManager.state.shouldCancelExisting) {
+				batchManager.actions.resetCancelExisting();
+				return;
+			}
 
-			batchQueue = new Set([]);
+			if (equalityFn(currentState, previousStateSnapShot)) return;
 
-			setState((prevState) => {
-				let accumulatedState = prevState;
-
-				for (const [stateUpdate] of batchedStateUpdates) {
-					const nextState = isFunction(stateUpdate) ? stateUpdate(accumulatedState) : stateUpdate;
-
-					accumulatedState = { ...accumulatedState, ...nextState };
-				}
-
-				return accumulatedState;
-			});
+			notifyListeners(currentState, previousStateSnapShot);
 		});
 	};
 
@@ -123,8 +127,6 @@ const createExternalStorageStore = <TState>(
 			const previousState = internalSafeParser(actualEvent.oldValue);
 
 			currentStorageState = internalSafeParser(actualEvent.newValue);
-
-			rawStorageValue = actualEvent.newValue;
 
 			onStoreChange(currentStorageState, previousState);
 		};
@@ -161,23 +163,14 @@ const createExternalStorageStore = <TState>(
 		return subscribe(handleStoreChange);
 	};
 
-	const resetBatchQueue = () => {
-		isBatchAlreadyScheduled = false;
-		batchQueue.clear();
-	};
-
 	const removeState = () => {
-		resetBatchQueue();
-
 		selectedStorage?.removeItem(key);
 
 		dispatchStorageEvent({ key, storageArea: selectedStorage });
 	};
 
 	const resetState = () => {
-		resetBatchQueue();
-
-		setState(getInitialState(), true);
+		setState(getInitialState(), { shouldReplace: true });
 	};
 
 	return {

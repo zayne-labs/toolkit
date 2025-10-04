@@ -5,16 +5,16 @@ import { createStore } from "./createStore";
 const flushMicrotasks = () => new Promise<void>((resolve) => queueMicrotask(() => resolve()));
 
 describe("createStore - Basic Batching Functionality", () => {
-	it("should batch multiple synchronous batched calls and result in single listener notification", async () => {
+	it("should batch multiple synchronous calls and result in single listener notification", async () => {
 		// Arrange
 		const store = createStore(() => ({ count: 0, name: "test" }));
 		const listener = vi.fn();
 		store.subscribe(listener);
 
 		// Act
-		store.setState.batched({ count: 1 });
-		store.setState.batched({ count: 2 });
-		store.setState.batched({ count: 3 });
+		store.setState({ count: 1 });
+		store.setState({ count: 2 });
+		store.setState({ count: 3 });
 
 		// Assert - listener should not be called yet
 		expect(listener).not.toHaveBeenCalled();
@@ -27,14 +27,14 @@ describe("createStore - Basic Batching Functionality", () => {
 		expect(listener).toHaveBeenCalledWith({ count: 3, name: "test" }, { count: 0, name: "test" });
 	});
 
-	it("should apply all batched updates in correct order and reflect final state", async () => {
+	it("should apply all updates in correct order and reflect final state", async () => {
 		// Arrange
 		const store = createStore(() => ({ count: 0, multiplier: 1 }));
 
 		// Act
-		store.setState.batched({ count: 5 });
-		store.setState.batched({ multiplier: 2 });
-		store.setState.batched((state) => ({ count: state.count + 10 }));
+		store.setState({ count: 5 });
+		store.setState({ multiplier: 2 });
+		store.setState({ count: 15 });
 
 		// Wait for microtask
 		await flushMicrotasks();
@@ -51,8 +51,8 @@ describe("createStore - Basic Batching Functionality", () => {
 		store.subscribe(listener);
 
 		// Act - First batch
-		store.setState.batched({ count: 1 });
-		store.setState.batched({ count: 2 });
+		store.setState({ count: 1 });
+		store.setState({ count: 2 });
 		await flushMicrotasks();
 
 		// Assert - First batch processed
@@ -61,8 +61,8 @@ describe("createStore - Basic Batching Functionality", () => {
 
 		// Act - Second batch (queue should be clear from first batch)
 		listener.mockClear();
-		store.setState.batched({ count: 3 });
-		store.setState.batched({ count: 4 });
+		store.setState({ count: 3 });
+		store.setState({ count: 4 });
 		await flushMicrotasks();
 
 		// Assert - Second batch processed independently
@@ -77,11 +77,11 @@ describe("createStore - Basic Batching Functionality", () => {
 		const queueMicrotaskSpy = vi.spyOn(globalThis, "queueMicrotask");
 
 		// Act
-		store.setState.batched({ count: 1 });
-		store.setState.batched({ count: 2 });
-		store.setState.batched({ count: 3 });
-		store.setState.batched({ count: 4 });
-		store.setState.batched({ count: 5 });
+		store.setState({ count: 1 });
+		store.setState({ count: 2 });
+		store.setState({ count: 3 });
+		store.setState({ count: 4 });
+		store.setState({ count: 5 });
 
 		// Assert - queueMicrotask should only be called once
 		expect(queueMicrotaskSpy).toHaveBeenCalledTimes(1);
@@ -101,15 +101,15 @@ describe("createStore - Basic Batching Functionality", () => {
 		const queueMicrotaskSpy = vi.spyOn(globalThis, "queueMicrotask");
 
 		// Act - First batch
-		store.setState.batched({ count: 1 });
-		store.setState.batched({ count: 2 });
+		store.setState({ count: 1 });
+		store.setState({ count: 2 });
 		expect(queueMicrotaskSpy).toHaveBeenCalledTimes(1);
 
 		await flushMicrotasks();
 
 		// Act - Second batch (guard should be reset)
-		store.setState.batched({ count: 3 });
-		store.setState.batched({ count: 4 });
+		store.setState({ count: 3 });
+		store.setState({ count: 4 });
 
 		// Assert - queueMicrotask should be called again (total 2 times)
 		// Note: flushMicrotasks itself calls queueMicrotask, so we expect 3 total
@@ -128,9 +128,9 @@ describe("createStore - Basic Batching Functionality", () => {
 		const store = createStore(() => ({ count: 0, total: 0 }));
 
 		// Act - Mix of object and function updates
-		store.setState.batched({ count: 5 });
-		store.setState.batched((state) => ({ total: state.count + 10 })); // Should see count: 5
-		store.setState.batched((state) => ({ count: state.count * 2 })); // Should see count: 5
+		store.setState({ count: 5 });
+		store.setState((state) => ({ total: state.count + 10 })); // Should see count: 5
+		store.setState((state) => ({ count: state.count * 2 })); // Should see count: 5
 
 		await flushMicrotasks();
 
@@ -146,8 +146,8 @@ describe("createStore - Basic Batching Functionality", () => {
 		store.subscribe(listener);
 
 		// Act - Batched updates that create a new object with same values
-		store.setState.batched({ count: 5 });
-		store.setState.batched({ count: 5 });
+		store.setState({ count: 5 });
+		store.setState({ count: 5 });
 
 		await flushMicrotasks();
 
@@ -184,10 +184,10 @@ describe("createStore - Basic Batching Functionality", () => {
 		store.subscribe(listener);
 
 		// Act
-		store.setState.batched({ name: "Jane" });
-		store.setState.batched({ age: 30 });
-		store.setState.batched({ city: "LA" });
-		store.setState.batched({ country: "Canada" });
+		store.setState({ name: "Jane" });
+		store.setState({ age: 30 });
+		store.setState({ city: "LA" });
+		store.setState({ country: "Canada" });
 
 		await flushMicrotasks();
 
@@ -208,19 +208,19 @@ describe("createStore - Basic Batching Functionality", () => {
 		store.subscribe(listener);
 
 		// Act - First batch
-		store.setState.batched({ count: 1 });
-		store.setState.batched({ count: 2 });
+		store.setState({ count: 1 });
+		store.setState({ count: 2 });
 
 		await flushMicrotasks();
 
 		// Act - Second batch immediately after
-		store.setState.batched({ count: 3 });
-		store.setState.batched({ count: 4 });
+		store.setState({ count: 3 });
+		store.setState({ count: 4 });
 
 		await flushMicrotasks();
 
 		// Act - Third batch
-		store.setState.batched({ count: 5 });
+		store.setState({ count: 5 });
 
 		await flushMicrotasks();
 
@@ -236,9 +236,9 @@ describe("createStore - Update Merging Logic", () => {
 		const store = createStore(() => ({ age: 25, city: "NYC", name: "John" }));
 
 		// Act - Multiple object updates
-		store.setState.batched({ name: "Jane" });
-		store.setState.batched({ age: 30 });
-		store.setState.batched({ city: "LA" });
+		store.setState({ name: "Jane" });
+		store.setState({ age: 30 });
+		store.setState({ city: "LA" });
 
 		await flushMicrotasks();
 
@@ -251,13 +251,13 @@ describe("createStore - Update Merging Logic", () => {
 		const store = createStore(() => ({ count: 0, multiplier: 1 }));
 
 		// Act - Function updates should see accumulated state
-		store.setState.batched({ count: 5 });
-		store.setState.batched((state) => {
+		store.setState({ count: 5 });
+		store.setState((state) => {
 			// Should see count: 5
 			expect(state.count).toBe(5);
 			return { multiplier: state.count * 2 };
 		});
-		store.setState.batched((state) => {
+		store.setState((state) => {
 			// Should see count: 5, multiplier: 10
 			expect(state.count).toBe(5);
 			expect(state.multiplier).toBe(10);
@@ -275,10 +275,10 @@ describe("createStore - Update Merging Logic", () => {
 		const store = createStore(() => ({ a: 1, b: 2, c: 3 }));
 
 		// Act - Mix of object and function updates
-		store.setState.batched({ a: 10 }); // Object update
-		store.setState.batched((state) => ({ b: state.a + 5 })); // Function sees a: 10
-		store.setState.batched({ c: 20 }); // Object update
-		store.setState.batched((state) => ({ a: state.b + state.c })); // Function sees b: 15, c: 20
+		store.setState({ a: 10 }); // Object update
+		store.setState((state) => ({ b: state.a + 5 })); // Function sees a: 10
+		store.setState({ c: 20 }); // Object update
+		store.setState((state) => ({ a: state.b + state.c })); // Function sees b: 15, c: 20
 
 		await flushMicrotasks();
 
@@ -292,15 +292,15 @@ describe("createStore - Update Merging Logic", () => {
 		const updateOrder: number[] = [];
 
 		// Act - Track order of updates
-		store.setState.batched((state) => {
+		store.setState((state) => {
 			updateOrder.push(1);
 			return { value: state.value + 1 };
 		});
-		store.setState.batched((state) => {
+		store.setState((state) => {
 			updateOrder.push(2);
 			return { value: state.value + 10 };
 		});
-		store.setState.batched((state) => {
+		store.setState((state) => {
 			updateOrder.push(3);
 			return { value: state.value + 100 };
 		});
@@ -319,8 +319,8 @@ describe("createStore - Update Merging Logic", () => {
 		store.subscribe(listener);
 
 		// Act - Updates that result in same values
-		store.setState.batched({ count: 5 });
-		store.setState.batched({ name: "test" });
+		store.setState({ count: 5 });
+		store.setState({ name: "test" });
 
 		await flushMicrotasks();
 
@@ -337,8 +337,8 @@ describe("createStore - Update Merging Logic", () => {
 		}));
 
 		// Act - Update nested property (note: shallow merge only)
-		store.setState.batched({ simple: "updated" });
-		store.setState.batched({ nested: { x: 10, y: 20 } });
+		store.setState({ simple: "updated" });
+		store.setState({ nested: { x: 10, y: 20 } });
 
 		await flushMicrotasks();
 
@@ -354,10 +354,10 @@ describe("createStore - Update Merging Logic", () => {
 		const store = createStore(() => ({ counter: 0 }));
 
 		// Act - Chain of dependent function updates
-		store.setState.batched((state) => ({ counter: state.counter + 1 }));
-		store.setState.batched((state) => ({ counter: state.counter * 2 }));
-		store.setState.batched((state) => ({ counter: state.counter + 10 }));
-		store.setState.batched((state) => ({ counter: state.counter / 2 }));
+		store.setState((state) => ({ counter: state.counter + 1 }));
+		store.setState((state) => ({ counter: state.counter * 2 }));
+		store.setState((state) => ({ counter: state.counter + 10 }));
+		store.setState((state) => ({ counter: state.counter / 2 }));
 
 		await flushMicrotasks();
 
@@ -376,9 +376,9 @@ describe("createStore - Update Merging Logic", () => {
 		}));
 
 		// Act - Update different properties
-		store.setState.batched({ a: 100 });
-		store.setState.batched({ c: 300 });
-		store.setState.batched({ e: 500 });
+		store.setState({ a: 100 });
+		store.setState({ c: 300 });
+		store.setState({ e: 500 });
 
 		await flushMicrotasks();
 
@@ -399,7 +399,7 @@ describe("createStore - Update Merging Logic", () => {
 		store.subscribe(listener);
 
 		// Act - Empty object update
-		store.setState.batched({});
+		store.setState({});
 
 		await flushMicrotasks();
 
@@ -413,8 +413,8 @@ describe("createStore - Update Merging Logic", () => {
 		const store = createStore(() => ({ x: 1, y: 2, z: 3 }));
 
 		// Act - Function returns partial update
-		store.setState.batched({ x: 10 });
-		store.setState.batched((state) => ({ y: state.x + 5 })); // Only updates y
+		store.setState({ x: 10 });
+		store.setState((state) => ({ y: state.x + 5 })); // Only updates y
 		// z should remain unchanged
 
 		await flushMicrotasks();
@@ -433,15 +433,15 @@ describe("createStore - Async Boundary Handling", () => {
 
 		// Act - Updates before await should be batched
 		const asyncOperation = async () => {
-			store.setState.batched({ count: 1 });
-			store.setState.batched({ count: 2 });
-			store.setState.batched({ status: "loading" });
+			store.setState({ count: 1 });
+			store.setState({ count: 2 });
+			store.setState({ status: "loading" });
 
 			// These updates should be batched together before the await
 			await new Promise((resolve) => setTimeout(resolve, 10));
 
 			// This update happens after await (new batch)
-			store.setState.batched({ status: "complete" });
+			store.setState({ status: "complete" });
 		};
 
 		await asyncOperation();
@@ -470,14 +470,14 @@ describe("createStore - Async Boundary Handling", () => {
 		// Act
 		const asyncOperation = async () => {
 			// First batch - before await
-			store.setState.batched({ step: 1 });
-			store.setState.batched({ step: 2 });
+			store.setState({ step: 1 });
+			store.setState({ step: 2 });
 
 			await new Promise((resolve) => setTimeout(resolve, 10));
 
 			// Second batch - after await
-			store.setState.batched({ step: 3 });
-			store.setState.batched({ step: 4 });
+			store.setState({ step: 3 });
+			store.setState({ step: 4 });
 		};
 
 		await asyncOperation();
@@ -497,20 +497,20 @@ describe("createStore - Async Boundary Handling", () => {
 		// Act
 		const asyncOperation = async () => {
 			// Batch 1
-			store.setState.batched({ value: 1 });
-			store.setState.batched({ value: 2 });
-			store.setState.batched({ value: 3 });
+			store.setState({ value: 1 });
+			store.setState({ value: 2 });
+			store.setState({ value: 3 });
 
 			await new Promise((resolve) => setTimeout(resolve, 5));
 
 			// Batch 2
-			store.setState.batched({ value: 4 });
-			store.setState.batched({ value: 5 });
+			store.setState({ value: 4 });
+			store.setState({ value: 5 });
 
 			await new Promise((resolve) => setTimeout(resolve, 5));
 
 			// Batch 3
-			store.setState.batched({ value: 6 });
+			store.setState({ value: 6 });
 		};
 
 		await asyncOperation();
@@ -530,8 +530,8 @@ describe("createStore - Async Boundary Handling", () => {
 		store.subscribe(listener);
 
 		// Act - Synchronous batched calls
-		store.setState.batched({ count: 1 });
-		store.setState.batched({ count: 2 });
+		store.setState({ count: 1 });
+		store.setState({ count: 2 });
 
 		// Explicitly wait for microtasks to ensure batch is flushed
 		await flushMicrotasks();
@@ -549,15 +549,15 @@ describe("createStore - Async Boundary Handling", () => {
 
 		// Act - Run two async operations concurrently
 		const operation1 = async () => {
-			store.setState.batched({ counter: 1 });
+			store.setState({ counter: 1 });
 			await new Promise((resolve) => setTimeout(resolve, 10));
-			store.setState.batched({ counter: 10 });
+			store.setState({ counter: 10 });
 		};
 
 		const operation2 = async () => {
-			store.setState.batched({ counter: 2 });
+			store.setState({ counter: 2 });
 			await new Promise((resolve) => setTimeout(resolve, 15));
-			store.setState.batched({ counter: 20 });
+			store.setState({ counter: 20 });
 		};
 
 		await Promise.all([operation1(), operation2()]);
@@ -578,15 +578,15 @@ describe("createStore - Async Boundary Handling", () => {
 
 		// Act
 		const nestedAsync = async () => {
-			store.setState.batched({ level: 1 });
+			store.setState({ level: 1 });
 
 			await (async () => {
-				store.setState.batched({ level: 2 });
+				store.setState({ level: 2 });
 				await new Promise((resolve) => setTimeout(resolve, 5));
-				store.setState.batched({ level: 3 });
+				store.setState({ level: 3 });
 			})();
 
-			store.setState.batched({ level: 4 });
+			store.setState({ level: 4 });
 		};
 
 		await nestedAsync();
@@ -606,15 +606,15 @@ describe("createStore - Async Boundary Handling", () => {
 		// Act
 		const asyncOperation = async () => {
 			// All synchronous before await
-			store.setState.batched({ a: 1 });
-			store.setState.batched({ b: 2 });
-			store.setState.batched({ c: 3 });
+			store.setState({ a: 1 });
+			store.setState({ b: 2 });
+			store.setState({ c: 3 });
 
 			// First await - should flush the batch
 			await Promise.resolve();
 
 			// After await - new batch
-			store.setState.batched({ a: 10 });
+			store.setState({ a: 10 });
 		};
 
 		await asyncOperation();
@@ -634,14 +634,14 @@ describe("createStore - Async Boundary Handling", () => {
 
 		// Act
 		const asyncOperation = async () => {
-			store.setState.batched({ result: 1 });
+			store.setState({ result: 1 });
 
 			await Promise.all([
-				Promise.resolve().then(() => store.setState.batched({ result: 2 })),
-				Promise.resolve().then(() => store.setState.batched({ result: 3 })),
+				Promise.resolve().then(() => store.setState({ result: 2 })),
+				Promise.resolve().then(() => store.setState({ result: 3 })),
 			]);
 
-			store.setState.batched({ result: 4 });
+			store.setState({ result: 4 });
 		};
 
 		await asyncOperation();
@@ -653,23 +653,23 @@ describe("createStore - Async Boundary Handling", () => {
 	});
 });
 
-describe("createStore - Backward Compatibility", () => {
-	it("should apply regular setState immediately without batching", () => {
+describe("createStore - Immediate Notifications", () => {
+	it("should notify immediately when shouldNotifyImmediately is true", () => {
 		// Arrange
 		const store = createStore(() => ({ count: 0 }));
 		const listener = vi.fn();
 		store.subscribe(listener);
 
-		// Act - Regular setState (not batched)
-		store.setState({ count: 1 });
+		// Act - setState with shouldNotifyImmediately
+		store.setState({ count: 1 }, { shouldNotifyImmediately: true });
 
 		// Assert - listener should be called immediately (synchronously)
 		expect(listener).toHaveBeenCalledTimes(1);
 		expect(listener).toHaveBeenCalledWith({ count: 1 }, { count: 0 });
 		expect(store.getState()).toEqual({ count: 1 });
 
-		// Act - Another regular setState
-		store.setState({ count: 2 });
+		// Act - Another immediate setState
+		store.setState({ count: 2 }, { shouldNotifyImmediately: true });
 
 		// Assert - listener called again immediately
 		expect(listener).toHaveBeenCalledTimes(2);
@@ -677,22 +677,22 @@ describe("createStore - Backward Compatibility", () => {
 		expect(store.getState()).toEqual({ count: 2 });
 	});
 
-	it("should return current state from getState during batch cycle", async () => {
+	it("should return updated state from getState immediately even during batch cycle", async () => {
 		// Arrange
 		const store = createStore(() => ({ count: 0, name: "test" }));
 
 		// Act - Queue batched updates
-		store.setState.batched({ count: 1 });
-		store.setState.batched({ count: 2 });
-		store.setState.batched({ name: "updated" });
+		store.setState({ count: 1 });
+		store.setState({ count: 2 });
+		store.setState({ name: "updated" });
 
-		// Assert - getState should return current state, not pending batched state
-		expect(store.getState()).toEqual({ count: 0, name: "test" });
+		// Assert - getState returns the latest state immediately (state is updated, notifications are batched)
+		expect(store.getState()).toEqual({ count: 2, name: "updated" });
 
 		// Wait for batch to flush
 		await flushMicrotasks();
 
-		// Assert - now getState returns the updated state
+		// Assert - state remains the same
 		expect(store.getState()).toEqual({ count: 2, name: "updated" });
 	});
 
@@ -707,9 +707,9 @@ describe("createStore - Backward Compatibility", () => {
 		const unsubscribe2 = store.subscribe(listener2);
 
 		// Act - Batched updates
-		store.setState.batched({ value: 1 });
-		store.setState.batched({ value: 2 });
-		store.setState.batched({ value: 3 });
+		store.setState({ value: 1 });
+		store.setState({ value: 2 });
+		store.setState({ value: 3 });
 
 		await flushMicrotasks();
 
@@ -723,7 +723,7 @@ describe("createStore - Backward Compatibility", () => {
 		unsubscribe1();
 		listener2.mockClear();
 
-		store.setState.batched({ value: 4 });
+		store.setState({ value: 4 });
 		await flushMicrotasks();
 
 		// Assert - only listener2 called
@@ -746,9 +746,9 @@ describe("createStore - Backward Compatibility", () => {
 		store.subscribe.withSelector((state) => state.name, nameListener);
 
 		// Act - Batch updates to different properties
-		store.setState.batched({ count: 1 });
-		store.setState.batched({ count: 2 });
-		store.setState.batched({ age: 30 });
+		store.setState({ count: 1 });
+		store.setState({ count: 2 });
+		store.setState({ age: 30 });
 
 		await flushMicrotasks();
 
@@ -759,7 +759,7 @@ describe("createStore - Backward Compatibility", () => {
 
 		// Act - Update name
 		countListener.mockClear();
-		store.setState.batched({ name: "updated" });
+		store.setState({ name: "updated" });
 		await flushMicrotasks();
 
 		// Assert - only nameListener called
@@ -768,54 +768,61 @@ describe("createStore - Backward Compatibility", () => {
 		expect(countListener).not.toHaveBeenCalled();
 	});
 
-	it("should work with resetState independently of batching", async () => {
+	it("should work with resetState and clear pending notifications", async () => {
 		// Arrange
 		const initialState = { count: 0, name: "initial" };
 		const store = createStore(() => initialState);
 		const listener = vi.fn();
 		store.subscribe(listener);
 
-		// Act - Update state normally
+		// Act - Update state
 		store.setState({ count: 5, name: "updated" });
+
+		await flushMicrotasks();
+
 		expect(store.getState()).toEqual({ count: 5, name: "updated" });
 		expect(listener).toHaveBeenCalledTimes(1);
 
-		// Act - Queue batched updates (not yet applied)
-		store.setState.batched({ count: 10 });
-		store.setState.batched({ name: "batched" });
+		// Act - Queue batched updates (state updated, notifications pending)
+		store.setState({ count: 10 });
+		store.setState({ name: "batched" });
 
-		// Assert - batched updates not applied yet
-		expect(store.getState()).toEqual({ count: 5, name: "updated" });
+		// Assert - state updated immediately but notifications pending
+		expect(store.getState()).toEqual({ count: 10, name: "batched" });
 		expect(listener).toHaveBeenCalledTimes(1); // Still only 1 call
 
-		// Act - Reset state before batch flushes (should clear pending batches)
+		// Act - Reset state before notifications flush (should clear pending notifications)
 		store.resetState();
 
-		// Assert - state reset immediately, listener called for reset
+		// Assert - state reset immediately
 		expect(store.getState()).toEqual(initialState);
-		expect(listener).toHaveBeenCalledTimes(2); // Called for reset
 
-		// Wait for microtask (batched updates should have been cleared)
+		// Wait for microtask
 		await flushMicrotasks();
 
-		// Assert - state remains at initial (batched updates were cleared, no additional listener calls)
+		// Assert - listener called 2 times total:
+		// 1. First setState batch
+		// 2. resetState batch
+		// The pending notification is cancelled by the isScheduleCancelled flag
+		expect(listener).toHaveBeenCalledTimes(2);
 		expect(store.getState()).toEqual(initialState);
-		expect(listener).toHaveBeenCalledTimes(2); // Still only 2 calls (no batch applied)
 
 		// Act - Queue new batched updates after reset
 		listener.mockClear();
-		store.setState.batched({ count: 10 });
-		store.setState.batched({ name: "batched" });
+		store.setState({ count: 10 });
+		store.setState({ name: "batched" });
 
 		// Wait for batch to flush
 		await flushMicrotasks();
 
 		// Assert - new batched updates applied normally
 		expect(store.getState()).toEqual({ count: 10, name: "batched" });
-		expect(listener).toHaveBeenCalledTimes(1); // Called once for the new batch
+		expect(listener).toHaveBeenCalledTimes(1);
 
 		// Act - Reset again
 		store.resetState();
+
+		await flushMicrotasks();
 
 		// Assert - state reset to initial again
 		expect(store.getState()).toEqual(initialState);
@@ -827,8 +834,8 @@ describe("createStore - Backward Compatibility", () => {
 		const store = createStore(() => initialState);
 
 		// Act - Batched updates
-		store.setState.batched({ value: 10 });
-		store.setState.batched({ value: 20 });
+		store.setState({ value: 10 });
+		store.setState({ value: 20 });
 
 		await flushMicrotasks();
 
@@ -841,13 +848,13 @@ describe("createStore - Backward Compatibility", () => {
 		expect(store.getState()).toEqual(initialState);
 	});
 
-	it("should have no performance overhead when batching is not used", () => {
+	it("should batch multiple synchronous updates efficiently", async () => {
 		// Arrange
 		const store = createStore(() => ({ count: 0 }));
 		const listener = vi.fn();
 		store.subscribe(listener);
 
-		// Act - Use only regular setState (no batching)
+		// Act - Multiple synchronous setState calls
 		const startTime = performance.now();
 
 		for (let count = 1; count <= 100; count++) {
@@ -857,59 +864,63 @@ describe("createStore - Backward Compatibility", () => {
 		const endTime = performance.now();
 		const duration = endTime - startTime;
 
-		// Assert - all updates applied immediately
-		expect(listener).toHaveBeenCalledTimes(100);
+		// Assert - state updated immediately but listeners not called yet
+		expect(listener).not.toHaveBeenCalled();
 		expect(store.getState()).toEqual({ count: 100 });
 
-		// Assert - performance is reasonable (should be very fast)
-		// This is a loose check - just ensuring no catastrophic slowdown
-		expect(duration).toBeLessThan(100); // Should complete in less than 100ms
-	});
-
-	it("should handle interleaved batched and non-batched calls correctly", async () => {
-		// Arrange
-		const store = createStore(() => ({ count: 0 }));
-		const listener = vi.fn();
-		store.subscribe(listener);
-
-		// Act - Mix batched and non-batched calls
-		store.setState.batched({ count: 1 }); // Queued
-		store.setState.batched({ count: 2 }); // Queued
-		store.setState({ count: 10 }); // Applied immediately
-
-		// Assert - non-batched call applied immediately
-		expect(listener).toHaveBeenCalledTimes(1);
-		expect(listener).toHaveBeenCalledWith({ count: 10 }, { count: 0 });
-		expect(store.getState()).toEqual({ count: 10 });
-
-		// Wait for batched updates to flush
 		await flushMicrotasks();
 
-		// Assert - batched updates applied after flush
-		expect(listener).toHaveBeenCalledTimes(2);
-		expect(listener).toHaveBeenCalledWith({ count: 2 }, { count: 10 });
-		expect(store.getState()).toEqual({ count: 2 });
+		// Assert - listener called once after batch
+		expect(listener).toHaveBeenCalledTimes(1);
+		expect(listener).toHaveBeenCalledWith({ count: 100 }, { count: 0 });
+
+		// Assert - performance is reasonable (should be very fast)
+		expect(duration).toBeLessThan(100);
 	});
 
-	it("should maintain existing behavior for function updates with regular setState", () => {
+	it("should handle interleaved batched and immediate calls correctly", async () => {
 		// Arrange
 		const store = createStore(() => ({ count: 0 }));
 		const listener = vi.fn();
 		store.subscribe(listener);
 
-		// Act - Function update with regular setState
-		store.setState((state) => ({ count: state.count + 5 }));
+		// Act - Mix batched and immediate calls
+		store.setState({ count: 1 }); // Batched - schedules microtask, snapshot = 0
+		store.setState({ count: 2 }); // Batched - reuses same microtask
+		store.setState({ count: 10 }, { shouldNotifyImmediately: true }); // Immediate - notifies with current previousState (2)
 
-		// Assert - applied immediately
+		// Assert - immediate call notified synchronously
 		expect(listener).toHaveBeenCalledTimes(1);
-		expect(store.getState()).toEqual({ count: 5 });
+		expect(listener).toHaveBeenCalledWith({ count: 10 }, { count: 2 });
+		expect(store.getState()).toEqual({ count: 10 });
 
-		// Act - Another function update
+		// Wait for the already-queued microtask
+		await flushMicrotasks();
+
+		// Assert - the queued microtask was cancelled by shouldNotifyImmediately
+		expect(listener).toHaveBeenCalledTimes(1); // Still only 1 call
+		expect(store.getState()).toEqual({ count: 10 });
+	});
+
+	it("should batch function updates correctly", async () => {
+		// Arrange
+		const store = createStore(() => ({ count: 0 }));
+		const listener = vi.fn();
+		store.subscribe(listener);
+
+		// Act - Function updates are batched
+		store.setState((state) => ({ count: state.count + 5 }));
 		store.setState((state) => ({ count: state.count * 2 }));
 
-		// Assert - applied immediately
-		expect(listener).toHaveBeenCalledTimes(2);
+		// Assert - state updated but listeners not called yet
+		expect(listener).not.toHaveBeenCalled();
 		expect(store.getState()).toEqual({ count: 10 });
+
+		await flushMicrotasks();
+
+		// Assert - listener called once with final state
+		expect(listener).toHaveBeenCalledTimes(1);
+		expect(listener).toHaveBeenCalledWith({ count: 10 }, { count: 0 });
 	});
 
 	it("should maintain existing behavior for getInitialState", () => {
@@ -925,23 +936,27 @@ describe("createStore - Backward Compatibility", () => {
 		expect(store.getState()).toEqual({ count: 10, name: "updated" });
 	});
 
-	it("should not affect existing equality check behavior", () => {
+	it("should respect equality check behavior", async () => {
 		// Arrange
 		const store = createStore(() => ({ count: 5 }));
 		const listener = vi.fn();
 		store.subscribe(listener);
 
-		// Act - Regular setState with same value
+		// Act - setState with same value (new object)
 		store.setState({ count: 5 });
+
+		await flushMicrotasks();
 
 		// Assert - listener called because new object created (different reference)
 		expect(listener).toHaveBeenCalledTimes(1);
 
-		// Act - Regular setState with function returning same state
+		// Act - setState with function returning same state
 		listener.mockClear();
 		store.setState((state) => state);
 
-		// Assert - listener not called (same reference)
+		await flushMicrotasks();
+
+		// Assert - listener not called (same reference, equality check prevents notification)
 		expect(listener).not.toHaveBeenCalled();
 	});
 
@@ -953,15 +968,26 @@ describe("createStore - Backward Compatibility", () => {
 		const listener = vi.fn();
 		store.subscribe(listener);
 
-		// Act - Regular setState with same count value
+		// Act - setState with same count value
 		store.setState({ count: 0 });
+
+		await flushMicrotasks();
 
 		// Assert - listener not called due to custom equality
 		expect(listener).not.toHaveBeenCalled();
+	});
+
+	it("should work correctly with custom equality function for batched updates", async () => {
+		// Arrange
+		const store = createStore(() => ({ count: 0 }), {
+			equalityFn: (a, b) => a.count === b.count, // Deep equality for count
+		});
+		const listener = vi.fn();
+		store.subscribe(listener);
 
 		// Act - Batched updates with same final count
-		store.setState.batched({ count: 5 });
-		store.setState.batched({ count: 0 }); // Back to original
+		store.setState({ count: 5 });
+		store.setState({ count: 0 }); // Back to original
 
 		// Wait for batch
 		await flushMicrotasks();
@@ -977,7 +1003,7 @@ describe("createStore - Backward Compatibility", () => {
 		// Assert - all expected methods exist
 		expect(typeof store.getState).toBe("function");
 		expect(typeof store.setState).toBe("function");
-		expect(typeof store.setState.batched).toBe("function");
+		expect(typeof store.setState).toBe("function");
 		expect(typeof store.subscribe).toBe("function");
 		expect(typeof store.subscribe.withSelector).toBe("function");
 		expect(typeof store.resetState).toBe("function");

@@ -7,14 +7,14 @@ type StateUpdate<TState> = TState | StoreStateSetter<TState, TState>;
 
 type PartialStateUpdate<TState> = Partial<TState> | StoreStateSetter<TState, Partial<TState>>;
 
-export type SetStateImpl<TState> = UnmaskType<{
-	(stateUpdate: PartialStateUpdate<TState>, shouldReplace?: false): void;
-	(stateUpdate: StateUpdate<TState>, shouldReplace: true): void;
+type SetStateOptions = UnmaskType<{
+	shouldNotifyImmediately?: boolean;
 }>;
 
-export type BatchedSetState<TState> = (stateUpdate: PartialStateUpdate<TState>) => void;
-
-export type SetState<TState> = SetStateImpl<TState> & { batched: BatchedSetState<TState> };
+export type SetState<TState> = UnmaskType<{
+	(stateUpdate: PartialStateUpdate<TState>, options?: SetStateOptions & { shouldReplace?: false }): void;
+	(stateUpdate: StateUpdate<TState>, options?: SetStateOptions & { shouldReplace: true }): void;
+}>;
 
 export type Listener<TState> = UnmaskType<(state: TState, prevState: TState) => void>;
 
