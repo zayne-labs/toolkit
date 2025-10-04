@@ -13,7 +13,7 @@ jobs:
       runs-on: ubuntu-latest
       strategy:
          matrix:
-            node-version: [20.x]
+            node-version: [lts/*]
       steps:
          - name: Checkout code
            uses: actions/checkout@v4
@@ -38,3 +38,6 @@ jobs:
            run: |
               pnpm lint:type-check
               pnpm lint:eslint
+
+         - name: Run tests
+           run: pnpm test
