@@ -57,10 +57,10 @@ const createExternalStorageStore = <TState>(
 
 	type InternalStoreApi = StorageStoreApi<TState>;
 
-	const setState: InternalStoreApi["setState"] = (newState, shouldReplace) => {
+	const setState: InternalStoreApi["setState"] = (stateUpdate, shouldReplace) => {
 		const previousState = currentStorageState;
 
-		const nextState = isFunction(newState) ? newState(previousState) : newState;
+		const nextState = isFunction(stateUpdate) ? stateUpdate(previousState) : stateUpdate;
 
 		if (equalityFn(nextState, previousState)) return;
 
@@ -79,6 +79,38 @@ const createExternalStorageStore = <TState>(
 			newValue,
 			oldValue,
 			storageArea: selectedStorage,
+		});
+	};
+
+	let batchQueue = new Set<Parameters<InternalStoreApi["setState"]["batched"]>>([]);
+
+	let isBatchAlreadyScheduled = false;
+
+	setState.batched = (...params) => {
+		batchQueue.add(params);
+
+		if (isBatchAlreadyScheduled) return;
+
+		isBatchAlreadyScheduled = true;
+
+		queueMicrotask(() => {
+			isBatchAlreadyScheduled = false;
+
+			const batchedStateUpdates = batchQueue;
+
+			batchQueue = new Set([]);
+
+			setState((prevState) => {
+				let accumulatedState = prevState;
+
+				for (const [stateUpdate] of batchedStateUpdates) {
+					const nextState = isFunction(stateUpdate) ? stateUpdate(accumulatedState) : stateUpdate;
+
+					accumulatedState = { ...accumulatedState, ...nextState };
+				}
+
+				return accumulatedState;
+			});
 		});
 	};
 
@@ -129,13 +161,24 @@ const createExternalStorageStore = <TState>(
 		return subscribe(handleStoreChange);
 	};
 
+	const resetBatchQueue = () => {
+		isBatchAlreadyScheduled = false;
+		batchQueue.clear();
+	};
+
 	const removeState = () => {
+		resetBatchQueue();
+
 		selectedStorage?.removeItem(key);
 
 		dispatchStorageEvent({ key, storageArea: selectedStorage });
 	};
 
-	const resetState = () => setState(getInitialState(), true);
+	const resetState = () => {
+		resetBatchQueue();
+
+		setState(getInitialState(), true);
+	};
 
 	return {
 		getInitialState,

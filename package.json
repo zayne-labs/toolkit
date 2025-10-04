@@ -26,6 +26,8 @@
 		"release": "pnpm --filter=./packages/* release",
 		"release:test": "pnpx pkg-pr-new publish './packages/*' --compact",
 		"test": "turbo run --filter=./packages/* test",
+		"test:browser": "turbo run --filter=./packages/* test:browser",
+		"test:coverage": "turbo run --filter=./packages/* test:coverage",
 		"test:dev": "turbo run --filter=./packages/* test:dev"
 	},
 	"devDependencies": {

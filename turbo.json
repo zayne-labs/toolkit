@@ -11,6 +11,14 @@
 			"persistent": true
 		},
 
+		"test": {},
+		"test:browser": {},
+		"test:dev": {
+			"cache": false,
+			"persistent": true
+		},
+		"test:coverage": {},
+
 		"lint:format": {},
 		"lint:size": {},
 		"lint:publint": {},

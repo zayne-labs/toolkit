@@ -11,7 +11,7 @@ const createStore = <TState>(
 ): StoreApi<TState> => {
 	let currentState: ReturnType<typeof initializer>;
 
-	const listeners = new Set<Listener<TState>>();
+	const listenerQueue = new Set<Listener<TState>>();
 
 	const getState = () => currentState;
 
@@ -21,10 +21,10 @@ const createStore = <TState>(
 
 	const { equalityFn = Object.is } = options;
 
-	const setState: InternalStoreApi["setState"] = (newState, shouldReplace) => {
+	const setState: InternalStoreApi["setState"] = (stateUpdate, shouldReplace) => {
 		const previousState = currentState;
 
-		const nextState = isFunction(newState) ? newState(previousState) : newState;
+		const nextState = isFunction(stateUpdate) ? stateUpdate(previousState) : stateUpdate;
 
 		if (equalityFn(nextState, previousState)) return;
 
@@ -33,7 +33,41 @@ const createStore = <TState>(
 				{ ...previousState, ...nextState }
 			:	(nextState as TState);
 
-		listeners.forEach((onStoreChange) => onStoreChange(currentState, previousState));
+		for (const listener of listenerQueue) {
+			listener(currentState, previousState);
+		}
+	};
+
+	let batchQueue = new Set<Parameters<InternalStoreApi["setState"]["batched"]>>([]);
+
+	let isBatchAlreadyScheduled = false;
+
+	setState.batched = (...params) => {
+		batchQueue.add(params);
+
+		if (isBatchAlreadyScheduled) return;
+
+		isBatchAlreadyScheduled = true;
+
+		queueMicrotask(() => {
+			isBatchAlreadyScheduled = false;
+
+			const batchedStateUpdates = batchQueue;
+
+			batchQueue = new Set([]);
+
+			setState((prevState) => {
+				let accumulatedState = prevState;
+
+				for (const [stateUpdate] of batchedStateUpdates) {
+					const nextState = isFunction(stateUpdate) ? stateUpdate(accumulatedState) : stateUpdate;
+
+					accumulatedState = { ...accumulatedState, ...nextState };
+				}
+
+				return accumulatedState;
+			});
+		});
 	};
 
 	const subscribe: InternalStoreApi["subscribe"] = (onStoreChange, subscribeOptions = {}) => {
@@ -45,9 +79,9 @@ const createStore = <TState>(
 			onStoreChange(state, state);
 		}
 
-		listeners.add(onStoreChange);
+		listenerQueue.add(onStoreChange);
 
-		return () => listeners.delete(onStoreChange);
+		return () => listenerQueue.delete(onStoreChange);
 	};
 
 	subscribe.withSelector = (selector, onStoreChange, subscribeOptions = {}) => {
@@ -72,7 +106,16 @@ const createStore = <TState>(
 		return unsubscribe;
 	};
 
-	const resetState = () => setState(getInitialState(), true);
+	const resetBatchQueue = () => {
+		isBatchAlreadyScheduled = false;
+		batchQueue.clear();
+	};
+
+	const resetState = () => {
+		resetBatchQueue();
+
+		setState(getInitialState(), true);
+	};
 
 	const api: InternalStoreApi = {
 		getInitialState,

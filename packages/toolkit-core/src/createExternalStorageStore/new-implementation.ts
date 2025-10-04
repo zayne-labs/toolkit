@@ -83,6 +83,8 @@ const createExternalStorageStore = <TState>(
 		}
 	};
 
+	setState.batched = internalStoreApi.setState.batched;
+
 	const subscribe: InternalStoreApi["subscribe"] = (onStoreChange) => {
 		// == If we're not syncing state across tabs, we just directly subscribe to the internal store
 		if (!syncStateAcrossTabs) {

@@ -2,11 +2,19 @@ import type { UnmaskType } from "@zayne-labs/toolkit-type-helpers";
 
 export type StoreStateSetter<TState, TResult = TState> = UnmaskType<(prevState: TState) => TResult>;
 
-type SetState<TState> = UnmaskType<{
-	(newState: Partial<TState> | StoreStateSetter<TState, Partial<TState>>, shouldReplace?: false): void;
-	// eslint-disable-next-line perfectionist/sort-union-types -- I want TState to be first in the union
-	(newState: TState | StoreStateSetter<TState>, shouldReplace: true): void;
+// eslint-disable-next-line perfectionist/sort-union-types -- I want TState to be first in the union
+type StateUpdate<TState> = TState | StoreStateSetter<TState, TState>;
+
+type PartialStateUpdate<TState> = Partial<TState> | StoreStateSetter<TState, Partial<TState>>;
+
+export type SetStateImpl<TState> = UnmaskType<{
+	(stateUpdate: PartialStateUpdate<TState>, shouldReplace?: false): void;
+	(stateUpdate: StateUpdate<TState>, shouldReplace: true): void;
 }>;
+
+export type BatchedSetState<TState> = (stateUpdate: PartialStateUpdate<TState>) => void;
+
+export type SetState<TState> = SetStateImpl<TState> & { batched: BatchedSetState<TState> };
 
 export type Listener<TState> = UnmaskType<(state: TState, prevState: TState) => void>;
 
@@ -43,3 +51,5 @@ export type StateInitializer<TState, TResult = TState> = (
 	get: StoreApi<TState>["getState"],
 	api: StoreApi<TState>
 ) => TResult;
+
+export type ExtractState<TStoreApi> = TStoreApi extends { getState: () => infer TState } ? TState : never;
