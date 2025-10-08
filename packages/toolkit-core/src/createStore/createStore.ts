@@ -109,9 +109,7 @@ const createStore = <TState>(
 	};
 
 	const resetState = () => {
-		batchManager.actions.cancel();
-
-		setState(getInitialState(), { shouldReplace: true });
+		setState(getInitialState(), { shouldNotifySync: true, shouldReplace: true });
 	};
 
 	const api: InternalStoreApi = {

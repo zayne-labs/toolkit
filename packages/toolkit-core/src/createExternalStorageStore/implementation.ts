@@ -168,9 +168,7 @@ const createExternalStorageStore = <TState>(
 	};
 
 	const resetState = () => {
-		batchManager.actions.cancel();
-
-		setState(getInitialState(), { shouldReplace: true });
+		setState(getInitialState(), { shouldNotifySync: true, shouldReplace: true });
 	};
 
 	return {

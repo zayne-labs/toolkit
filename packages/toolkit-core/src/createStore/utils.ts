@@ -15,8 +15,8 @@ export const createBatchManager = <TState>() => {
 		// eslint-disable-next-line perfectionist/sort-objects -- I want state to come first
 		actions: {
 			cancel: () => {
-				batchManager.state.status = "idle";
 				batchManager.state.isCancelled = true;
+				batchManager.actions.end();
 			},
 			end: () => {
 				batchManager.state.status = "idle";
