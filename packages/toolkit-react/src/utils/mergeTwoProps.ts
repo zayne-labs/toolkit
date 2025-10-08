@@ -1,4 +1,5 @@
 import { type AnyFunction, isFunction } from "@zayne-labs/toolkit-type-helpers";
+import { cnMerge } from "@/lib/utils/cn";
 import { composeTwoEventHandlers } from "./composeEventHandlers";
 
 // == This approach is more efficient than using a regex.
@@ -14,15 +15,15 @@ const isEventHandler = (key: string, value: unknown): value is AnyFunction => {
 	return isHandler;
 };
 
-const mergeTwoClassNames = (formerClassName: string | undefined, latterClassName: string | undefined) => {
-	if (!latterClassName || !formerClassName) {
-		// eslint-disable-next-line ts-eslint/prefer-nullish-coalescing -- Logical OR is fit for this case
-		return latterClassName || formerClassName;
-	}
+// const mergeTwoClassNames = (formerClassName: string | undefined, latterClassName: string | undefined) => {
+// 	if (!latterClassName || !formerClassName) {
+// 		// eslint-disable-next-line ts-eslint/prefer-nullish-coalescing -- Logical OR is fit for this case
+// 		return latterClassName || formerClassName;
+// 	}
 
-	// eslint-disable-next-line prefer-template -- String concatenation is more performant than template literals in this case
-	return formerClassName + " " + latterClassName;
-};
+// 	// eslint-disable-next-line prefer-template -- String concatenation is more performant than template literals in this case
+// 	return formerClassName + " " + latterClassName;
+// };
 
 export const mergeTwoProps = <TProps extends Record<never, never>>(
 	formerProps: TProps | undefined,
@@ -41,10 +42,7 @@ export const mergeTwoProps = <TProps extends Record<never, never>>(
 
 		// == If the prop is `className` or `class`, we merge them
 		if (latterPropName === "className" || latterPropName === "class") {
-			propsAccumulator[latterPropName] = mergeTwoClassNames(
-				formerPropValue as string,
-				latterPropValue as string
-			);
+			propsAccumulator[latterPropName] = cnMerge(formerPropValue as string, latterPropValue as string);
 			continue;
 		}
 
