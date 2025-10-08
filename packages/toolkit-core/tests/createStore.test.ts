@@ -661,7 +661,7 @@ describe("createStore - Immediate Notifications", () => {
 		store.subscribe(listener);
 
 		// Act - setState with shouldNotifyImmediately
-		store.setState({ count: 1 }, { shouldNotifyImmediately: true });
+		store.setState({ count: 1 }, { shouldNotifySync: true });
 
 		// Assert - listener should be called immediately (synchronously)
 		expect(listener).toHaveBeenCalledTimes(1);
@@ -669,7 +669,7 @@ describe("createStore - Immediate Notifications", () => {
 		expect(store.getState()).toEqual({ count: 1 });
 
 		// Act - Another immediate setState
-		store.setState({ count: 2 }, { shouldNotifyImmediately: true });
+		store.setState({ count: 2 }, { shouldNotifySync: true });
 
 		// Assert - listener called again immediately
 		expect(listener).toHaveBeenCalledTimes(2);
@@ -887,7 +887,7 @@ describe("createStore - Immediate Notifications", () => {
 		// Act - Mix batched and immediate calls
 		store.setState({ count: 1 }); // Batched - schedules microtask, snapshot = 0
 		store.setState({ count: 2 }); // Batched - reuses same microtask
-		store.setState({ count: 10 }, { shouldNotifyImmediately: true }); // Immediate - notifies with current previousState (2)
+		store.setState({ count: 10 }, { shouldNotifySync: true }); // Immediate - notifies with current previousState (2)
 
 		// Assert - immediate call notified synchronously
 		expect(listener).toHaveBeenCalledTimes(1);

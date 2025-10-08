@@ -73,12 +73,10 @@ const createExternalStorageStore = <TState>(
 		});
 	};
 
-	const batchManager = createBatchManager();
-
-	let previousStateSnapShot: TState;
+	const batchManager = createBatchManager<TState>();
 
 	const setState: InternalStoreApi["setState"] = (stateUpdate, setStateOptions = {}) => {
-		const { shouldNotifyImmediately = false, shouldReplace = false } = setStateOptions;
+		const { shouldNotifySync = false, shouldReplace = false } = setStateOptions;
 
 		const previousState = currentStorageState;
 
@@ -90,31 +88,31 @@ const createExternalStorageStore = <TState>(
 
 		const currentState = partialize(mergedState);
 
-		if (shouldNotifyImmediately) {
-			batchManager.actions.cancelExistingAndEnd();
+		if (shouldNotifySync) {
+			batchManager.actions.cancel();
 
 			notifyListeners(currentState, previousState);
 
 			return;
 		}
 
-		if (batchManager.state.isPending) return;
+		if (batchManager.state.status === "pending") return;
 
 		batchManager.actions.start();
 
-		previousStateSnapShot = previousState;
+		batchManager.actions.setPreviousStateSnapshot(previousState);
 
 		queueMicrotask(() => {
-			batchManager.actions.end();
-
-			if (batchManager.state.shouldCancelExisting) {
-				batchManager.actions.resetCancelExisting();
+			if (batchManager.state.isCancelled) {
+				batchManager.actions.resetCancel();
 				return;
 			}
 
-			if (equalityFn(currentState, previousStateSnapShot)) return;
+			batchManager.actions.end();
 
-			notifyListeners(currentState, previousStateSnapShot);
+			if (equalityFn(currentState, batchManager.state.previousStateSnapshot)) return;
+
+			notifyListeners(currentState, batchManager.state.previousStateSnapshot);
 		});
 	};
 
@@ -170,6 +168,8 @@ const createExternalStorageStore = <TState>(
 	};
 
 	const resetState = () => {
+		batchManager.actions.cancel();
+
 		setState(getInitialState(), { shouldReplace: true });
 	};
 

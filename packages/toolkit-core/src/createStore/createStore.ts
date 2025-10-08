@@ -10,7 +10,7 @@ const createStore = <TState>(
 	initializer: StateInitializer<TState>,
 	options: StoreOptions<TState> = {}
 ): StoreApi<TState> => {
-	let currentState: ReturnType<typeof initializer>;
+	let currentState: TState;
 
 	const listenerQueue = new Set<Listener<TState>>();
 
@@ -28,12 +28,10 @@ const createStore = <TState>(
 
 	type InternalStoreApi = StoreApi<TState>;
 
-	const batchManager = createBatchManager();
-
-	let previousStateSnapShot: TState;
+	const batchManager = createBatchManager<TState>();
 
 	const setState: InternalStoreApi["setState"] = (stateUpdate, setStateOptions = {}) => {
-		const { shouldNotifyImmediately = false, shouldReplace = false } = setStateOptions;
+		const { shouldNotifySync = false, shouldReplace = false } = setStateOptions;
 
 		const previousState = currentState;
 
@@ -46,31 +44,31 @@ const createStore = <TState>(
 				{ ...previousState, ...nextState }
 			:	(nextState as TState);
 
-		if (shouldNotifyImmediately) {
-			batchManager.actions.cancelExistingAndEnd();
+		if (shouldNotifySync) {
+			batchManager.actions.cancel();
 
 			notifyListeners(currentState, previousState);
 
 			return;
 		}
 
-		if (batchManager.state.isPending) return;
+		if (batchManager.state.status === "pending") return;
 
 		batchManager.actions.start();
 
-		previousStateSnapShot = previousState;
+		batchManager.actions.setPreviousStateSnapshot(previousState);
 
 		queueMicrotask(() => {
-			batchManager.actions.end();
-
-			if (batchManager.state.shouldCancelExisting) {
-				batchManager.actions.resetCancelExisting();
+			if (batchManager.state.isCancelled) {
+				batchManager.actions.resetCancel();
 				return;
 			}
 
-			if (equalityFn(currentState, previousStateSnapShot)) return;
+			batchManager.actions.end();
 
-			notifyListeners(currentState, previousStateSnapShot);
+			if (equalityFn(currentState, batchManager.state.previousStateSnapshot)) return;
+
+			notifyListeners(currentState, batchManager.state.previousStateSnapshot);
 		});
 	};
 
@@ -111,7 +109,7 @@ const createStore = <TState>(
 	};
 
 	const resetState = () => {
-		batchManager.actions.cancelExistingAndEnd();
+		batchManager.actions.cancel();
 
 		setState(getInitialState(), { shouldReplace: true });
 	};

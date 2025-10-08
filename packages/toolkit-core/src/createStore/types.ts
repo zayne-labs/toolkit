@@ -8,7 +8,7 @@ type FullStateUpdate<TState> = TState | StoreStateSetter<TState, TState>;
 type PartialStateUpdate<TState> = Partial<TState> | StoreStateSetter<TState, Partial<TState>>;
 
 type SetStateOptions = UnmaskType<{
-	shouldNotifyImmediately?: boolean;
+	shouldNotifySync?: boolean;
 }>;
 
 export type SetState<TState> = UnmaskType<{

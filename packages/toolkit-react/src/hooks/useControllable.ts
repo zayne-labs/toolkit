@@ -72,8 +72,8 @@ type UseControllableStateOptions<TValue> = {
 export const useControllableState = <TValue>(options: UseControllableStateOptions<TValue>) => {
 	const { defaultValue, equalityFn = Object.is, onChange: onChangeProp, value: valueProp } = options;
 
-	const savedOnchangeProp = useCallbackRef(onChangeProp);
-	const savedEqualityFn = useCallbackRef(equalityFn);
+	const stableOnchangeProp = useCallbackRef(onChangeProp);
+	const stableEqualityFn = useCallbackRef(equalityFn);
 
 	const [unControlledState, setUncontrolledState] = useState(defaultValue as TValue);
 
@@ -85,18 +85,18 @@ export const useControllableState = <TValue>(options: UseControllableStateOption
 		(newValue) => {
 			const nextValue = isFunction(newValue) ? newValue(currentValue) : newValue;
 
-			if (savedEqualityFn(currentValue, nextValue)) return;
+			if (stableEqualityFn(currentValue, nextValue)) return;
 
-			if (isControlled) {
-				savedOnchangeProp(nextValue);
-				return;
-			}
+			// == Always call onChangeProp whether the value is controlled or uncontrolled,
+			// == just in case the onChangeProp is used to perform side effects
+			// == without necessarily updating the controlled valueProp
+			stableOnchangeProp(nextValue);
+
+			if (isControlled) return;
 
 			setUncontrolledState(nextValue);
-			// == Always call onChangeProp even if the value is uncontrolled, just in case the onChangeProp is used to perform side effects without necessarily updating the controlled valueProp
-			savedOnchangeProp(nextValue);
 		},
-		[isControlled, savedOnchangeProp, savedEqualityFn, currentValue]
+		[isControlled, stableOnchangeProp, stableEqualityFn, currentValue]
 	);
 
 	return [currentValue, setValue] as [value: typeof currentValue, setValue: typeof setValue];
