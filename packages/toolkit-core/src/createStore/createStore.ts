@@ -12,7 +12,7 @@ const createStore = <TState>(
 ): StoreApi<TState> => {
 	let currentState: TState;
 
-	const listenerQueue = new Set<Listener<TState>>();
+	const listeners = new Set<Listener<TState>>();
 
 	const getState = () => currentState;
 
@@ -21,7 +21,7 @@ const createStore = <TState>(
 	const { equalityFn = Object.is } = options;
 
 	const notifyListeners: Listener<TState> = (state, prevState) => {
-		for (const listener of listenerQueue) {
+		for (const listener of listeners) {
 			listener(state, prevState);
 		}
 	};
@@ -81,9 +81,9 @@ const createStore = <TState>(
 			onStoreChange(state, state);
 		}
 
-		listenerQueue.add(onStoreChange);
+		listeners.add(onStoreChange);
 
-		return () => listenerQueue.delete(onStoreChange);
+		return () => listeners.delete(onStoreChange);
 	};
 
 	subscribe.withSelector = (selector, onStoreChange, subscribeOptions = {}) => {
