@@ -2,24 +2,24 @@
 
 A powerful collection of utility functions, types, and composables designed to accelerate development across various JavaScript/TypeScript projects. Built with modularity and type-safety in mind.
 
-## 📦 Packages
+## Packages
 
 - `@zayne-labs/toolkit-core` - Core utility functions and helpers
 - `@zayne-labs/toolkit-type-helpers` - Advanced TypeScript type utilities and helpers
 - `@zayne-labs/toolkit-react` - React-specific hooks, utilities, and Zustand integrations
 
-## ✨ Features
+## Features
 
-- 🎯 Modular design - Import only what you need
-- 📝 Full TypeScript support with advanced type utilities
-- ⚛️ React hooks and utilities for common patterns
-- 🔄 Zustand store integrations and helpers
-- 🎨 Zero runtime overhead for type utilities
-- 📦 Tree-shakeable exports
-- 🧪 Thoroughly tested utilities
-- 🔜 Support for Vue, Svelte, and Solid coming soon!
+- Modular design - Import only what you need
+- Full TypeScript support with advanced type utilities
+- React hooks and utilities for common patterns
+- Zustand store integrations and helpers
+- Zero runtime overhead for type utilities
+- Tree-shakeable exports
+- Thoroughly tested utilities
+- Support for Vue, Svelte, and Solid coming soon!
 
-## 📥 Installation
+## Installation
 
 ```bash
 # Using pnpm (recommended)
@@ -32,7 +32,7 @@ npm install @zayne-labs/toolkit
 yarn add @zayne-labs/toolkit
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ```typescript
 // Core utilities
@@ -48,7 +48,7 @@ import { composeRefs } from '@zayne-labs/toolkit/react/utils'
 import type { Prettify } from '@zayne-labs/toolkit/type-helpers'
 ```
 
-## 🛠️ Development
+## Development
 
 This project uses pnpm as the package manager. To get started with development:
 
@@ -84,7 +84,7 @@ toolkit/
 └── package.json         # Root package.json
 ```
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please check out our [contribution guidelines](https://github.com/zayne-labs/contribute) for details on how to get started.
 
