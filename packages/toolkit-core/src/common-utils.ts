@@ -12,19 +12,23 @@ export const dataAttr = (condition: unknown) => (condition ? "true" : undefined)
 // };
 
 export const tw = (strings: TemplateStringsArray, ...values: Array<"Not-Allowed">) => {
-	const twClassString = strings.reduce(
-		(accumulatedString, string, index) => `${accumulatedString}${string}${values[index] ?? ""}`,
-		""
-	);
+	const twClassString = String.raw({ raw: strings }, ...values);
 
 	return twClassString.trim();
 };
 
 export const css = (strings: TemplateStringsArray, ...values: Array<number | string | undefined>) => {
-	const cssString = strings.reduce(
-		(accumulatedString, string, index) => `${accumulatedString}${string}${values[index] ?? ""}`,
-		""
-	);
+	const cssString = String.raw({ raw: strings }, ...values);
 
 	return cssString.trim();
 };
+
+// export const css = (strings: TemplateStringsArray, ...values: Array<number | string | undefined>) => {
+// 	let accumulatedString = "";
+
+// 	for (const [index, string] of strings.entries()) {
+// 		accumulatedString = `${accumulatedString}${string}${values[index] ?? ""}`;
+// 	}
+
+// 	return accumulatedString.trim();
+// };

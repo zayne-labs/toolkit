@@ -72,18 +72,6 @@ pnpm lint:eslint
 pnpm lint:format
 ```
 
-## 📁 Project Structure
-
-```
-toolkit/
-├── packages/
-│   ├── toolkit-core/     # Core JavaScript/TypeScript utilities
-│   ├── toolkit-react/    # React-specific hooks and utilities
-│   └── toolkit-type-helpers/  # TypeScript type utilities
-├── dev/                  # Development utilities
-└── package.json         # Root package.json
-```
-
 ## Contributing
 
 We welcome contributions! Please check out our [contribution guidelines](https://github.com/zayne-labs/contribute) for details on how to get started.
