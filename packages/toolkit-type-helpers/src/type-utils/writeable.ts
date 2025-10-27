@@ -1,4 +1,4 @@
-type ArrayOrObject = Record<number | string | symbol, unknown> | unknown[];
+type ArrayOrObject = Record<number | string | symbol, unknown> | unknown[] | readonly unknown[];
 
 export type WriteableLevel = "deep" | "shallow";
 
@@ -10,16 +10,12 @@ export type WriteableLevel = "deep" | "shallow";
  */
 
 export type Writeable<TObject, TLevel extends WriteableLevel = "shallow"> =
-	TObject extends readonly [...infer TTupleItems] ?
-		[
-			...{
-				[Index in keyof TTupleItems]: TLevel extends "deep" ? Writeable<TTupleItems[Index], "deep">
-				:	TTupleItems[Index];
-			},
-		]
-	: TObject extends ArrayOrObject ?
+	TObject extends ArrayOrObject ?
 		{
-			-readonly [Key in keyof TObject]: TLevel extends "deep" ? Writeable<TObject[Key], "deep">
+			-readonly [Key in keyof TObject]: TLevel extends "deep" ?
+				NonNullable<TObject[Key]> extends ArrayOrObject ?
+					Writeable<TObject[Key], "deep">
+				:	TObject[Key]
 			:	TObject[Key];
 		}
 	:	TObject;
