@@ -1,7 +1,18 @@
 import { createStore, type StoreApi } from "@zayne-labs/toolkit-core";
 import type { SelectorFn } from "@zayne-labs/toolkit-type-helpers";
 import { useStore } from "../../hooks";
-import type { Mutate, StateCreator, StoreMutatorIdentifier, UseBoundStore } from "../types";
+import type { Get, Mutate, StoreMutatorIdentifier, UseBoundStore } from "../types";
+
+export type StateCreator<
+	T,
+	Mis extends Array<[StoreMutatorIdentifier, unknown]> = [],
+	Mos extends Array<[StoreMutatorIdentifier, unknown]> = [],
+	U = T,
+> = { $$storeMutators?: Mos } & ((
+	setState: Get<Mutate<StoreApi<T>, Mis>, "setState", never>,
+	getState: Get<Mutate<StoreApi<T>, Mis>, "getState", never>,
+	store: Mutate<StoreApi<T>, Mis>
+) => U);
 
 type CreateStoreWithSubscribe = {
 	<T, Mos extends Array<[StoreMutatorIdentifier, unknown]> = []>(
