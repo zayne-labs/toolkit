@@ -1,7 +1,7 @@
 import { createStore } from "@zayne-labs/toolkit-core";
 import type { AnyFunction, AnyObject, Prettify } from "@zayne-labs/toolkit-type-helpers";
-import { createReactZustandStore } from "./createReactZustandStore";
-import type { StateCreator, StoreMutatorIdentifier } from "./types";
+import type { StateCreator, StoreMutatorIdentifier } from "../types";
+import { createReactStore } from "./createReactStore";
 
 type Write<TInitialState, TExtraState> = Prettify<Omit<TInitialState, keyof TExtraState> & TExtraState>;
 
@@ -21,10 +21,16 @@ export const combine =
 		...(storeCreator as AnyFunction)(...params),
 	});
 
-export const createStoreWithCombine = <TInitialState extends AnyObject, TExtraState extends AnyObject>(
+export const createVanillaStoreWithCombine = <
+	TInitialState extends AnyObject,
+	TExtraState extends AnyObject,
+>(
 	...params: Parameters<typeof combine<TInitialState, TExtraState>>
 ) => createStore(combine(...params));
 
-export const createWithCombine = <TInitialState extends AnyObject, TExtraState extends AnyObject>(
+export const createReactStoreWithCombine = <
+	TInitialState extends AnyObject,
+	TExtraState extends AnyObject,
+>(
 	...params: Parameters<typeof combine<TInitialState, TExtraState>>
-) => createReactZustandStore(combine(...params));
+) => createReactStore(combine(...params));

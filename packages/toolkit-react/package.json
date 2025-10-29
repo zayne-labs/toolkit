@@ -22,7 +22,8 @@
 	"exports": {
 		".": "./dist/esm/hooks/index.js",
 		"./utils": "./dist/esm/utils/index.js",
-		"./zustand": "./dist/esm/zustand/index.js"
+		"./zustand": "./dist/esm/zustand/new-implementation/index.js",
+		"./zustand/compatible": "./dist/esm/zustand/compatible/index.js"
 	},
 	"files": [
 		"dist"
@@ -48,13 +49,17 @@
 	"peerDependencies": {
 		"@types/react": ">=19.0.0",
 		"react": ">=19.0.0",
-		"tailwind-merge": "^2.5.0 || ^3.0.0"
+		"tailwind-merge": "^2.5.0 || ^3.0.0",
+		"zustand": "5.x.x"
 	},
 	"peerDependenciesMeta": {
 		"@types/react": {
 			"optional": true
 		},
 		"react": {
+			"optional": true
+		},
+		"zustand": {
 			"optional": true
 		}
 	},
@@ -78,7 +83,8 @@
 		"size-limit": "^11.2.0",
 		"tailwind-merge": "3.3.1",
 		"tsdown": "^0.15.10",
-		"typescript": "5.9.3"
+		"typescript": "5.9.3",
+		"zustand": "^5.0.8"
 	},
 	"publishConfig": {
 		"access": "public",
@@ -95,7 +101,7 @@
 			"limit": "2 kb"
 		},
 		{
-			"path": "./src/zustand/index.ts",
+			"path": "./src/zustand/new-implementation/index.ts",
 			"limit": "2 kb"
 		}
 	]
