@@ -23,7 +23,7 @@
 		".": "./dist/esm/hooks/index.js",
 		"./utils": "./dist/esm/utils/index.js",
 		"./zustand": "./dist/esm/zustand/new-implementation/index.js",
-		"./zustand/compatible": "./dist/esm/zustand/compatible/index.js"
+		"./zustand-compat": "./dist/esm/zustand/compatible/index.js"
 	},
 	"files": [
 		"dist"
