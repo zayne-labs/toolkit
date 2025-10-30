@@ -1,4 +1,4 @@
-import { isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
+import { isBoolean, isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
 import type { EqualityFn, Listener, StateInitializer, StoreApi } from "./types";
 import { createBatchManager } from "./utils";
 
@@ -29,10 +29,11 @@ const createStore = <TState>(
 
 	type InternalStoreApi = StoreApi<TState>;
 
-	const batchManager = createBatchManager<TState>();
-
 	const setState: InternalStoreApi["setState"] = (stateUpdate, setStateOptions = {}) => {
-		const { shouldNotifySync = globalShouldNotifySync, shouldReplace = false } = setStateOptions;
+		const {
+			shouldNotifySync = globalShouldNotifySync,
+			shouldReplace = isBoolean(setStateOptions) ? setStateOptions : false,
+		} = setStateOptions;
 
 		const previousState = currentState;
 
@@ -46,42 +47,32 @@ const createStore = <TState>(
 			:	(nextState as TState);
 
 		if (shouldNotifySync) {
-			batchManager.actions.cancel();
+			batchManager.state.status === "pending" && batchManager.actions.cancel();
 
 			notifyListeners(currentState, previousState);
 
 			return;
 		}
 
-		// == Keep track of currentState always
-		batchManager.actions.setCurrentStateSnapshot(currentState);
-
 		if (batchManager.state.status === "pending") return;
 
 		batchManager.actions.start();
 
-		// == Only keep track of the previousState as at the start of the batch
 		batchManager.actions.setPreviousStateSnapshot(previousState);
 
 		queueMicrotask(() => {
+			batchManager.actions.end();
+
 			if (batchManager.state.isCancelled) {
 				batchManager.actions.resetCancel();
 				return;
 			}
 
-			batchManager.actions.end();
+			const { previousStateSnapshot } = batchManager.state;
 
-			const isStateEqual = equalityFn(
-				batchManager.state.currentStateSnapshot,
-				batchManager.state.previousStateSnapshot
-			);
+			if (equalityFn(currentState, previousStateSnapshot)) return;
 
-			if (isStateEqual) return;
-
-			notifyListeners(
-				batchManager.state.currentStateSnapshot,
-				batchManager.state.previousStateSnapshot
-			);
+			notifyListeners(currentState, previousStateSnapshot);
 		});
 	};
 
@@ -103,20 +94,17 @@ const createStore = <TState>(
 		const { equalityFn: sliceEqualityFn = equalityFn, fireListenerImmediately = false } =
 			subscribeOptions;
 
-		if (fireListenerImmediately) {
-			const slice = selector(getState());
+		const unsubscribe = subscribe(
+			(state, prevState) => {
+				const previousSlice = selector(prevState);
+				const slice = selector(state);
 
-			onStoreChange(slice, slice);
-		}
+				if (sliceEqualityFn(slice as never, previousSlice as never)) return;
 
-		const unsubscribe = subscribe((state, prevState) => {
-			const previousSlice = selector(prevState);
-			const slice = selector(state);
-
-			if (sliceEqualityFn(slice as never, previousSlice as never)) return;
-
-			onStoreChange(slice, previousSlice);
-		});
+				onStoreChange(slice, previousSlice);
+			},
+			{ fireListenerImmediately }
+		);
 
 		return unsubscribe;
 	};
@@ -134,6 +122,8 @@ const createStore = <TState>(
 	};
 
 	const initialState = (currentState = initializer(setState, getState, api));
+
+	const batchManager = createBatchManager<TState>({ initialState });
 
 	return api;
 };

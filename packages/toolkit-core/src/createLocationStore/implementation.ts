@@ -60,11 +60,11 @@ const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreA
 
 		if (isLocationStateEqual) return;
 
-		const { state: navigationState } = navigationOptions ?? {};
+		const { state } = navigationOptions ?? {};
 
 		const nextLocationState = {
 			...nextUrlObject,
-			...(Boolean(navigationState) && { state: navigationState }),
+			...(Boolean(state) && { state }),
 		};
 
 		triggerPopstateEvent(nextLocationState);

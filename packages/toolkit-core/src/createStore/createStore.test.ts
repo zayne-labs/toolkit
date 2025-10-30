@@ -1017,3 +1017,294 @@ describe("createStore - Immediate Notifications", () => {
 		expect(store).toHaveProperty("getInitialState");
 	});
 });
+
+describe("createStore - Cancel/Immediate Notification Edge Cases", () => {
+	it("should handle multiple shouldNotifySync calls without breaking batching", async () => {
+		// Arrange
+		const store = createStore(() => ({ count: 0 }));
+		const listener = vi.fn();
+		store.subscribe(listener);
+
+		// Act - Immediate notifications don't schedule microtasks
+		store.setState({ count: 1 }, { shouldNotifySync: true });
+		expect(listener).toHaveBeenCalledTimes(1);
+
+		store.setState({ count: 2 }, { shouldNotifySync: true });
+		expect(listener).toHaveBeenCalledTimes(2);
+
+		// Act - Now batch some updates (should work normally since no microtask was scheduled)
+		listener.mockClear();
+		store.setState({ count: 3 });
+		store.setState({ count: 4 });
+
+		await flushMicrotasks();
+
+		// Assert - Should work normally
+		expect(listener).toHaveBeenCalledTimes(1);
+		expect(listener).toHaveBeenCalledWith({ count: 4 }, { count: 2 });
+	});
+
+	it("should cancel pending batch when shouldNotifySync is called mid-batch", async () => {
+		// Arrange
+		const store = createStore(() => ({ count: 0 }));
+		const listener = vi.fn();
+		store.subscribe(listener);
+
+		// Act - Start a batch
+		store.setState({ count: 1 });
+		store.setState({ count: 2 });
+
+		// Act - Immediate notification should cancel the batch
+		store.setState({ count: 10 }, { shouldNotifySync: true });
+
+		// Assert - Immediate notification happened
+		expect(listener).toHaveBeenCalledTimes(1);
+		expect(listener).toHaveBeenCalledWith({ count: 10 }, { count: 2 });
+
+		// Wait for the cancelled microtask to fire
+		await flushMicrotasks();
+
+		// Assert - Should still only have 1 call (cancelled batch shouldn't notify)
+		expect(listener).toHaveBeenCalledTimes(1);
+
+		// Act - New batch should work
+		listener.mockClear();
+		store.setState({ count: 20 });
+		await flushMicrotasks();
+
+		// Assert
+		expect(listener).toHaveBeenCalledTimes(1);
+		expect(listener).toHaveBeenCalledWith({ count: 20 }, { count: 10 });
+	});
+
+	it("should allow batched updates immediately after shouldNotifySync", async () => {
+		// Arrange
+		const store = createStore(() => ({ count: 0 }));
+		const listener = vi.fn();
+		store.subscribe(listener);
+
+		// Act - Immediate notification (no pending batch, so no cancellation)
+		store.setState({ count: 1 }, { shouldNotifySync: true });
+
+		// Act - Immediately start batching
+		store.setState({ count: 2 });
+		store.setState({ count: 3 });
+
+		// Assert - Only the immediate one so far
+		expect(listener).toHaveBeenCalledTimes(1);
+
+		await flushMicrotasks();
+
+		// Assert - Batched updates work normally since there was no cancellation
+		expect(listener).toHaveBeenCalledTimes(2);
+		expect(listener).toHaveBeenNthCalledWith(2, { count: 3 }, { count: 1 });
+	});
+});
+
+describe("createStore - Race Condition Tests", () => {
+	it("should handle rapid alternating between batched and immediate updates", async () => {
+		// Arrange
+		const store = createStore(() => ({ count: 0 }));
+		const listener = vi.fn();
+		store.subscribe(listener);
+
+		// Act - Rapid alternating
+		store.setState({ count: 1 }); // Batch - schedules microtask, status = "pending"
+		store.setState({ count: 2 }, { shouldNotifySync: true }); // Immediate (cancels), status stays "pending"
+		store.setState({ count: 3 }); // Tries to batch but status is "pending", just updates state
+		store.setState({ count: 4 }, { shouldNotifySync: true }); // Immediate again
+		store.setState({ count: 5 }); // Tries to batch but status is "pending", just updates state
+
+		await flushMicrotasks();
+
+		// Assert - Should have 2 immediate calls only (batched updates were lost)
+		expect(listener).toHaveBeenCalledTimes(2);
+		expect(store.getState()).toEqual({ count: 5 });
+	});
+
+	it("should handle multiple resetState calls without breaking", async () => {
+		// Arrange
+		const initialState = { count: 0 };
+		const store = createStore(() => initialState);
+		const listener = vi.fn();
+		store.subscribe(listener);
+
+		// Act
+		store.setState({ count: 10 });
+		store.resetState(); // First reset (immediate notification)
+		store.resetState(); // Second reset - state already equals initial, equality check prevents notification
+
+		// Assert
+		expect(store.getState()).toEqual(initialState);
+		expect(listener).toHaveBeenCalledTimes(1); // Only first reset notifies
+
+		await flushMicrotasks();
+
+		// Assert - Should still be 1 call
+		expect(listener).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe("createStore - Microtask Timing Tests", () => {
+	it("should handle setState called from within a listener during batch flush", async () => {
+		// Arrange
+		const store = createStore(() => ({ count: 0, nested: 0 }));
+		let callCount = 0;
+		const listener = vi.fn((state: { count: number; nested: number }) => {
+			callCount++;
+			// Trigger another update from within the listener (only on first call)
+			if (callCount === 1 && state.count === 3 && state.nested === 0) {
+				store.setState({ nested: 1 });
+			}
+		});
+		store.subscribe(listener);
+
+		// Act
+		store.setState({ count: 1 });
+		store.setState({ count: 2 });
+		store.setState({ count: 3 });
+
+		await flushMicrotasks();
+
+		// Assert - First batch notification triggers nested update which notifies immediately
+		// because it happens during the listener execution (synchronous)
+		expect(listener).toHaveBeenCalledTimes(2);
+		expect(store.getState()).toEqual({ count: 3, nested: 1 });
+	});
+
+	it("should notify when batched updates result in same values but different reference", async () => {
+		// Arrange
+		const store = createStore(() => ({ count: 5 }));
+		const listener = vi.fn();
+		store.subscribe(listener);
+
+		// Act - Updates that result in same values
+		store.setState({ count: 10 });
+		store.setState({ count: 5 }); // Back to original value
+
+		await flushMicrotasks();
+
+		// Assert - Should notify because new object is created (different reference)
+		expect(listener).toHaveBeenCalledTimes(1);
+		expect(listener).toHaveBeenCalledWith({ count: 5 }, { count: 5 });
+	});
+});
+
+describe("createStore - Subscription Edge Cases", () => {
+	it("should handle unsubscribe called during pending batch", async () => {
+		// Arrange
+		const store = createStore(() => ({ count: 0 }));
+		const listener = vi.fn();
+		const unsubscribe = store.subscribe(listener);
+
+		// Act
+		store.setState({ count: 1 });
+		store.setState({ count: 2 });
+
+		// Unsubscribe before batch flushes
+		unsubscribe();
+
+		await flushMicrotasks();
+
+		// Assert - Listener should not be called
+		expect(listener).not.toHaveBeenCalled();
+		expect(store.getState()).toEqual({ count: 2 });
+	});
+
+	it("should handle new subscription added during pending batch", async () => {
+		// Arrange
+		const store = createStore(() => ({ count: 0 }));
+		const listener1 = vi.fn();
+		store.subscribe(listener1);
+
+		// Act
+		store.setState({ count: 1 });
+		store.setState({ count: 2 });
+
+		// Add new listener before batch flushes
+		const listener2 = vi.fn();
+		store.subscribe(listener2);
+
+		await flushMicrotasks();
+
+		// Assert - Both listeners should be called
+		expect(listener1).toHaveBeenCalledTimes(1);
+		expect(listener2).toHaveBeenCalledTimes(1);
+		expect(listener1).toHaveBeenCalledWith({ count: 2 }, { count: 0 });
+		expect(listener2).toHaveBeenCalledWith({ count: 2 }, { count: 0 });
+	});
+});
+
+describe("createStore - Complex Async Scenarios", () => {
+	it("should handle nested async operations with shouldNotifySync", async () => {
+		// Arrange
+		const store = createStore(() => ({ level: 0, status: "idle" }));
+		const listener = vi.fn();
+		store.subscribe(listener);
+
+		// Act
+		const operation = async () => {
+			store.setState({ level: 1 });
+			store.setState({ status: "loading" });
+
+			await Promise.resolve();
+
+			// Immediate notification mid-operation (cancels the first batch)
+			store.setState({ level: 2 }, { shouldNotifySync: true });
+
+			await Promise.resolve();
+
+			// This setState happens after the cancelled microtask has fired
+			// so it starts a new batch normally
+			store.setState({ status: "complete" });
+		};
+
+		await operation();
+		await flushMicrotasks();
+
+		// Assert - Should have 3 notifications: first batch, immediate, second batch
+		expect(listener).toHaveBeenCalledTimes(3);
+		expect(store.getState()).toEqual({ level: 2, status: "complete" });
+	});
+});
+
+describe("createStore - Global shouldNotifySync Option Tests", () => {
+	it("should respect global shouldNotifySync option", async () => {
+		// Arrange
+		const store = createStore(() => ({ count: 0 }), { shouldNotifySync: true });
+		const listener = vi.fn();
+		store.subscribe(listener);
+
+		// Act
+		store.setState({ count: 1 });
+		store.setState({ count: 2 });
+
+		// Assert - Should notify immediately for each call
+		expect(listener).toHaveBeenCalledTimes(2);
+
+		await flushMicrotasks();
+
+		// Assert - Should still be 2 (no additional notifications)
+		expect(listener).toHaveBeenCalledTimes(2);
+	});
+
+	it("should allow overriding global shouldNotifySync per call", async () => {
+		// Arrange
+		const store = createStore(() => ({ count: 0 }), { shouldNotifySync: true });
+		const listener = vi.fn();
+		store.subscribe(listener);
+
+		// Act - Override to use batching
+		store.setState({ count: 1 }, { shouldNotifySync: false });
+		store.setState({ count: 2 }, { shouldNotifySync: false });
+
+		// Assert - Should not notify yet
+		expect(listener).not.toHaveBeenCalled();
+
+		await flushMicrotasks();
+
+		// Assert - Should notify once with batched result
+		expect(listener).toHaveBeenCalledTimes(1);
+		expect(listener).toHaveBeenCalledWith({ count: 2 }, { count: 0 });
+	});
+});

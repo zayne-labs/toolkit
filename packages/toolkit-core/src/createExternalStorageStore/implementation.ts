@@ -1,5 +1,5 @@
-import { isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
 import { createBatchManager } from "@/createStore/utils";
+import { isBoolean, isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
 import { on } from "../on";
 import { parseJSON } from "../parseJSON";
 import type { StorageOptions, StorageStoreApi } from "./types";
@@ -73,10 +73,13 @@ const createExternalStorageStore = <TState>(
 		});
 	};
 
-	const batchManager = createBatchManager<TState>();
+	const batchManager = createBatchManager<TState>({ initialState });
 
 	const setState: InternalStoreApi["setState"] = (stateUpdate, setStateOptions = {}) => {
-		const { shouldNotifySync = false, shouldReplace = false } = setStateOptions;
+		const {
+			shouldNotifySync = false,
+			shouldReplace = isBoolean(setStateOptions) ? setStateOptions : false,
+		} = setStateOptions;
 
 		const previousState = currentStorageState;
 
@@ -103,16 +106,18 @@ const createExternalStorageStore = <TState>(
 		batchManager.actions.setPreviousStateSnapshot(previousState);
 
 		queueMicrotask(() => {
+			batchManager.actions.end();
+
 			if (batchManager.state.isCancelled) {
 				batchManager.actions.resetCancel();
 				return;
 			}
 
-			batchManager.actions.end();
+			const { previousStateSnapshot } = batchManager.state;
 
-			if (equalityFn(currentState, batchManager.state.previousStateSnapshot)) return;
+			if (equalityFn(currentState, previousStateSnapshot)) return;
 
-			notifyListeners(currentState, batchManager.state.previousStateSnapshot);
+			notifyListeners(currentState, previousStateSnapshot);
 		});
 	};
 
