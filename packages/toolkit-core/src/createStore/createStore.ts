@@ -4,6 +4,7 @@ import { createBatchManager } from "./utils";
 
 type StoreOptions<TState> = {
 	equalityFn?: EqualityFn<TState>;
+	shouldNotifySync?: boolean;
 };
 
 const createStore = <TState>(
@@ -18,7 +19,7 @@ const createStore = <TState>(
 
 	const getInitialState = () => initialState;
 
-	const { equalityFn = Object.is } = options;
+	const { equalityFn = Object.is, shouldNotifySync: globalShouldNotifySync = false } = options;
 
 	const notifyListeners: Listener<TState> = (state, prevState) => {
 		for (const listener of listeners) {
@@ -31,7 +32,7 @@ const createStore = <TState>(
 	const batchManager = createBatchManager<TState>();
 
 	const setState: InternalStoreApi["setState"] = (stateUpdate, setStateOptions = {}) => {
-		const { shouldNotifySync = false, shouldReplace = false } = setStateOptions;
+		const { shouldNotifySync = globalShouldNotifySync, shouldReplace = false } = setStateOptions;
 
 		const previousState = currentState;
 
@@ -52,10 +53,14 @@ const createStore = <TState>(
 			return;
 		}
 
+		// == Keep track of currentState always
+		batchManager.actions.setCurrentStateSnapshot(currentState);
+
 		if (batchManager.state.status === "pending") return;
 
 		batchManager.actions.start();
 
+		// == Only keep track of the previousState as at the start of the batch
 		batchManager.actions.setPreviousStateSnapshot(previousState);
 
 		queueMicrotask(() => {
@@ -66,9 +71,17 @@ const createStore = <TState>(
 
 			batchManager.actions.end();
 
-			if (equalityFn(currentState, batchManager.state.previousStateSnapshot)) return;
+			const isStateEqual = equalityFn(
+				batchManager.state.currentStateSnapshot,
+				batchManager.state.previousStateSnapshot
+			);
 
-			notifyListeners(currentState, batchManager.state.previousStateSnapshot);
+			if (isStateEqual) return;
+
+			notifyListeners(
+				batchManager.state.currentStateSnapshot,
+				batchManager.state.previousStateSnapshot
+			);
 		});
 	};
 
@@ -97,8 +110,8 @@ const createStore = <TState>(
 		}
 
 		const unsubscribe = subscribe((state, prevState) => {
-			const slice = selector(state);
 			const previousSlice = selector(prevState);
+			const slice = selector(state);
 
 			if (sliceEqualityFn(slice as never, previousSlice as never)) return;
 

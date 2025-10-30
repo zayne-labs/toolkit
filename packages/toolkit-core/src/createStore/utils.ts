@@ -1,4 +1,5 @@
 type BatchManagerState<TState> = {
+	currentStateSnapshot: TState;
 	isCancelled: boolean;
 	previousStateSnapshot: TState;
 	status: "idle" | "pending";
@@ -7,6 +8,7 @@ type BatchManagerState<TState> = {
 export const createBatchManager = <TState>() => {
 	const batchManager = {
 		state: {
+			currentStateSnapshot: undefined as TState,
 			isCancelled: false,
 			previousStateSnapshot: undefined as TState,
 			status: "idle",
@@ -24,8 +26,11 @@ export const createBatchManager = <TState>() => {
 			resetCancel: () => {
 				batchManager.state.isCancelled = false;
 			},
-			setPreviousStateSnapshot: (state: TState) => {
-				batchManager.state.previousStateSnapshot = state;
+			setCurrentStateSnapshot: (currentState: TState) => {
+				batchManager.state.currentStateSnapshot = currentState;
+			},
+			setPreviousStateSnapshot: (prevState: TState) => {
+				batchManager.state.previousStateSnapshot = prevState;
 			},
 			start: () => {
 				batchManager.state.status = "pending";

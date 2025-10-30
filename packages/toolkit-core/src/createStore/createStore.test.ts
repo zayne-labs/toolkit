@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createStore } from "../src/createStore";
+import { createStore } from "./createStore";
 
 // Helper to wait for microtasks to complete
 const flushMicrotasks = () => new Promise<void>((resolve) => queueMicrotask(() => resolve()));
