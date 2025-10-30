@@ -1,7 +1,7 @@
 import { createStore, type StoreApi } from "@zayne-labs/toolkit-core";
 import type { SelectorFn } from "@zayne-labs/toolkit-type-helpers";
-import { useStore } from "../../hooks";
-import type { Get, Mutate, StoreMutatorIdentifier, UseBoundStore } from "../types";
+import { useStore } from "../hooks";
+import type { Get, Mutate, StoreMutatorIdentifier, UseBoundStore } from "./types";
 
 export type StateCreator<
 	T,
@@ -14,20 +14,7 @@ export type StateCreator<
 	store: Mutate<StoreApi<T>, Mis>
 ) => U);
 
-type CreateStoreWithSubscribe = {
-	<T, Mos extends Array<[StoreMutatorIdentifier, unknown]> = []>(
-		initializer: StateCreator<T, [], Mos>
-	): Mutate<StoreApi<T>, Mos>;
-
-	<T>(): <Mos extends Array<[StoreMutatorIdentifier, unknown]> = []>(
-		initializer: StateCreator<T, [], Mos>
-	) => Mutate<StoreApi<T>, Mos>;
-};
-
-export const createVanillaStore = (<TState>(stateInitializer: StateCreator<TState> | undefined) =>
-	stateInitializer ? createStore(stateInitializer) : createStore) as CreateStoreWithSubscribe;
-
-type CreateWithSubscribe = {
+type CreateReactStore = {
 	<T, Mos extends Array<[StoreMutatorIdentifier, unknown]> = []>(
 		initializer: StateCreator<T, [], Mos>
 	): UseBoundStore<Mutate<StoreApi<T>, Mos>>;
@@ -47,6 +34,4 @@ const createReactStoreImpl = <TState>(createState: StateCreator<TState>) => {
 };
 
 export const createReactStore = (<TState>(stateInitializer: StateCreator<TState> | undefined) =>
-	stateInitializer ?
-		createReactStoreImpl(stateInitializer)
-	:	createReactStoreImpl) as CreateWithSubscribe;
+	stateInitializer ? createReactStoreImpl(stateInitializer) : createReactStoreImpl) as CreateReactStore;

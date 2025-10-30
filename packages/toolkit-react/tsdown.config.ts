@@ -8,8 +8,8 @@ const sharedOptions = {
 	entry: [
 		"src/hooks/index.ts",
 		"src/utils/index.ts",
+		"src/zustand/index.ts",
 		"src/zustand/compatible/index.ts",
-		"src/zustand/new-implementation/index.ts",
 	],
 	format: ["esm"],
 	platform: "browser",

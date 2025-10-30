@@ -1,2 +1,2 @@
-export * from "../new-implementation/createZustandContext";
+export * from "../createReactStoreContext";
 export * from "./createReactStore";

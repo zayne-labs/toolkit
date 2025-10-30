@@ -22,7 +22,7 @@
 	"exports": {
 		".": "./dist/esm/hooks/index.js",
 		"./utils": "./dist/esm/utils/index.js",
-		"./zustand": "./dist/esm/zustand/new-implementation/index.js",
+		"./zustand": "./dist/esm/zustand/index.js",
 		"./zustand-compat": "./dist/esm/zustand/compatible/index.js"
 	},
 	"files": [
@@ -73,7 +73,7 @@
 		"@size-limit/esbuild-why": "^11.2.0",
 		"@size-limit/preset-small-lib": "^11.2.0",
 		"@total-typescript/ts-reset": "^0.6.1",
-		"@types/node": "^24.9.1",
+		"@types/node": "^24.9.2",
 		"@types/react": "^19.2.2",
 		"@zayne-labs/tsconfig": "0.11.4",
 		"concurrently": "^9.2.1",
@@ -82,7 +82,7 @@
 		"react": "^19.2.0",
 		"size-limit": "^11.2.0",
 		"tailwind-merge": "3.3.1",
-		"tsdown": "^0.15.10",
+		"tsdown": "^0.15.12",
 		"typescript": "5.9.3",
 		"zustand": "^5.0.8"
 	},
@@ -101,7 +101,7 @@
 			"limit": "2 kb"
 		},
 		{
-			"path": "./src/zustand/new-implementation/index.ts",
+			"path": "./src/zustand/index.ts",
 			"limit": "2 kb"
 		}
 	]
