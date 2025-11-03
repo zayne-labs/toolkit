@@ -1,4 +1,4 @@
-import { createBatchManager } from "@/createStore/utils";
+import { createBatchManager } from "@/createStore/batchManager";
 import { isBoolean, isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
 import { on } from "../on";
 import { parseJSON } from "../parseJSON";

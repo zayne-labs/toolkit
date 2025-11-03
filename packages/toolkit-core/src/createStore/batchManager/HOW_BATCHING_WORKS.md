@@ -59,9 +59,9 @@ Tracks batching state:
 
 ```typescript
 type BatchManagerState = {
-	isCancelled: boolean; // Should the microtask be cancelled?
-	previousStateSnapshot: TState; // State before the batch started
-	status: "idle" | "pending"; // Is a microtask scheduled?
+ isCancelled: boolean; // Should the microtask be cancelled?
+ previousStateSnapshot: TState; // State before the batch started
+ status: "idle" | "pending"; // Is a microtask scheduled?
 };
 ```
 
@@ -255,12 +255,12 @@ The `status === "pending"` check prevents multiple microtasks:
 
 ```typescript
 function setState(newState: any) {
-	if (batchManager.state.status === "pending") return; // Guard clause
+ if (batchManager.state.status === "pending") return; // Guard clause
 
-	batchManager.actions.start(); // Sets status = "pending"
-	queueMicrotask(() => {
-		/* ... */
-	});
+ batchManager.actions.start(); // Sets status = "pending"
+ queueMicrotask(() => {
+  /* ... */
+ });
 }
 ```
 
@@ -272,8 +272,8 @@ When a microtask is scheduled, it "owns" the pending status until it completes:
 
 ```typescript
 queueMicrotask(() => {
-	batchManager.actions.end(); // Sets status = "idle"
-	// ... notify listeners or handle cancellation
+ batchManager.actions.end(); // Sets status = "idle"
+ // ... notify listeners or handle cancellation
 });
 ```
 
@@ -285,10 +285,10 @@ Only set when a batch starts, not on every setState:
 
 ```typescript
 function setState(newState: any) {
-	if (batchManager.state.status === "pending") return; // Exit early for subsequent calls
+ if (batchManager.state.status === "pending") return; // Exit early for subsequent calls
 
-	// Only runs on first setState in the batch
-	batchManager.actions.setPreviousStateSnapshot(previousState);
+ // Only runs on first setState in the batch
+ batchManager.actions.setPreviousStateSnapshot(previousState);
 }
 ```
 
@@ -296,13 +296,13 @@ function setState(newState: any) {
 
 ```typescript
 function setState(newState: any, options: any) {
-	if (options?.shouldNotifySync) {
-		// Only cancel if there's actually a pending batch
-		if (batchManager.state.status === "pending") {
-			batchManager.actions.cancel();
-		}
-		notifyListeners(currentState, previousState);
-	}
+ if (options?.shouldNotifySync) {
+  // Only cancel if there's actually a pending batch
+  if (batchManager.state.status === "pending") {
+   batchManager.actions.cancel();
+  }
+  notifyListeners(currentState, previousState);
+ }
 }
 ```
 
@@ -378,8 +378,8 @@ await flushMicrotasks(); // Batch completes
 
 ```typescript
 if (shouldNotifySync) {
-	batchManager.actions.cancel(); // Wrong! Sets isCancelled even if no batch
-	notifyListeners(currentState, previousState);
+ batchManager.actions.cancel(); // Wrong! Sets isCancelled even if no batch
+ notifyListeners(currentState, previousState);
 }
 ```
 
@@ -389,7 +389,7 @@ if (shouldNotifySync) {
 
 ```typescript
 if (shouldNotifySync && batchManager.state.status === "pending") {
-	batchManager.actions.cancel();
+ batchManager.actions.cancel();
 }
 ```
 
@@ -408,8 +408,8 @@ if (batchManager.state.status === "pending") return;
 
 ```typescript
 function setState(newState: any) {
-	if (batchManager.state.status === "pending") return;
-	batchManager.actions.setPreviousStateSnapshot(previousState); // Correct!
+ if (batchManager.state.status === "pending") return;
+ batchManager.actions.setPreviousStateSnapshot(previousState); // Correct!
 }
 ```
 
@@ -417,8 +417,8 @@ function setState(newState: any) {
 
 ```typescript
 cancel: () => {
-	batchManager.state.isCancelled = true;
-	batchManager.actions.end(); // Wrong! Microtask still scheduled
+ batchManager.state.isCancelled = true;
+ batchManager.actions.end(); // Wrong! Microtask still scheduled
 };
 ```
 
@@ -428,7 +428,7 @@ cancel: () => {
 
 ```typescript
 cancel: () => {
-	batchManager.state.isCancelled = true; // Just set the flag
+ batchManager.state.isCancelled = true; // Just set the flag
 };
 ```
 

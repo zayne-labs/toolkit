@@ -1,3 +1,4 @@
+import { createBatchManager } from "@/createStore/batchManager";
 import { isBrowser } from "../constants";
 import type { EqualityFn, StoreApi } from "../createStore";
 import { formatUrl, type PartialURLInfo, type URLInfoObject } from "../navigation";
@@ -10,6 +11,7 @@ export type LocationStoreOptions = {
 };
 
 type NavigationOptions = {
+	shouldNotifySync?: boolean;
 	state?: PartialURLInfo["state"];
 };
 
@@ -50,26 +52,57 @@ const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreA
 		globalThis.dispatchEvent(new PopStateEvent("popstate", { state: nextLocationState }));
 	};
 
+	const batchManager = createBatchManager<URLInfoObject>({ initialState });
+
 	const setState = (newURL: string | PartialURLInfo, navigationOptions?: NavigationOptions) => {
-		const { urlString: currentString } = formatUrl(currentLocationState);
+		const { shouldNotifySync = false, state: urlState } = navigationOptions ?? {};
+
+		const previousLocationState = currentLocationState;
+
+		const { urlString: currentString } = formatUrl(previousLocationState);
 
 		const { urlObject: nextUrlObject, urlString: nextUrlString } = formatUrl(newURL);
 
+		currentLocationState = {
+			...(nextUrlObject as URLInfoObject),
+			...(Boolean(urlState) && { urlState }),
+		};
+
 		const isLocationStateEqual =
-			nextUrlString === currentString || equalityFn(nextUrlObject ?? {}, currentLocationState);
+			nextUrlString === currentString || equalityFn(currentLocationState, previousLocationState);
 
 		if (isLocationStateEqual) return;
 
-		const { state } = navigationOptions ?? {};
+		if (shouldNotifySync) {
+			batchManager.actions.cancel();
 
-		const nextLocationState = {
-			...nextUrlObject,
-			...(Boolean(state) && { state }),
-		};
+			triggerPopstateEvent(currentLocationState);
 
-		triggerPopstateEvent(nextLocationState);
+			return;
+		}
 
-		return { historyState: nextLocationState.state, nextUrlString };
+		if (batchManager.state.status === "pending") return;
+
+		batchManager.actions.start();
+
+		batchManager.actions.setPreviousStateSnapshot(previousLocationState);
+
+		queueMicrotask(() => {
+			batchManager.actions.end();
+
+			if (batchManager.state.isCancelled) {
+				batchManager.actions.resetCancel();
+				return;
+			}
+
+			const { previousStateSnapshot } = batchManager.state;
+
+			if (equalityFn(currentLocationState, previousStateSnapshot)) return;
+
+			triggerPopstateEvent(currentLocationState);
+		});
+
+		return { historyState: currentLocationState.state, nextUrlString };
 	};
 
 	const push: LocationStoreApi["push"] = (newURL, navigationOptions) => {

@@ -1,6 +1,6 @@
 import { isBoolean, isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
+import { createBatchManager } from "./batchManager";
 import type { EqualityFn, Listener, StateInitializer, StoreApi } from "./types";
-import { createBatchManager } from "./utils";
 
 type StoreOptions<TState> = {
 	equalityFn?: EqualityFn<TState>;
