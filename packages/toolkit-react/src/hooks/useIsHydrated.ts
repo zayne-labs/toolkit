@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { useDeferredValue, useSyncExternalStore } from "react";
 
 const noop = () => {};
 
@@ -38,7 +38,11 @@ const useIsHydrated = () => {
 		noopStore.getServerSnapshot
 	);
 
-	return isHydrated;
+	// == Using useDeferredValue to make the returned value for uSES play nicely with React's concurrent mode.
+	// LINK - https://kurtextrem.de/posts/react-uses-hydration#-concurrent-usesyncexternalstore
+	const deferredIsHydrated = useDeferredValue(isHydrated);
+
+	return deferredIsHydrated;
 };
 
 export { useIsHydrated };
