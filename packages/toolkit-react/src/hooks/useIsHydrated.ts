@@ -40,6 +40,7 @@ const useIsHydrated = () => {
 
 	// == Using useDeferredValue to make the returned value for uSES play nicely with React's concurrent mode.
 	// LINK - https://kurtextrem.de/posts/react-uses-hydration#-concurrent-usesyncexternalstore
+	// TODO - Switch concurrent react stores once it's officially released - https://react.dev/blog/2025/04/23/react-labs-view-transitions-activity-and-more#concurrent-stores
 	const deferredIsHydrated = useDeferredValue(isHydrated);
 
 	return deferredIsHydrated;
