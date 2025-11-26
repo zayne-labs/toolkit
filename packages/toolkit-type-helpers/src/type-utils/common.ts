@@ -14,6 +14,9 @@ export type CallbackFn<in TParams, out TResult = void> = (...params: TParams[]) 
 
 export type SelectorFn<TStore, TResult> = (state: TStore) => TResult;
 
+export type DistributiveOmit<TObject, TKeysToOmit extends keyof TObject> =
+	TObject extends unknown ? Omit<TObject, TKeysToOmit> : never;
+
 // export type ExtractUnion<TEnum extends Record<string, unknown> | unknown[]> = TEnum extends unknown[]
 // 	? TEnum[number]
 // 	: TEnum[keyof TEnum];
