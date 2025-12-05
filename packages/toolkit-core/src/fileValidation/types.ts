@@ -109,8 +109,10 @@ export interface FileValidationSuccessContextEach {
 	validFile: FileOrFileMeta;
 }
 
-export interface FileValidationSuccessContextBatch
-	extends Pick<FileValidationSuccessContextEach, "message"> {
+export interface FileValidationSuccessContextBatch extends Pick<
+	FileValidationSuccessContextEach,
+	"message"
+> {
 	/**
 	 * Array of files that passed validation
 	 */

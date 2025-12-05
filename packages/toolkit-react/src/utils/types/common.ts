@@ -35,10 +35,8 @@ export type DefaultRenderItemErrorMessages = {
  */
 export type DiscriminatedRenderItemProps<
 	TRenderItemPropType,
-	TErrorMessages extends Record<
-		keyof DefaultRenderItemErrorMessages,
-		string
-	> = DefaultRenderItemErrorMessages,
+	TErrorMessages extends Record<keyof DefaultRenderItemErrorMessages, string> =
+		DefaultRenderItemErrorMessages,
 > = UnionDiscriminator<
 	[{ children: TRenderItemPropType }, { renderItem: TRenderItemPropType }],
 	TErrorMessages
