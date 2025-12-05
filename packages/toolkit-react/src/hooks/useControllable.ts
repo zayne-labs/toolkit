@@ -1,8 +1,8 @@
 "use client";
 
+import type { StateSetter } from "@/utils";
 import { isFunction } from "@zayne-labs/toolkit-type-helpers";
 import { useCallback, useMemo, useState } from "react";
-import type { StateSetter } from "@/utils";
 import { useCallbackRef } from "./useCallbackRef";
 
 type UseControllablePropOptions<TProp> = {
@@ -90,7 +90,7 @@ export const useControllableState = <TValue>(options: UseControllableStateOption
 			// == Always call onChangeProp whether the value is controlled or uncontrolled,
 			// == just in case the onChangeProp is used to perform side effects
 			// == without necessarily updating the controlled valueProp
-			stableOnchangeProp(nextValue);
+			stableOnchangeProp?.(nextValue);
 
 			if (isControlled) return;
 

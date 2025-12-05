@@ -3,7 +3,7 @@ import { createContext, use } from "react";
 export type CustomContextOptions<TContextValue, TStrict extends boolean> = {
 	defaultValue?: TContextValue | null;
 	errorMessage?: string;
-	extension?: (contextValue: NoInfer<TContextValue> | null) => TContextValue | null;
+	extendValue?: (contextValue: NoInfer<TContextValue> | null) => TContextValue | null;
 	hookName?: string;
 	name?: string;
 	providerName?: string;
@@ -20,7 +20,7 @@ export const createCustomContext = <TContextValue = null, TStrict extends boolea
 	const {
 		defaultValue = null,
 		errorMessage,
-		extension,
+		extendValue,
 		hookName = "useUnnamedContext",
 		providerName = "UnnamedContextProvider",
 		name = providerName.endsWith("Provider") ? providerName.slice(0, -8) : "UnnamedContext",
@@ -34,7 +34,7 @@ export const createCustomContext = <TContextValue = null, TStrict extends boolea
 	const useCustomContext: UseCustomContext<TContextValue, TStrict> = () => {
 		const contextValue = use(Context);
 
-		const extendedContextValue = extension?.(contextValue) ?? contextValue;
+		const extendedContextValue = extendValue?.(contextValue) ?? contextValue;
 
 		if (strict && extendedContextValue === null) {
 			throw new ContextError(errorMessage ?? getErrorMessage(hookName, providerName));

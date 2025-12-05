@@ -1,4 +1,4 @@
-import { createBatchManager } from "@/createStore/batchManager";
+import { createBatchManager } from "@/createBatchManager";
 import { isBoolean, isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
 import { on } from "../on";
 import { parseJSON } from "../parseJSON";
@@ -50,12 +50,6 @@ const createExternalStorageStore = <TState>(
 
 	const getInitialState = () => initialState;
 
-	const mergeCurrentStateWithNextState = (nextState: Partial<TState> | null, shouldReplace?: boolean) => {
-		return !shouldReplace && isObject(currentStorageState) && isObject(nextState) ?
-				{ ...currentStorageState, ...nextState }
-			:	(nextState as TState);
-	};
-
 	type InternalStoreApi = StorageStoreApi<TState>;
 
 	const notifyListeners = (state: Partial<TState>, prevState: TState) => {
@@ -87,9 +81,12 @@ const createExternalStorageStore = <TState>(
 
 		if (equalityFn(nextState, previousState)) return;
 
-		const mergedState = mergeCurrentStateWithNextState(nextState, shouldReplace);
+		currentStorageState =
+			!shouldReplace && isObject(previousState) && isObject(nextState) ?
+				{ ...previousState, ...nextState }
+			:	(nextState as TState);
 
-		const currentState = partialize(mergedState);
+		const currentState = partialize(currentStorageState);
 
 		if (shouldNotifySync) {
 			batchManager.actions.cancel();

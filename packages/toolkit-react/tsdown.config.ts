@@ -12,6 +12,7 @@ const sharedOptions = {
 		"src/zustand/compatible/index.ts",
 	],
 	format: ["esm"],
+	ignoreWatch: [".turbo"],
 	platform: "browser",
 	sourcemap: !isDevMode,
 	target: "esnext",

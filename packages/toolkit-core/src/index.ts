@@ -2,6 +2,7 @@ export * from "./checkIsDeviceMobile";
 export * from "./common-utils";
 export * from "./constants";
 export * from "./copyToClipboard";
+export * from "./createBatchManager";
 export * from "./createExternalStorageStore";
 export * from "./createFileURL";
 export * from "./createLocationStore";

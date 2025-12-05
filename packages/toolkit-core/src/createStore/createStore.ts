@@ -1,5 +1,5 @@
 import { isBoolean, isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
-import { createBatchManager } from "./batchManager";
+import { createBatchManager } from "../createBatchManager";
 import type { EqualityFn, Listener, StateInitializer, StoreApi } from "./types";
 
 type StoreOptions<TState> = {
@@ -42,7 +42,7 @@ const createStore = <TState>(
 		if (equalityFn(nextState, previousState)) return;
 
 		currentState =
-			!shouldReplace && isObject(previousState) && isObject(nextState) && nextState !== previousState ?
+			!shouldReplace && isObject(previousState) && isObject(nextState) ?
 				{ ...previousState, ...nextState }
 			:	(nextState as TState);
 

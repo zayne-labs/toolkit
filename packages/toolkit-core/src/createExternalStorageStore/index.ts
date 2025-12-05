@@ -1,2 +1,2 @@
-export * from "./implementation";
+export * from "./createExternalStorageStore";
 export * from "./types";

@@ -7,6 +7,7 @@ const sharedOptions = {
 	dts: { newContext: true }, // generate d.ts
 	entry: ["src/index.ts"],
 	format: ["esm"],
+	ignoreWatch: [".turbo"],
 	platform: "browser",
 	sourcemap: !isDevMode,
 	target: "esnext",

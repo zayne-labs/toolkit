@@ -38,10 +38,10 @@ type UseStorageStateOptions<TValue> = Omit<StorageOptions<TValue>, "initialValue
 export const useStorageState = <TValue, TSlice = TValue>(
 	key: string,
 	initialValue?: TValue,
-	options?: UseStorageStateOptions<TValue> & { select?: SelectorFn<TValue, TSlice> }
+	options: UseStorageStateOptions<TValue> & { select?: SelectorFn<TValue, TSlice> } = {}
 ): UseStorageResult<TValue, TSlice> => {
 	const { equalityFn, logger, parser, partialize, select, serializer, storageArea, syncStateAcrossTabs } =
-		options ?? {};
+		options;
 
 	const savedEquality = useCallbackRef(equalityFn);
 	const savedLogger = useCallbackRef(logger);

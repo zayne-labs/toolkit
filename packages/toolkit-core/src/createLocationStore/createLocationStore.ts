@@ -1,4 +1,4 @@
-import { createBatchManager } from "@/createStore/batchManager";
+import { createBatchManager } from "@/createBatchManager";
 import { isBrowser } from "../constants";
 import type { EqualityFn, StoreApi } from "../createStore";
 import { formatUrl, type PartialURLInfo, type URLInfoObject } from "../navigation";

@@ -36,7 +36,7 @@ const useCopyToClipboard = (options: CopyToClipboardOptions & { timeout?: number
 			void copyToClipboard(valueToCopy, {
 				mimeType,
 				onCopied: () => {
-					savedOnCopied();
+					savedOnCopied?.();
 					handleHasCopied();
 				},
 				onError: savedOnError,

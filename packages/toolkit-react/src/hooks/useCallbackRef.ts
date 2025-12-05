@@ -2,12 +2,12 @@ import type { AnyFunction } from "@zayne-labs/toolkit-type-helpers";
 import { useCallback, useInsertionEffect, useRef } from "react";
 
 /**
- * Returns a stable function that always points to the latest version of the callback function.
- * @param callbackFn - The function to reference
- * @returns a stable function that always points to the latest version of the callback function
+ * @description
+ * - Returns a stable function that always points to the latest version of the callback function.
+ * - This is only is the callback passed is not null or undefined.
  */
 
-const useCallbackRef = <TCallback = AnyFunction>(callbackFn: TCallback | undefined) => {
+const useCallbackRef = <TCallback = AnyFunction>(callbackFn: TCallback): TCallback => {
 	const callbackRef = useRef(callbackFn);
 
 	useInsertionEffect(() => {
@@ -21,7 +21,9 @@ const useCallbackRef = <TCallback = AnyFunction>(callbackFn: TCallback | undefin
 		[]
 	);
 
-	return savedCallback as TCallback;
+	const callbackOrSavedCallback = callbackFn ? (savedCallback as TCallback) : callbackFn;
+
+	return callbackOrSavedCallback;
 };
 
 export { useCallbackRef };

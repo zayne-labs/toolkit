@@ -5,6 +5,7 @@ const isDevMode = process.env.NODE_ENV === "development";
 const sharedOptions = {
 	clean: true, // clean up dist folder,
 	format: ["esm"],
+	ignoreWatch: [".turbo"],
 	platform: "browser",
 	target: "esnext",
 	treeshake: true,

@@ -1,7 +1,7 @@
 import { isBrowser } from "./constants";
 
 export type ScrollObserverOptions = IntersectionObserverInit & {
-	onIntersection?: (entry: IntersectionObserverEntry, observer: IntersectionObserver) => void;
+	onIntersectionChange?: (entry: IntersectionObserverEntry, observer: IntersectionObserver) => void;
 };
 
 export const createScrollObserver = <TElement extends HTMLElement>(
@@ -12,12 +12,16 @@ export const createScrollObserver = <TElement extends HTMLElement>(
 	const elementObserver =
 		isBrowser() ?
 			new IntersectionObserver(
-				(entries, observer) => entries.forEach((entry) => options.onIntersection?.(entry, observer)),
+				(entries, observer) => {
+					for (const entry of entries) {
+						options.onIntersectionChange?.(entry, observer);
+					}
+				},
 				{ rootMargin, ...restOfOptions }
 			)
 		:	null;
 
-	const handleObservation = (element: TElement | null) => {
+	const handleElementObservation = (element: TElement | null) => {
 		const scrollWatcher = document.createElement("span");
 		scrollWatcher.dataset.scrollWatcher = "";
 
@@ -35,5 +39,5 @@ export const createScrollObserver = <TElement extends HTMLElement>(
 		return cleanupFn;
 	};
 
-	return { elementObserver, handleObservation };
+	return { elementObserver, handleElementObservation };
 };

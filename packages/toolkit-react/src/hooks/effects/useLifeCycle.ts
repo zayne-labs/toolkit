@@ -13,11 +13,10 @@ const useLifeCycle = ({ onMount, onUnmount }: LifeCycleOptions) => {
 	const stableOnUnmount = useCallbackRef(onUnmount);
 
 	useEffect(() => {
-		stableOnMount();
+		stableOnMount?.();
 
 		return stableOnUnmount;
-		// eslint-disable-next-line react-hooks/exhaustive-deps -- stableOnMount and stableOnUnmount are stable
-	}, []);
+	}, [stableOnMount, stableOnUnmount]);
 };
 
 export { useLifeCycle };
