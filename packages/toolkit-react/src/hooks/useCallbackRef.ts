@@ -7,7 +7,10 @@ import { useCallback, useInsertionEffect, useRef } from "react";
  * - This is only is the callback passed is not null or undefined.
  */
 
-const useCallbackRef = <TCallback = AnyFunction>(callbackFn: TCallback): TCallback => {
+// eslint-disable-next-line ts-eslint/no-invalid-void-type -- Ignore
+const useCallbackRef = <TCallback extends AnyFunction | null | undefined | void = AnyFunction>(
+	callbackFn: TCallback
+): TCallback => {
 	const callbackRef = useRef(callbackFn);
 
 	useInsertionEffect(() => {
