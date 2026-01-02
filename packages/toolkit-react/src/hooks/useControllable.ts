@@ -31,7 +31,7 @@ export const useControllableProp = <TProp>(options: UseControllablePropOptions<T
 type UseControllableStateOptions<TValue> = {
 	defaultProp?: TValue | (() => TValue);
 	isControlled?: boolean;
-	onChange?: (value: TValue) => void;
+	onChange?: StateSetter<TValue>;
 	prop?: TValue;
 };
 
@@ -73,18 +73,18 @@ export const useControllableState = <TProp>(options: UseControllableStateOptions
 
 	const [unControlledState, setUncontrolledState] = useState(defaultProp as TProp);
 
-	const state = isControlled ? prop : unControlledState;
+	const state = (isControlled ? prop : unControlledState) as TProp;
 
 	const setState: StateSetter<TProp> = useCallback(
 		(newValue) => {
-			const nextValue = isFunction(newValue) ? newValue(state as TProp) : newValue;
+			const nextValue = isFunction(newValue) ? newValue(state) : newValue;
 
 			if (isControlled) {
-				return stableOnchange?.(nextValue);
+				stableOnchange?.(nextValue);
+			} else {
+				setUncontrolledState(nextValue);
+				stableOnchange?.(nextValue);
 			}
-
-			setUncontrolledState(nextValue);
-			return stableOnchange?.(nextValue);
 		},
 		[state, isControlled, stableOnchange]
 	);
