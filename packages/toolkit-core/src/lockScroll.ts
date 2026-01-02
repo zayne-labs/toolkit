@@ -42,8 +42,8 @@ export const lockScroll = (options: LockScrollOptions) => {
 	const { lock } = options;
 
 	if (!lock) {
-		document.body.style.setProperty("--overflow-y", null);
-		document.body.style.setProperty("--scrollbar-padding", null);
+		document.body.style.removeProperty("--overflow-y");
+		document.body.style.removeProperty("--scrollbar-padding");
 		return;
 	}
 
