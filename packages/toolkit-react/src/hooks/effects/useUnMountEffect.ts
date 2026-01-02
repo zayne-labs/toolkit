@@ -1,4 +1,4 @@
-import { type Destructor, useLifeCycle } from "./useLifeCycle";
+import { useLifeCycle, type Destructor } from "./useLifeCycle";
 
 const useUnmountEffect = (cleanUpFn: Destructor) => useLifeCycle({ onUnmount: cleanUpFn });
 

@@ -1,5 +1,5 @@
-import { cnMerge } from "@/lib/utils/cn";
 import { isFunction, isObject, isString } from "@zayne-labs/toolkit-type-helpers";
+import { cnMerge } from "@/lib/utils/cn";
 import { composeTwoEventHandlers } from "../composeEventHandlers";
 import { isEventHandler } from "./utils";
 

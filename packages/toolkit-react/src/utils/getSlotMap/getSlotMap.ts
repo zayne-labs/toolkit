@@ -1,8 +1,8 @@
 import { toArray } from "@zayne-labs/toolkit-core";
 import {
+	isFunction,
 	type CallbackFn,
 	type EmptyObject,
-	isFunction,
 	type Prettify,
 	type UnionToIntersection,
 	type UnknownObject,

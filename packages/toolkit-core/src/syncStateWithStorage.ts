@@ -1,4 +1,4 @@
-import { type ExtractUnion, isArray, isPlainObject } from "@zayne-labs/toolkit-type-helpers";
+import { isArray, isPlainObject, type ExtractUnion } from "@zayne-labs/toolkit-type-helpers";
 import { pickKeys } from "./pickKeys";
 
 // prettier-ignore

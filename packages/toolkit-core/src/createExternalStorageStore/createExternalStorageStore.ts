@@ -1,9 +1,9 @@
-import { createBatchManager } from "@/createBatchManager";
 import { isBoolean, isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
+import { createBatchManager } from "@/createBatchManager";
 import { on } from "../on";
 import { parseJSON } from "../parseJSON";
 import type { StorageOptions, StorageStoreApi } from "./types";
-import { type DispatchOptions, dispatchStorageEvent, getStorage, safeParser } from "./utils";
+import { dispatchStorageEvent, getStorage, safeParser, type DispatchOptions } from "./utils";
 
 const createExternalStorageStore = <TState>(
 	options: StorageOptions<TState> = {} as never
@@ -13,7 +13,7 @@ const createExternalStorageStore = <TState>(
 		initialValue = null as never,
 		key,
 		logger = console.info,
-		parser = parseJSON<TState> as never,
+		parser = parseJSON as never,
 		partialize = (state) => state,
 		serializer = JSON.stringify,
 		storageArea = "localStorage",

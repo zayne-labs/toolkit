@@ -1,9 +1,9 @@
 import { toArray } from "@zayne-labs/toolkit-core";
 import {
-	type AnyFunction,
 	AssertionError,
 	isArray,
 	isFunction,
+	type AnyFunction,
 	type Prettify,
 	type UnknownObject,
 } from "@zayne-labs/toolkit-type-helpers";

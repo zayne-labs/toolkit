@@ -1,7 +1,7 @@
 import type { StoreApi } from "@zayne-labs/toolkit-core";
 import type { SelectorFn } from "@zayne-labs/toolkit-type-helpers";
 import { createElement } from "react";
-import { type CustomContextOptions, createCustomContext, useStore } from "../hooks";
+import { createCustomContext, useStore, type CustomContextOptions } from "../hooks";
 
 const createReactStoreContext = <
 	TState extends Record<string, unknown>,

@@ -1,4 +1,4 @@
-import { type CallbackFn, isArray, isObject } from "@zayne-labs/toolkit-type-helpers";
+import { isArray, isObject, type CallbackFn } from "@zayne-labs/toolkit-type-helpers";
 
 type DebouncedFnParams<TParams> =
 	| [params: TParams | TParams[], overrideOptions: { $delay: number }]

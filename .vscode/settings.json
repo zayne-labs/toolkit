@@ -11,8 +11,7 @@
 
 	// Optional
 	"editor.codeActionsOnSave": {
-		"source.addMissingImports": "never",
-		"source.organizeImports.biome": "explicit"
+		"source.addMissingImports": "never"
 	},
 	"cSpell.words": ["Abramov", "partialized"]
 }

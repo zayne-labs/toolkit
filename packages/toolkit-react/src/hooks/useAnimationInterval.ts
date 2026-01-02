@@ -1,4 +1,4 @@
-import { type AnimationIntervalOptions, setAnimationInterval } from "@zayne-labs/toolkit-core";
+import { setAnimationInterval, type AnimationIntervalOptions } from "@zayne-labs/toolkit-core";
 import type { Prettify } from "@zayne-labs/toolkit-type-helpers";
 import { useEffect, useMemo } from "react";
 import { useCallbackRef } from "./useCallbackRef";
@@ -13,11 +13,11 @@ type AnimationOptions = Prettify<
 const useAnimationInterval = (options: AnimationOptions) => {
 	const { intervalDuration, onAnimation, once } = options;
 
-	const latestCallback = useCallbackRef(onAnimation);
+	const stableCallback = useCallbackRef(onAnimation);
 
 	const { start, stop } = useMemo(
-		() => setAnimationInterval(latestCallback, intervalDuration, { once }),
-		[intervalDuration, latestCallback, once]
+		() => setAnimationInterval(stableCallback, intervalDuration, { once }),
+		[intervalDuration, stableCallback, once]
 	);
 
 	useEffect(() => {
@@ -26,8 +26,7 @@ const useAnimationInterval = (options: AnimationOptions) => {
 		start();
 
 		return stop;
-		// eslint-disable-next-line react-hooks/exhaustive-deps -- start and stop are stable
-	}, [intervalDuration]);
+	}, [intervalDuration, start, stop]);
 
 	return { start, stop };
 };

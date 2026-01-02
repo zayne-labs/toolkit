@@ -6,7 +6,6 @@ const useEffectOnce = (callBackFn: React.EffectCallback) => {
 
 	const effectGuardRef = useRef(false);
 
-	// == savedCallback is always stable so no worries about re-execution of this effect
 	useEffect(() => {
 		if (effectGuardRef.current) return;
 

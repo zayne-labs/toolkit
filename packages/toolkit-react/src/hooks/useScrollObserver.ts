@@ -1,5 +1,5 @@
 import { createScrollObserver, type ScrollObserverOptions } from "@zayne-labs/toolkit-core";
-import { type RefCallback, useMemo, useState } from "react";
+import { useMemo, useState, type RefCallback } from "react";
 import { useCallbackRef } from "./useCallbackRef";
 
 const useScrollObserver = <TElement extends HTMLElement>(options: ScrollObserverOptions = {}) => {

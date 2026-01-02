@@ -1,7 +1,7 @@
 import {
+	copyToClipboard,
 	type AllowedClipboardItems,
 	type CopyToClipboardOptions,
-	copyToClipboard,
 } from "@zayne-labs/toolkit-core";
 import { useCallback, useRef, useState } from "react";
 import { useCallbackRef } from "./useCallbackRef";

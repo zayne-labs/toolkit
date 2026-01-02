@@ -1,8 +1,8 @@
 "use client";
 
-import type { StateSetter } from "@/utils";
 import { isFunction } from "@zayne-labs/toolkit-type-helpers";
 import { useCallback, useMemo, useState } from "react";
+import type { StateSetter } from "@/utils";
 import { useCallbackRef } from "./useCallbackRef";
 
 type UseControllablePropOptions<TProp> = {
@@ -29,75 +29,65 @@ export const useControllableProp = <TProp>(options: UseControllablePropOptions<T
 };
 
 type UseControllableStateOptions<TValue> = {
-	defaultValue?: TValue | (() => TValue);
-	equalityFn?: (prevState: TValue, nextValue: TValue) => boolean;
+	defaultProp?: TValue | (() => TValue);
+	isControlled?: boolean;
 	onChange?: (value: TValue) => void;
-	value?: TValue;
+	prop?: TValue;
 };
 
 /**
  * @description React hook to manage state that can be either controlled or uncontrolled.
- * - When `options.value` is provided, the hook operates in controlled mode.
- *   In this mode, `value` always equals `options.value` and `setValue` will
+ * - When `options.prop` is provided, the hook operates in controlled mode.
+ *   In this mode, `value` always equals `options.prop` and `setState` will
  *   invoke `options.onChange(next)` without mutating internal state.
- * - When `options.value` is not provided, the hook operates in uncontrolled
- *   mode, initializing internal state from `options.defaultValue` and updating
- *   it via `setValue`.
- * - All updates are gated by `options.equalityFn(prev, next)` which defaults
- *   to `Object.is`.
+ * - When `options.prop` is not provided, the hook operates in uncontrolled
+ *   mode, initializing internal state from `options.defaultProp` and updating
+ *   it via `setState`.
  *
  * @param options - Configuration options for the hook.
- * @param options.value - Controlled value. If defined, the state is controlled.
- * @param options.defaultValue - Initial value for the uncontrolled state. Can be a
+ * @param options.prop - Controlled value. If defined, the state is controlled.
+ * @param options.defaultProp - Initial value for the uncontrolled state. Can be a
  * function for lazy initialization or a direct value.
  * @param options.onChange - Callback fired when a new value is requested. In
  * controlled mode, this is invoked instead of updating internal state. In
  * uncontrolled mode, it is called after the internal state updates.
- * @param options.equalityFn - Predicate that decides whether to commit an
- * update given `prevState` and `nextValue`. If the values are equal, the update
- * is skipped. Defaults to `Object.is`.
- * @returns A tuple `[value, setValue]`  just like React.useState.
+ * @returns A tuple `[state, setState]`  just like React.useState.
  *
  * @example
  * // Uncontrolled usage
- * const [value, setValue] = useControllableState({ defaultValue: 0 });
+ * const [state, setState] = useControllableState({ defaultProp: 0 });
  *
  * @example
  * // Controlled usage
- * const [value, setValue] = useControllableState({
- *   value: props.value,
+ * const [state, setState] = useControllableState({
+ *   prop: props.value,
  *   onChange: props.onChange,
  * });
  */
-export const useControllableState = <TValue>(options: UseControllableStateOptions<TValue>) => {
-	const { defaultValue, equalityFn = Object.is, onChange: onChangeProp, value: valueProp } = options;
+export const useControllableState = <TProp>(options: UseControllableStateOptions<TProp>) => {
+	const { defaultProp, onChange, prop } = options;
 
-	const stableOnchangeProp = useCallbackRef(onChangeProp);
-	const stableEqualityFn = useCallbackRef(equalityFn);
+	const isControlled = options.isControlled ?? prop !== undefined;
 
-	const [unControlledState, setUncontrolledState] = useState(defaultValue as TValue);
+	const stableOnchange = useCallbackRef(onChange);
 
-	const isControlled = valueProp !== undefined;
+	const [unControlledState, setUncontrolledState] = useState(defaultProp as TProp);
 
-	const currentValue = isControlled ? valueProp : unControlledState;
+	const state = isControlled ? prop : unControlledState;
 
-	const setValue: StateSetter<TValue> = useCallback(
+	const setState: StateSetter<TProp> = useCallback(
 		(newValue) => {
-			const nextValue = isFunction(newValue) ? newValue(currentValue) : newValue;
+			const nextValue = isFunction(newValue) ? newValue(state as TProp) : newValue;
 
-			if (stableEqualityFn(currentValue, nextValue)) return;
-
-			// == Always call onChangeProp whether the value is controlled or uncontrolled,
-			// == just in case the onChangeProp is used to perform side effects
-			// == without necessarily updating the controlled valueProp
-			stableOnchangeProp?.(nextValue);
-
-			if (isControlled) return;
+			if (isControlled) {
+				return stableOnchange?.(nextValue);
+			}
 
 			setUncontrolledState(nextValue);
+			return stableOnchange?.(nextValue);
 		},
-		[isControlled, stableOnchangeProp, stableEqualityFn, currentValue]
+		[state, isControlled, stableOnchange]
 	);
 
-	return [currentValue, setValue] as [value: typeof currentValue, setValue: typeof setValue];
+	return [state, setState] as [state: typeof state, setState: typeof setState];
 };

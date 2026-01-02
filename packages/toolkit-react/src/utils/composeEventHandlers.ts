@@ -1,4 +1,4 @@
-import { type AnyFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
+import { isObject, type AnyFunction } from "@zayne-labs/toolkit-type-helpers";
 
 const isSyntheticEvent = (event: unknown): event is React.SyntheticEvent => {
 	return isObject(event) && Object.hasOwn(event, "nativeEvent");

@@ -1,4 +1,4 @@
-import { type AnyString, isString } from "@zayne-labs/toolkit-type-helpers";
+import { isString, type AnyString } from "@zayne-labs/toolkit-type-helpers";
 
 const fallBackCopy = (text: string) => {
 	const tempTextArea = document.createElement("textarea");

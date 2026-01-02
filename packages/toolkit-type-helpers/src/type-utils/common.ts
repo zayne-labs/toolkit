@@ -17,6 +17,18 @@ export type SelectorFn<TStore, TResult> = (state: TStore) => TResult;
 export type DistributiveOmit<TObject, TKeysToOmit extends keyof TObject> =
 	TObject extends unknown ? Omit<TObject, TKeysToOmit> : never;
 
+export type DistributivePick<TObject, TKeysToPick extends keyof TObject> =
+	TObject extends unknown ? Pick<TObject, TKeysToPick> : never;
+
+/**
+ * @description Userland implementation of NoInfer intrinsic type, but this one doesn't show up on hover like the intrinsic one
+ *
+ * Prevents TypeScript from inferring `TGeneric` at this position by creating a circular dependency.
+ * The tuple index `[TGeneric extends unknown ? 0 : never]` depends on `TGeneric`, forcing TS to
+ * skip this site for inference and use other arguments or defaults instead.
+ */
+export type NoInferUnMasked<TGeneric> = [TGeneric][TGeneric extends unknown ? 0 : never];
+
 // export type ExtractUnion<TEnum extends Record<string, unknown> | unknown[]> = TEnum extends unknown[]
 // 	? TEnum[number]
 // 	: TEnum[keyof TEnum];
