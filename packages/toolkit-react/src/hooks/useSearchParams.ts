@@ -6,16 +6,23 @@ import {
 import { isFunction } from "@zayne-labs/toolkit-type-helpers";
 import { useLocationState } from "./useLocationState";
 
-type UseSearchParamsOptions = LocationStoreOptions & {
+type UseSearchParamsOptions<TSearchParams extends URLSearchParamsInit> = Omit<
+	LocationStoreOptions,
+	"defaultValues"
+> & {
 	action?: "push" | "replace";
+	defaultValues?: TSearchParams;
 };
 
 export const useSearchParams = <TSearchParams extends URLSearchParamsInit>(
-	options?: UseSearchParamsOptions
+	options?: UseSearchParamsOptions<TSearchParams>
 ) => {
-	const { action = "push", ...restOfOptions } = options ?? {};
+	const { action = "push", defaultValues, ...restOfOptions } = options ?? {};
 
-	const [searchParams, actions] = useLocationState((state) => state.search, restOfOptions);
+	const [searchParams, actions] = useLocationState((state) => state.search, {
+		...restOfOptions,
+		defaultValues: { search: defaultValues },
+	});
 
 	const setSearchParams = (
 		newQueryParams: TSearchParams | ((prev: URLSearchParams) => TSearchParams)
@@ -34,8 +41,10 @@ export const useSearchParams = <TSearchParams extends URLSearchParamsInit>(
 	];
 };
 
-export const useSearchParamsObject = <TSearchParams extends Record<string, string>>(
-	options?: UseSearchParamsOptions
+export const useSearchParamsObject = <
+	TSearchParams extends Extract<URLSearchParamsInit, Record<string, string | string[]>>,
+>(
+	options?: UseSearchParamsOptions<TSearchParams>
 ) => {
 	const [searchParams, setSearchParams, triggerPopstateEvent] = useSearchParams(options);
 

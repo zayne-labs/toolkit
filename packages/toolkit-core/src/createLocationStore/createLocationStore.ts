@@ -1,13 +1,13 @@
 import { createBatchManager } from "@/createBatchManager";
 import { isBrowser } from "../constants";
 import type { EqualityFn, StoreApi } from "../createStore";
-import { formatUrl, type PartialURLInfo, type URLInfoObject } from "../navigation";
+import { createSearchParams, formatUrl, type PartialURLInfo, type URLInfoObject } from "../navigation";
 import { on } from "../on";
 
 export type LocationInfo = URLInfoObject;
 
 export type LocationStoreOptions = {
-	defaultValues?: LocationInfo;
+	defaultValues?: Omit<PartialURLInfo, "searchString">;
 	equalityFn?: EqualityFn<string | LocationInfo>;
 };
 
@@ -27,15 +27,17 @@ const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreA
 
 	const getSearchParam = () => new URLSearchParams(isBrowser() ? globalThis.location.search : "");
 
-	const initialSearchParam = getSearchParam();
+	const initialSearchParam =
+		defaultValues?.search ? createSearchParams(defaultValues.search) : getSearchParam();
 
 	const initialState = {
-		hash: isBrowser() ? globalThis.location.hash : "",
-		pathname: isBrowser() ? globalThis.location.pathname : "",
+		hash: defaultValues?.hash ?? (isBrowser() ? globalThis.location.hash : ""),
+		pathname: defaultValues?.pathname ?? (isBrowser() ? globalThis.location.pathname : ""),
 		search: initialSearchParam,
 		searchString: initialSearchParam.toString(),
-		state: isBrowser() ? (globalThis.history.state as LocationInfo["state"]) : null,
-		...defaultValues,
+		state:
+			defaultValues?.state
+			?? (isBrowser() ? (globalThis.history.state as LocationInfo["state"]) : null),
 	} satisfies LocationInfo;
 
 	let currentLocationState: LocationInfo = initialState;
