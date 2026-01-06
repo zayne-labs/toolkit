@@ -36,13 +36,15 @@ export const useLocationState = <TSlice = LocationInfo>(
 	selector?: SelectorFn<LocationInfo, TSlice>,
 	options: LocationStoreOptions = {}
 ): UseLocationResult<TSlice> => {
-	const { equalityFn } = options;
+	const { defaultValues, equalityFn } = options;
 
-	const savedEqualityFn = useCallbackRef(equalityFn);
+	const stableEqualityFn = useCallbackRef(equalityFn);
 
 	const locationStore = useMemo(
-		() => createLocationStore({ equalityFn: savedEqualityFn }),
-		[savedEqualityFn]
+		() => createLocationStore({ defaultValues, equalityFn: stableEqualityFn }),
+		// eslint-disable-next-line react-hooks/rule-suppression -- Ignore
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- Ignore
+		[stableEqualityFn, JSON.stringify(defaultValues)]
 	);
 
 	const stateSlice = useStore(locationStore as never, selector);

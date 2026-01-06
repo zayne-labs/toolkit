@@ -4,7 +4,7 @@ const isDevMode = process.env.NODE_ENV === "development";
 
 const sharedOptions = {
 	clean: !isDevMode, // clean up dist folder,
-	dts: { newContext: true }, // generate d.ts
+	dts: true, // generate d.ts
 	entry: ["src/index.ts"],
 	format: ["esm"],
 	ignoreWatch: [".turbo"],

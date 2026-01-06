@@ -1,11 +1,11 @@
 import { useSearchParamsObject, useStorageState } from "@zayne-labs/toolkit-react";
 
 function AppTwo() {
-	const [searchParams, setSearchParams] = useSearchParamsObject<{ state: string }>();
+	const [searchParams, setSearchParams] = useSearchParamsObject<{ flow: string; random: string }>();
 
 	const [storageState, actions] = useStorageState(
 		"state",
-		{ flow: "crate", value: 0 }
+		{ flow: "create", value: 0 }
 		// {
 		// 	syncStateAcrossTabs: false,
 		// }
@@ -17,12 +17,14 @@ function AppTwo() {
 				type="button"
 				onClick={() => {
 					actions.setState({ value: Math.random() });
-					setSearchParams({ state: Math.random().toString() });
+					setSearchParams({ flow: Math.random().toString(), random: Math.random().toString() });
 				}}
 			>
 				Click me from App Two
 			</button>
-			<p> Search Params: {searchParams.state}</p>
+			<p>
+				Search Params: {searchParams.random} {searchParams.flow}
+			</p>
 			<p> Storage State: {JSON.stringify(storageState)}</p>
 		</div>
 	);

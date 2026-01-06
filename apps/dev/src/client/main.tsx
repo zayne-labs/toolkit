@@ -9,7 +9,11 @@ export default function Main() {
 	const pathname = globalThis.location.pathname;
 
 	switch (pathname) {
-		case "/": {
+		case "/four": {
+			return <AppFour />;
+		}
+
+		case "/one": {
 			return (
 				<>
 					<App />
@@ -17,10 +21,6 @@ export default function Main() {
 					<AppThree />
 				</>
 			);
-		}
-
-		case "/four": {
-			return <AppFour />;
 		}
 
 		default: {

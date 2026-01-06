@@ -15,7 +15,7 @@ const sharedOptions = {
 const config = defineConfig([
 	{
 		...sharedOptions,
-		dts: { newContext: true },
+		dts: true,
 		entry: ["src/index.ts"],
 		name: "ESM",
 		outDir: "./dist/esm",

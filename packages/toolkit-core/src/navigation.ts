@@ -50,9 +50,6 @@ export type FormUrlResult<TUrl extends string | PartialURLInfo | URL> = {
 	urlString: string;
 };
 
-const questionMark = "?";
-const hashMark = "#";
-
 export const formatUrl = <TUrl extends string | PartialURLInfo>(url: TUrl): FormUrlResult<TUrl> => {
 	if (isString(url)) {
 		return { urlObject: null, urlString: url } as never;
@@ -62,21 +59,18 @@ export const formatUrl = <TUrl extends string | PartialURLInfo>(url: TUrl): Form
 
 	const urlObject = {
 		...url,
-		hash: url.hash ?? "",
-		pathname: url.pathname ?? "/",
+		hash: url.hash ?? globalThis.location.hash,
+		pathname: url.pathname ?? globalThis.location.pathname,
 		search,
 		searchString: search.toString(),
 	} satisfies URLInfoObject;
 
-	const formattedSearch =
-		urlObject.searchString.startsWith(questionMark) ?
-			urlObject.searchString
-		:	`${questionMark}${urlObject.searchString}`;
+	const urlConstruct = new URL(urlObject.pathname, globalThis.location.origin);
 
-	const formattedHash =
-		urlObject.hash.startsWith(hashMark) ? urlObject.hash : `${hashMark}${urlObject.hash}`;
+	urlConstruct.search = urlObject.searchString;
+	urlConstruct.hash = urlObject.hash;
 
-	const urlString = `${urlObject.pathname}${formattedSearch}${formattedHash}`;
+	const urlString = urlConstruct.toString();
 
 	return { urlObject, urlString } as never;
 };

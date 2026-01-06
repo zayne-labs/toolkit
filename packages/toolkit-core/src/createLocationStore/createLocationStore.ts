@@ -7,6 +7,7 @@ import { on } from "../on";
 export type LocationInfo = URLInfoObject;
 
 export type LocationStoreOptions = {
+	defaultValues?: LocationInfo;
 	equalityFn?: EqualityFn<string | LocationInfo>;
 };
 
@@ -21,10 +22,8 @@ export type LocationStoreApi = Omit<StoreApi<LocationInfo>, "resetState" | "setS
 	triggerPopstateEvent: (nextLocationState?: LocationInfo["state"]) => void;
 };
 
-/* eslint-disable unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window */
 const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreApi => {
-	// TODO - Apply shallow equality here
-	const { equalityFn = Object.is } = options;
+	const { defaultValues, equalityFn = Object.is } = options;
 
 	const getSearchParam = () => new URLSearchParams(isBrowser() ? globalThis.location.search : "");
 
@@ -36,6 +35,7 @@ const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreA
 		search: initialSearchParam,
 		searchString: initialSearchParam.toString(),
 		state: isBrowser() ? (globalThis.history.state as LocationInfo["state"]) : null,
+		...defaultValues,
 	} satisfies LocationInfo;
 
 	let currentLocationState: LocationInfo = initialState;
@@ -147,7 +147,7 @@ const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreA
 			onLocationStoreChange(currentLocationState, previousLocationState);
 		};
 
-		const cleanup = on("popstate", window, handleLocationStoreChange);
+		const cleanup = on("popstate", globalThis, handleLocationStoreChange);
 
 		return cleanup;
 	};
@@ -185,6 +185,5 @@ const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreA
 
 	return api;
 };
-/* eslint-enable unicorn/prefer-global-this -- It doesn't need globalThis since it only exists in window */
 
 export { createLocationStore };
