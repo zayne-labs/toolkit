@@ -7,6 +7,7 @@ import {
 import type { SelectorFn } from "@zayne-labs/toolkit-type-helpers";
 import { useMemo } from "react";
 import { useCallbackRef } from "./useCallbackRef";
+import { useCompareValue } from "./useCompare";
 import { useStore } from "./useStore";
 
 type UseLocationResult<TSlice> = [state: TSlice, actions: LocationStoreApi];
@@ -39,12 +40,11 @@ export const useLocationState = <TSlice = LocationInfo>(
 	const { defaultValues, equalityFn } = options;
 
 	const stableEqualityFn = useCallbackRef(equalityFn);
+	const stableDefaultValues = useCompareValue(defaultValues);
 
 	const locationStore = useMemo(
-		() => createLocationStore({ defaultValues, equalityFn: stableEqualityFn }),
-		// eslint-disable-next-line react-hooks/rule-suppression -- Ignore
-		// eslint-disable-next-line react-hooks/exhaustive-deps -- Ignore
-		[stableEqualityFn, JSON.stringify(defaultValues)]
+		() => createLocationStore({ defaultValues: stableDefaultValues, equalityFn: stableEqualityFn }),
+		[stableEqualityFn, stableDefaultValues]
 	);
 
 	const stateSlice = useStore(locationStore as never, selector);

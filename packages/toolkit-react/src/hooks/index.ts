@@ -15,7 +15,7 @@ export * from "./useLocationState";
 export * from "./useScrollObserver";
 export * from "./useSearch";
 export * from "./useSearchParams";
-export * from "./useShallowCompare";
+export * from "./useCompare";
 export * from "./useStorageState";
 export * from "./useStore";
 export * from "./useThrottle";

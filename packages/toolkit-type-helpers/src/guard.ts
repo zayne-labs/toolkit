@@ -15,10 +15,17 @@ export const isBoolean = (value: unknown) => typeof value === "boolean";
 
 export const isArray = <TArray>(value: unknown): value is TArray[] => Array.isArray(value);
 
+export const isSet = <TSet extends Set<unknown>>(value: unknown): value is TSet => value instanceof Set;
+
+export const isMap = <TMap extends Map<unknown, unknown>>(value: unknown): value is TMap => {
+	return value instanceof Map;
+};
+
 export const isFormData = (value: unknown) => value instanceof FormData;
 
-export const isObject = <TObject extends object>(value: unknown): value is TObject =>
-	typeof value === "object" && value !== null;
+export const isObject = <TObject extends object>(value: unknown): value is TObject => {
+	return typeof value === "object" && value !== null;
+};
 
 export const isObjectAndNotArray = <TObject = UnknownObject>(value: unknown): value is TObject => {
 	return isObject(value) && !isArray(value);
@@ -65,6 +72,27 @@ export const isPlainObject = <TPlainObject extends UnknownObjectWithAnyKey = Unk
 	return true;
 };
 
+export const isSerializableObject = (value: unknown) => {
+	return (
+		isPlainObject(value)
+		|| isArray(value)
+		|| typeof (value as { toJSON: unknown } | undefined)?.toJSON === "function"
+	);
+};
+
+export const isValidJsonString = (value: unknown): value is string => {
+	if (!isString(value)) {
+		return false;
+	}
+
+	try {
+		JSON.parse(value);
+		return true;
+	} catch {
+		return false;
+	}
+};
+
 export const isFunction = <TFunction extends AnyFunction>(value: unknown): value is TFunction => {
 	return typeof value === "function";
 };
@@ -79,6 +107,8 @@ export const isFile = (value: unknown) => value instanceof File;
 
 export const isBlob = (value: unknown) => value instanceof Blob;
 
+export const isPromise = (value: unknown) => value instanceof Promise;
+
 export const isIterable = <TIterable>(obj: object): obj is Iterable<TIterable> => Symbol.iterator in obj;
 
 export const isJsonString = (value: unknown): value is string => {
@@ -92,4 +122,30 @@ export const isJsonString = (value: unknown): value is string => {
 	} catch {
 		return false;
 	}
+};
+
+// https://github.com/unjs/ofetch/blob/main/src/utils.ts
+export const isJSONSerializable = (value: unknown) => {
+	if (value === undefined) {
+		return false;
+	}
+	const t = typeof value;
+	// eslint-disable-next-line ts-eslint/no-unnecessary-condition -- No time to make this more type-safe
+	if (t === "string" || t === "number" || t === "boolean" || t === null) {
+		return true;
+	}
+	if (t !== "object") {
+		return false;
+	}
+	if (isArray(value)) {
+		return true;
+	}
+	if ((value as Buffer | null)?.buffer) {
+		return false;
+	}
+
+	return (
+		value?.constructor.name === "Object"
+		|| typeof (value as { toJSON: () => unknown } | null)?.toJSON === "function"
+	);
 };
