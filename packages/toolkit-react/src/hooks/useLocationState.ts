@@ -40,7 +40,7 @@ export const useLocationState = <TSlice = LocationInfo>(
 	const { defaultValues, equalityFn } = options;
 
 	const stableEqualityFn = useCallbackRef(equalityFn);
-	const stableDefaultValues = useCompareValue(defaultValues);
+	const stableDefaultValues = useCompareValue(defaultValues, { compareFnOptions: { maxDepth: 2 } });
 
 	const locationStore = useMemo(
 		() => createLocationStore({ defaultValues: stableDefaultValues, equalityFn: stableEqualityFn }),

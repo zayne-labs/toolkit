@@ -185,11 +185,11 @@ describe("compare", () => {
 
 			// With maxDepth: 2, we stop at 'b' and check equality by reference.
 			// { c: 1 } !== { c: 1 } (ref) -> FALSE
-			expect(deepCompare(objA, objB, { maxDepth: 2 })).toBe(false);
+			expect(shallowCompare(objA, objB, { maxDepth: 2 })).toBe(false);
 
 			// With maxDepth: 3, we go into 'c' and check values.
 			// 1 === 1 -> TRUE
-			expect(deepCompare(objA, objB, { maxDepth: 3 })).toBe(true);
+			expect(shallowCompare(objA, objB, { maxDepth: 3 })).toBe(true);
 		});
 	});
 
