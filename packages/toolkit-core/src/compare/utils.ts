@@ -8,7 +8,22 @@ type RecordWithEntries = {
 	entries: () => Iterable<[unknown, unknown]>;
 };
 
-export type EqualityFn = UnmaskType<<TValue>(valueA: TValue, valueB: TValue) => boolean>;
+export type CompareFn = UnmaskType<
+	<TValue>(valueA: TValue, valueB: TValue, options?: CompareFnOptions) => boolean
+>;
+
+export type CompareFnOptions = {
+	/**
+	 * Custom equality function to use when the limit is reached.
+	 * @default Object.is
+	 */
+	equalityFn?: CompareFn;
+	/**
+	 * The maximum depth to recurse.
+	 * @default 1
+	 */
+	maxDepth?: number;
+};
 
 export const hasIterableEntries = (
 	value: Iterable<unknown>
@@ -20,7 +35,7 @@ export const hasIterableEntries = (
 export const compareEntries = (
 	valueA: RecordWithEntries,
 	valueB: RecordWithEntries,
-	equalityFn: EqualityFn
+	equalityFn: CompareFn
 ) => {
 	const mapA = isMap(valueA) ? valueA : new Map(valueA.entries());
 	const mapB = isMap(valueB) ? valueB : new Map(valueB.entries());
@@ -42,7 +57,7 @@ export const compareEntries = (
 export const compareIterables = (
 	valueA: Iterable<unknown>,
 	valueB: Iterable<unknown>,
-	equalityFn: EqualityFn
+	equalityFn: CompareFn
 ) => {
 	const iteratorA = valueA[Symbol.iterator]();
 	const iteratorB = valueB[Symbol.iterator]();
@@ -64,7 +79,7 @@ export const compareIterables = (
 export const comparePlainObjects = (
 	objA: Record<string, unknown>,
 	objB: Record<string, unknown>,
-	equalityFn: EqualityFn = Object.is
+	equalityFn: CompareFn = Object.is
 ) => {
 	const keysOfA = Object.keys(objA);
 
@@ -79,4 +94,24 @@ export const comparePlainObjects = (
 	}
 
 	return true;
+};
+
+export const hasReferentialCycle = (
+	valueA: object,
+	valueB: object,
+	visited: WeakMap<object, WeakSet<object>>
+) => {
+	const comparedWithA = visited.get(valueA);
+
+	if (comparedWithA?.has(valueB)) {
+		return true;
+	}
+
+	if (!comparedWithA) {
+		visited.set(valueA, new WeakSet([valueB]));
+		return false;
+	}
+
+	comparedWithA.add(valueB);
+	return false;
 };

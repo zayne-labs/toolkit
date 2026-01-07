@@ -1,9 +1,9 @@
-import { deepCompare, shallowCompare } from "@zayne-labs/toolkit-core";
+import { deepCompare, shallowCompare, type CompareFnOptions } from "@zayne-labs/toolkit-core";
 import type { SelectorFn } from "@zayne-labs/toolkit-type-helpers";
 import { useInsertionEffect, useRef } from "react";
-import { useCallbackRef } from "./useCallbackRef";
 
 type UseCompareSelectorOptions = {
+	compareFnOptions?: CompareFnOptions;
 	type?: "deep" | "shallow";
 };
 
@@ -11,38 +11,38 @@ export const useCompareSelector = <TState, TResult>(
 	selector: SelectorFn<TState, TResult> | undefined,
 	options: UseCompareSelectorOptions = {}
 ) => {
-	const { type = "shallow" } = options;
+	const { compareFnOptions, type = "shallow" } = options;
 
 	const prevStateRef = useRef<TResult>(undefined as never);
 
 	const compareFn = type === "shallow" ? shallowCompare : deepCompare;
 
-	const shallowSelector = useCallbackRef((state: TState) => {
+	const compareSelector = (state: TState): TResult => {
 		const nextState = selector?.(state);
 
 		if (!nextState) {
 			return prevStateRef.current;
 		}
 
-		if (compareFn(prevStateRef.current, nextState)) {
+		if (compareFn(prevStateRef.current, nextState, compareFnOptions)) {
 			return prevStateRef.current;
 		}
 
 		return (prevStateRef.current = nextState);
-	});
+	};
 
-	return shallowSelector;
+	return compareSelector;
 };
 
 export const useCompareValue = <TValue>(value: TValue, options: UseCompareSelectorOptions = {}) => {
-	const { type = "shallow" } = options;
+	const { compareFnOptions, type = "shallow" } = options;
 
 	const prevValueRef = useRef<TValue>(value);
 
 	const compareFn = type === "shallow" ? shallowCompare : deepCompare;
 
 	useInsertionEffect(() => {
-		if (compareFn(prevValueRef.current, value)) return;
+		if (compareFn(prevValueRef.current, value, compareFnOptions)) return;
 
 		prevValueRef.current = value;
 	});
