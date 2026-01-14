@@ -22,10 +22,12 @@ const createReactStoreContext = <
 		return createElement(Provider, { value: store }, children);
 	}
 
-	const useZustandStoreContext = <TResult = TState>(selector?: SelectorFn<TState, TResult>): TResult => {
+	const useZustandStoreContext = <TInput = TState, TResult = TInput>(
+		selector?: SelectorFn<TInput, TResult>
+	): TResult => {
 		const zustandStore = useCustomContext();
 
-		return useStore(zustandStore, selector);
+		return useStore(zustandStore, selector as never);
 	};
 
 	return [ZustandStoreContextProvider, useZustandStoreContext] as [
