@@ -1,11 +1,10 @@
 import { useDeferredValue, useSyncExternalStore } from "react";
 
-const noop = () => {};
-
 const noopStore = {
-	getServerSnapshot: () => true,
-	getSnapshot: () => false,
-	subscribe: () => noop,
+	getServerSnapshot: () => false,
+	getSnapshot: () => true,
+	// eslint-disable-next-line unicorn/consistent-function-scoping -- Ignore
+	subscribe: () => () => {},
 };
 
 /**
