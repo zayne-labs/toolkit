@@ -22,9 +22,7 @@ const createReactStoreContext = <
 		return createElement(Provider, { value: store }, children);
 	}
 
-	const useZustandStoreContext = <TInput = TState, TResult = TInput>(
-		selector?: SelectorFn<TInput, TResult>
-	): TResult => {
+	const useZustandStoreContext = <TResult = TState>(selector?: SelectorFn<TState, TResult>): TResult => {
 		const zustandStore = useCustomContext();
 
 		return useStore(zustandStore, selector as never);
