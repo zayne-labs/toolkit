@@ -12,7 +12,7 @@ jobs:
       runs-on: ubuntu-latest
       strategy:
          matrix:
-            node-version: [20.x]
+            node-version: [lts/*]
 
       steps:
          - name: Checkout code
@@ -31,7 +31,7 @@ jobs:
 
          - name: Format files
            run: |
-              pnpm install --dev --frozen-lockfile
+              pnpm install --frozen-lockfile
               pnpm lint:format:root
 
          - uses: autofix-ci/action@ff86a557419858bb967097bfc916833f5647fa8c
