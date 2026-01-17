@@ -54,17 +54,17 @@
 		"@size-limit/esbuild-why": "^12.0.0",
 		"@size-limit/preset-small-lib": "^12.0.0",
 		"@total-typescript/ts-reset": "^0.6.1",
-		"@types/node": "^25.0.3",
-		"@zayne-labs/tsconfig": "0.11.16",
+		"@types/node": "^25.0.9",
+		"@zayne-labs/tsconfig": "0.11.18",
 		"clsx": "^2.1.1",
 		"concurrently": "^9.2.1",
 		"cross-env": "^10.1.0",
-		"happy-dom": "^20.0.11",
+		"happy-dom": "^20.3.1",
 		"publint": "^0.3.16",
 		"size-limit": "^12.0.0",
-		"tsdown": "0.19.0-beta.3",
+		"tsdown": "0.20.0-beta.3",
 		"typescript": "5.9.3",
-		"vitest": "^4.0.16"
+		"vitest": "^4.0.17"
 	},
 	"publishConfig": {
 		"access": "public",
