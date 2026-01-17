@@ -2,7 +2,7 @@
 	"name": "@zayne-labs/toolkit-root",
 	"type": "module",
 	"version": "0.0.0",
-	"packageManager": "pnpm@10.27.0",
+	"packageManager": "pnpm@10.28.0",
 	"author": "Ryan Zayne",
 	"scripts": {
 		"build": "turbo run --filter=./packages/* build",
