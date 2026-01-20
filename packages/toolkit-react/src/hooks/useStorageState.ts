@@ -6,6 +6,7 @@ import {
 import type { SelectorFn } from "@zayne-labs/toolkit-type-helpers";
 import { useMemo } from "react";
 import { useCallbackRef } from "./useCallbackRef";
+import { useCompareValue } from "./useCompare";
 import { useStore } from "./useStore";
 
 type UseStorageResult<TState, TSlice = TState> = [state: TSlice, actions: StorageStoreApi<TState>];
@@ -37,38 +38,39 @@ type UseStorageStateOptions<TValue> = Omit<StorageOptions<TValue>, "initialValue
 
 export const useStorageState = <TValue, TSlice = TValue>(
 	key: string,
-	initialValue?: TValue,
+	defaultValue?: TValue,
 	options: UseStorageStateOptions<TValue> & { select?: SelectorFn<TValue, TSlice> } = {}
 ): UseStorageResult<TValue, TSlice> => {
 	const { equalityFn, logger, parser, partialize, select, serializer, storageArea, syncStateAcrossTabs } =
 		options;
 
-	const savedEquality = useCallbackRef(equalityFn);
-	const savedLogger = useCallbackRef(logger);
-	const savedParser = useCallbackRef(parser);
-	const savedPartialize = useCallbackRef(partialize);
-	const savedSerializer = useCallbackRef(serializer);
+	const shallowComparedDefaultValue = useCompareValue(defaultValue);
+	const stableEqualityFn = useCallbackRef(equalityFn);
+	const stableLogger = useCallbackRef(logger);
+	const stableParser = useCallbackRef(parser);
+	const stablePartialize = useCallbackRef(partialize);
+	const stableSerializer = useCallbackRef(serializer);
 
 	const externalStore = useMemo(() => {
 		return createExternalStorageStore({
-			equalityFn: savedEquality,
-			initialValue,
+			defaultValue: shallowComparedDefaultValue,
+			equalityFn: stableEqualityFn,
 			key,
-			logger: savedLogger,
-			parser: savedParser,
-			partialize: savedPartialize,
-			serializer: savedSerializer,
+			logger: stableLogger,
+			parser: stableParser,
+			partialize: stablePartialize,
+			serializer: stableSerializer,
 			storageArea,
 			syncStateAcrossTabs,
 		});
 	}, [
-		initialValue,
+		shallowComparedDefaultValue,
 		key,
-		savedEquality,
-		savedLogger,
-		savedParser,
-		savedPartialize,
-		savedSerializer,
+		stableEqualityFn,
+		stableLogger,
+		stableParser,
+		stablePartialize,
+		stableSerializer,
 		storageArea,
 		syncStateAcrossTabs,
 	]);

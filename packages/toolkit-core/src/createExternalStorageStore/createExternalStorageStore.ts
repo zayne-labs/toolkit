@@ -1,7 +1,5 @@
-import { isBoolean, isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
-import { createBatchManager } from "@/createBatchManager";
+import { createStore } from "../createStore";
 import { on } from "../on";
-import { parseJSON } from "../parseJSON";
 import type { StorageOptions, StorageStoreApi } from "./types";
 import { dispatchStorageEvent, getStorage, safeParser, type DispatchOptions } from "./utils";
 
@@ -9,173 +7,155 @@ const createExternalStorageStore = <TState>(
 	options: StorageOptions<TState> = {} as never
 ): StorageStoreApi<TState> => {
 	const {
+		defaultValue = null as never,
 		equalityFn = Object.is,
-		initialValue = null as never,
 		key,
-		logger = console.info,
-		parser = parseJSON as never,
+		logger = console.error,
+		parser = JSON.parse,
 		partialize = (state) => state,
 		serializer = JSON.stringify,
+		shouldNotifySync: globalShouldNotifySync = false,
 		storageArea = "localStorage",
 		syncStateAcrossTabs = true,
 	} = options;
 
+	const storeId = crypto.randomUUID();
+
 	const selectedStorage = getStorage(storageArea);
 
-	const rawStorageValue = selectedStorage?.getItem(key);
-
-	const getInitialStorageValue = () => {
+	const getInitialValue = () => {
 		try {
-			if (rawStorageValue === null) {
-				return initialValue;
-			}
+			const rawStorageValue = selectedStorage?.getItem(key);
 
-			const initialStorageValue = parser(rawStorageValue);
-
-			return initialStorageValue;
+			return safeParser({
+				fallbackValue: defaultValue,
+				logger,
+				parser,
+				value: rawStorageValue,
+			});
 		} catch (error) {
 			logger(error);
-			return initialValue;
+
+			return defaultValue;
 		}
 	};
 
-	const internalSafeParser = (value: Parameters<typeof safeParser>[0]) =>
-		safeParser(value, parser, logger);
+	const internalStore = createStore<TState>(() => getInitialValue(), {
+		equalityFn,
+		shouldNotifySync: globalShouldNotifySync,
+	});
 
-	const initialState = rawStorageValue ? internalSafeParser(rawStorageValue) : getInitialStorageValue();
+	const handleItemStorageAndEventDispatch = (
+		state: TState,
+		prevState: TState,
+		action: "remove-item" | "set-item"
+	) => {
+		const currentStateSnapshot = partialize(state);
 
-	let currentStorageState = initialState;
+		try {
+			const newValue = serializer(currentStateSnapshot);
 
-	const getState = () => currentStorageState;
+			const oldValue = serializer(partialize(prevState));
 
-	const getInitialState = () => initialState;
+			action === "set-item" ?
+				selectedStorage?.setItem(key, newValue)
+			:	selectedStorage?.removeItem(key);
 
-	type InternalStoreApi = StorageStoreApi<TState>;
-
-	const notifyListeners = (state: Partial<TState>, prevState: TState) => {
-		const newValue = serializer(state);
-
-		const oldValue = serializer(prevState);
-
-		selectedStorage?.setItem(key, newValue);
-
-		dispatchStorageEvent({
-			key,
-			newValue,
-			oldValue,
-			storageArea: selectedStorage,
-		});
-	};
-
-	const batchManager = createBatchManager<TState>({ initialState });
-
-	const setState: InternalStoreApi["setState"] = (stateUpdate, setStateOptions = {}) => {
-		const {
-			shouldNotifySync = false,
-			shouldReplace = isBoolean(setStateOptions) ? setStateOptions : false,
-		} = setStateOptions;
-
-		const previousState = currentStorageState;
-
-		const nextState = isFunction(stateUpdate) ? stateUpdate(previousState) : stateUpdate;
-
-		if (equalityFn(nextState, previousState)) return;
-
-		currentStorageState =
-			!shouldReplace && isObject(previousState) && isObject(nextState) ?
-				{ ...previousState, ...nextState }
-			:	(nextState as TState);
-
-		const currentState = partialize(currentStorageState);
-
-		if (shouldNotifySync) {
-			batchManager.actions.cancel();
-
-			notifyListeners(currentState, previousState);
-
-			return;
+			dispatchStorageEvent({ key, newValue, oldValue, storageArea: selectedStorage, storeId });
+		} catch (error) {
+			logger(error);
 		}
+	};
 
-		if (batchManager.state.status === "pending") return;
-
-		batchManager.actions.start();
-
-		batchManager.actions.setPreviousStateSnapshot(previousState);
-
-		queueMicrotask(() => {
-			batchManager.actions.end();
-
-			if (batchManager.state.isCancelled) {
-				batchManager.actions.resetCancel();
-				return;
-			}
-
-			const { previousStateSnapshot } = batchManager.state;
-
-			if (equalityFn(currentState, previousStateSnapshot)) return;
-
-			notifyListeners(currentState, previousStateSnapshot);
+	const setState: typeof internalStore.setState = (stateUpdate, setStateOptions) => {
+		internalStore.setState(stateUpdate, {
+			...(setStateOptions as object),
+			onNotifySync: (prevState) => {
+				handleItemStorageAndEventDispatch(internalStore.getState(), prevState, "set-item");
+			},
+			onNotifyViaBatch: (previousStateSnapshot) => {
+				handleItemStorageAndEventDispatch(internalStore.getState(), previousStateSnapshot, "set-item");
+			},
 		});
 	};
 
-	const subscribe: InternalStoreApi["subscribe"] = (onStoreChange) => {
-		const handleStorageChange = (event: CustomEvent<Required<DispatchOptions>> | StorageEvent) => {
-			const actualEvent = event instanceof CustomEvent ? event.detail : event;
+	const handleStorageChange = (event: CustomEvent<Required<DispatchOptions>> | StorageEvent) => {
+		const resolvedEvent = event instanceof CustomEvent ? event.detail : event;
 
-			if (actualEvent.key !== key || actualEvent.storageArea !== selectedStorage) return;
+		const isSameStoreInstance = "storeId" in resolvedEvent && resolvedEvent.storeId === storeId;
 
-			const previousState = internalSafeParser(actualEvent.oldValue);
+		const shouldSkipUpdate =
+			resolvedEvent.key !== key || resolvedEvent.storageArea !== selectedStorage || isSameStoreInstance;
 
-			currentStorageState = internalSafeParser(actualEvent.newValue);
+		if (shouldSkipUpdate) return;
 
-			onStoreChange(currentStorageState, previousState);
-		};
+		const nextState = safeParser({
+			fallbackValue: internalStore.getInitialState(),
+			logger,
+			parser,
+			value: resolvedEvent.newValue,
+		});
 
+		internalStore.setState(nextState, { shouldNotifySync: true, shouldReplace: true });
+	};
+
+	let cleanupExternalListeners: (() => void) | null = null;
+
+	const setupExternalListeners = () => {
 		const storageStoreCleanup = on("storage-store-change" as never, globalThis, handleStorageChange);
 
 		const storageCleanup = syncStateAcrossTabs ? on("storage", globalThis, handleStorageChange) : null;
 
-		return () => {
+		cleanupExternalListeners = () => {
 			storageStoreCleanup();
 			storageCleanup?.();
+			cleanupExternalListeners = null;
 		};
 	};
 
-	subscribe.withSelector = (selector, onStoreChange, subscribeOptions = {}) => {
-		const { equalityFn: sliceEqualityFn = equalityFn, fireListenerImmediately = false } =
-			subscribeOptions;
+	const hasNoInternalListeners = () => internalStore.getListeners().size === 0;
 
-		if (fireListenerImmediately) {
-			const slice = selector(getState());
-
-			onStoreChange(slice, slice);
+	const subscribe: StorageStoreApi<TState>["subscribe"] = (onStoreChange, subscribeOptions) => {
+		if (hasNoInternalListeners()) {
+			setupExternalListeners();
 		}
 
-		const handleStoreChange: Parameters<InternalStoreApi["subscribe"]>[0] = ($state, prevState) => {
-			const previousSlice = selector(prevState);
-			const slice = selector($state);
+		const unsubscribe = internalStore.subscribe(onStoreChange, subscribeOptions);
 
-			if (sliceEqualityFn(slice as never, previousSlice as never)) return;
+		return () => {
+			unsubscribe();
 
-			onStoreChange(slice, previousSlice);
+			if (hasNoInternalListeners()) {
+				cleanupExternalListeners?.();
+			}
 		};
-
-		return subscribe(handleStoreChange);
 	};
+	subscribe.withSelector = internalStore.subscribe.withSelector;
 
 	const removeState = () => {
-		selectedStorage?.removeItem(key);
+		try {
+			selectedStorage?.removeItem(key);
+		} catch (error) {
+			logger(error);
+		}
 
-		dispatchStorageEvent({ key, storageArea: selectedStorage });
+		internalStore.setState(defaultValue, {
+			onNotifySync: (prevState) => {
+				handleItemStorageAndEventDispatch(internalStore.getState(), prevState, "remove-item");
+			},
+			shouldNotifySync: true,
+			shouldReplace: true,
+		});
 	};
 
 	const resetState = () => {
-		setState(getInitialState(), { shouldNotifySync: true, shouldReplace: true });
+		setState(internalStore.getInitialState(), { shouldNotifySync: true, shouldReplace: true });
 	};
 
 	return {
-		getInitialState,
-		getState,
+		getInitialState: internalStore.getInitialState,
+		getListeners: internalStore.getListeners,
+		getState: internalStore.getState,
 		removeState,
 		resetState,
 		setState,

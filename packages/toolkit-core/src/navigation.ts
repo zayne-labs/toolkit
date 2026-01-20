@@ -44,23 +44,35 @@ export type URLInfoObject = {
 	state?: unknown;
 };
 
-export type FormUrlResult<TUrl extends string | PartialURLInfo | URL> = {
-	urlObject: TUrl extends PartialURLInfo ? URLInfoObject : null;
-
+export type FormUrlResult = {
+	urlObject: URLInfoObject;
 	urlString: string;
 };
 
-export const formatUrl = <TUrl extends string | PartialURLInfo>(url: TUrl): FormUrlResult<TUrl> => {
-	if (isString(url)) {
-		return { urlObject: null, urlString: url } as never;
+export const formatUrl = (newURL: string | PartialURLInfo): FormUrlResult => {
+	if (isString(newURL)) {
+		const url = new URL(newURL, globalThis.location.origin);
+
+		const urlString = url.toString();
+
+		const search = url.searchParams;
+
+		const urlObject = {
+			hash: url.hash,
+			pathname: url.pathname,
+			search,
+			searchString: search.toString(),
+		} satisfies URLInfoObject;
+
+		return { urlObject, urlString } as never;
 	}
 
-	const search = createSearchParams(url.search);
+	const search = createSearchParams(newURL.search);
 
 	const urlObject = {
-		...url,
-		hash: url.hash ?? globalThis.location.hash,
-		pathname: url.pathname ?? globalThis.location.pathname,
+		...newURL,
+		hash: newURL.hash ?? globalThis.location.hash,
+		pathname: newURL.pathname ?? globalThis.location.pathname,
 		search,
 		searchString: search.toString(),
 	} satisfies URLInfoObject;
@@ -78,7 +90,7 @@ export const formatUrl = <TUrl extends string | PartialURLInfo>(url: TUrl): Form
 export const pushState = (url: string | PartialURLInfo, options?: { state?: PartialURLInfo["state"] }) => {
 	const { urlObject, urlString } = formatUrl(url);
 
-	const { state = urlObject?.state } = options ?? {};
+	const { state = urlObject.state } = options ?? {};
 
 	globalThis.history.pushState(state, "", urlString);
 };
@@ -89,7 +101,7 @@ export const replaceState = (
 ) => {
 	const { urlObject, urlString } = formatUrl(url);
 
-	const { state = urlObject?.state } = options ?? {};
+	const { state = urlObject.state } = options ?? {};
 
 	globalThis.history.replaceState(state, "", urlString);
 };

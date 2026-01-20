@@ -1,9 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App";
-import AppFour from "./AppFour";
-import AppThree from "./AppThree";
-import AppTwo from "./AppTwo";
+import { AppFour } from "./four";
+import { AppOne } from "./one";
+import { AppThree } from "./three";
+import { AppTwo } from "./two";
 
 export default function Main() {
 	const pathname = globalThis.location.pathname;
@@ -13,18 +13,14 @@ export default function Main() {
 			return <AppFour />;
 		}
 
-		case "/one": {
+		default: {
 			return (
 				<>
-					<App />
+					<AppOne />
 					<AppTwo />
 					<AppThree />
 				</>
 			);
-		}
-
-		default: {
-			return null;
 		}
 	}
 }

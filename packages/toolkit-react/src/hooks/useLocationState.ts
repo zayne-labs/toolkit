@@ -1,7 +1,7 @@
 import {
 	createLocationStore,
-	type LocationInfo,
 	type LocationStoreApi,
+	type LocationStoreInfo,
 	type LocationStoreOptions,
 } from "@zayne-labs/toolkit-core";
 import type { SelectorFn } from "@zayne-labs/toolkit-type-helpers";
@@ -16,12 +16,12 @@ export const createUseLocationState = (options?: LocationStoreOptions) => {
 	const locationStore = createLocationStore(options);
 
 	type UseBoundLocationState = LocationStoreApi
-		& (<TSlice = LocationInfo>(
-			selector?: SelectorFn<LocationInfo, TSlice>
+		& (<TSlice = LocationStoreInfo>(
+			selector?: SelectorFn<LocationStoreInfo, TSlice>
 		) => UseLocationResult<TSlice>);
 
-	const useLocationState = <TSlice = LocationInfo>(
-		selector?: SelectorFn<LocationInfo, TSlice>
+	const useLocationState = <TSlice = LocationStoreInfo>(
+		selector?: SelectorFn<LocationStoreInfo, TSlice>
 	): UseLocationResult<TSlice> => {
 		const stateSlice = useStore(locationStore as never, selector);
 
@@ -33,8 +33,8 @@ export const createUseLocationState = (options?: LocationStoreOptions) => {
 	return useLocationState as UseBoundLocationState;
 };
 
-export const useLocationState = <TSlice = LocationInfo>(
-	selector?: SelectorFn<LocationInfo, TSlice>,
+export const useLocationState = <TSlice = LocationStoreInfo>(
+	selector?: SelectorFn<LocationStoreInfo, TSlice>,
 	options: LocationStoreOptions = {}
 ): UseLocationResult<TSlice> => {
 	const { defaultValues, equalityFn } = options;

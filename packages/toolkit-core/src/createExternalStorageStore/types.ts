@@ -1,15 +1,10 @@
-import type { StoreApi } from "../createStore";
+import type { CreateStoreOptions, StoreApi } from "../createStore";
 
-export type StorageOptions<TState> = {
+export type StorageOptions<TState> = CreateStoreOptions<TState> & {
 	/**
-	 * The function to use to compare the previous and next state.
-	 * @default Object.is
+	 * The default value of the state.
 	 */
-	equalityFn?: (nextState: Partial<TState>, previousState: Partial<TState>) => boolean;
-	/**
-	 * The initial value of the state.
-	 */
-	initialValue?: TState;
+	defaultValue?: TState;
 	/**
 	 * The key to use for the storage.
 	 */
@@ -23,7 +18,7 @@ export type StorageOptions<TState> = {
 	 * The function to use to parse the state.
 	 * @default JSON.parse
 	 */
-	parser?: (value: unknown) => TState;
+	parser?: (value: string) => TState;
 	/**
 	 * The function to use to chose which parts of the state to store.
 	 */

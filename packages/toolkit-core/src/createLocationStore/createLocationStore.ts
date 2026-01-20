@@ -1,184 +1,126 @@
-import { createBatchManager } from "@/createBatchManager";
 import { isBrowser } from "../constants";
-import type { EqualityFn, StoreApi } from "../createStore";
-import { createSearchParams, formatUrl, type PartialURLInfo, type URLInfoObject } from "../navigation";
+import { createStore } from "../createStore";
+import { createSearchParams, formatUrl } from "../navigation";
 import { on } from "../on";
+import type { LocationStoreApi, LocationStoreInfo, LocationStoreOptions } from "./types";
 
-export type LocationInfo = URLInfoObject;
+const getSearchParam = () => new URLSearchParams(isBrowser() ? globalThis.location.search : "");
 
-export type LocationStoreOptions = {
-	defaultValues?: Omit<PartialURLInfo, "searchString">;
-	equalityFn?: EqualityFn<string | LocationInfo>;
-};
-
-type NavigationOptions = {
-	shouldNotifySync?: boolean;
-	state?: PartialURLInfo["state"];
-};
-
-export type LocationStoreApi = Omit<StoreApi<LocationInfo>, "resetState" | "setState"> & {
-	push: (url: string | PartialURLInfo, options?: NavigationOptions) => void;
-	replace: LocationStoreApi["push"];
-	triggerPopstateEvent: (nextLocationState?: LocationInfo["state"]) => void;
+const triggerPopstateEvent: LocationStoreApi["triggerPopstateEvent"] = (nextLocationState) => {
+	globalThis.dispatchEvent(new PopStateEvent("popstate", { state: nextLocationState }));
 };
 
 const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreApi => {
-	const { defaultValues, equalityFn = Object.is } = options;
+	const {
+		defaultValues,
+		equalityFn = Object.is,
+		logger = console.error,
+		shouldNotifySync: globalShouldNotifySync = false,
+	} = options;
 
-	const getSearchParam = () => new URLSearchParams(isBrowser() ? globalThis.location.search : "");
-
-	const initialSearchParam =
-		defaultValues?.search ? createSearchParams(defaultValues.search) : getSearchParam();
-
-	const initialState = {
-		hash: defaultValues?.hash ?? (isBrowser() ? globalThis.location.hash : ""),
-		pathname: defaultValues?.pathname ?? (isBrowser() ? globalThis.location.pathname : ""),
-		search: initialSearchParam,
-		searchString: initialSearchParam.toString(),
-		state:
-			defaultValues?.state
-			?? (isBrowser() ? (globalThis.history.state as LocationInfo["state"]) : null),
-	} satisfies LocationInfo;
-
-	let currentLocationState: LocationInfo = initialState;
-
-	const getState = () => currentLocationState;
-
-	const getInitialState = () => initialState;
-
-	/**
-	 * @description This has to be done in order to actually trigger the popState event, otherwise it would only fire when the user clicks on the forward/back button.
-	 * @see https://stackoverflow.com/a/37492075/18813022
-	 */
-	const triggerPopstateEvent: LocationStoreApi["triggerPopstateEvent"] = (nextLocationState) => {
-		globalThis.dispatchEvent(new PopStateEvent("popstate", { state: nextLocationState }));
-	};
-
-	const batchManager = createBatchManager<URLInfoObject>({ initialState });
-
-	const setState = (newURL: string | PartialURLInfo, navigationOptions?: NavigationOptions) => {
-		const { shouldNotifySync = false, state: urlState } = navigationOptions ?? {};
-
-		const previousLocationState = currentLocationState;
-
-		const { urlString: currentString } = formatUrl(previousLocationState);
-
-		const { urlObject: nextUrlObject, urlString: nextUrlString } = formatUrl(newURL);
-
-		currentLocationState = {
-			...(nextUrlObject as URLInfoObject),
-			...(Boolean(urlState) && { urlState }),
-		};
-
-		const isLocationStateEqual =
-			nextUrlString === currentString || equalityFn(currentLocationState, previousLocationState);
-
-		if (isLocationStateEqual) return;
-
-		if (shouldNotifySync) {
-			batchManager.actions.cancel();
-
-			triggerPopstateEvent(currentLocationState);
-
-			return;
-		}
-
-		if (batchManager.state.status === "pending") return;
-
-		batchManager.actions.start();
-
-		batchManager.actions.setPreviousStateSnapshot(previousLocationState);
-
-		queueMicrotask(() => {
-			batchManager.actions.end();
-
-			if (batchManager.state.isCancelled) {
-				batchManager.actions.resetCancel();
-				return;
-			}
-
-			const { previousStateSnapshot } = batchManager.state;
-
-			if (equalityFn(currentLocationState, previousStateSnapshot)) return;
-
-			triggerPopstateEvent(currentLocationState);
-		});
-
-		return { historyState: currentLocationState.state, nextUrlString };
-	};
-
-	const push: LocationStoreApi["push"] = (newURL, navigationOptions) => {
-		const { historyState, nextUrlString } = setState(newURL, navigationOptions) ?? {};
-
-		if (!nextUrlString) return;
-
-		globalThis.history.pushState(historyState, "", nextUrlString);
-	};
-
-	const replace: LocationStoreApi["replace"] = (newURL, navigationOptions) => {
-		const { historyState, nextUrlString } = setState(newURL, navigationOptions) ?? {};
-
-		if (!nextUrlString) return;
-
-		globalThis.history.replaceState(historyState, "", nextUrlString);
-	};
-
-	const getCurrentLocationObject = () => {
-		const currentSearchParams = getSearchParam();
+	const getInitialLocationStoreInfo = () => {
+		const initialSearchParam =
+			defaultValues?.search ? createSearchParams(defaultValues.search) : getSearchParam();
 
 		return {
+			hash: defaultValues?.hash ?? (isBrowser() ? globalThis.location.hash : ""),
+			pathname: defaultValues?.pathname ?? (isBrowser() ? globalThis.location.pathname : ""),
+			search: initialSearchParam,
+			searchString: initialSearchParam.toString(),
+			state:
+				defaultValues?.state
+				?? (isBrowser() ? (globalThis.history.state as LocationStoreInfo["state"]) : undefined),
+		} satisfies LocationStoreInfo;
+	};
+
+	const internalStore = createStore<LocationStoreInfo>(() => getInitialLocationStoreInfo(), {
+		equalityFn,
+		shouldNotifySync: globalShouldNotifySync,
+	});
+
+	const navigate = (
+		action: "push" | "replace" = "push",
+		...parameters: Parameters<LocationStoreApi["push"]>
+	) => {
+		const [url, navOptions = {}] = parameters;
+
+		const { shouldNotifySync = globalShouldNotifySync, state: urlState } = navOptions;
+
+		const { urlObject: nextUrlObject, urlString: nextUrlString } = formatUrl(url);
+
+		const nextLocationState = {
+			...nextUrlObject,
+			state: urlState !== undefined ? urlState : nextUrlObject.state,
+		} satisfies LocationStoreInfo;
+
+		internalStore.setState(nextLocationState, { shouldNotifySync, shouldReplace: true });
+
+		try {
+			action === "push" ?
+				globalThis.history.pushState(nextLocationState.state, "", nextUrlString)
+			:	globalThis.history.replaceState(nextLocationState.state, "", nextUrlString);
+		} catch (error) {
+			logger(error);
+		}
+	};
+
+	const push: LocationStoreApi["push"] = (...parameters) => navigate("push", ...parameters);
+
+	const replace: LocationStoreApi["replace"] = (...parameters) => navigate("replace", ...parameters);
+
+	const handleLocationStoreChange = (event: PopStateEvent) => {
+		const currentSearchParams = getSearchParam();
+
+		const currentLocationInfo = {
 			hash: globalThis.location.hash,
 			pathname: globalThis.location.pathname,
 			search: currentSearchParams,
 			searchString: currentSearchParams.toString(),
-			state: globalThis.history.state as LocationInfo["state"],
+			state: globalThis.history.state as LocationStoreInfo["state"],
+		} satisfies LocationStoreInfo;
+
+		const nextLocationState = {
+			...currentLocationInfo,
+			...(event.state as LocationStoreInfo),
+		};
+
+		internalStore.setState(nextLocationState, { shouldNotifySync: true, shouldReplace: true });
+	};
+
+	let cleanupExternalListeners: (() => void) | null = null;
+
+	const setupExternalListeners = () => {
+		const popstateCleanup = on("popstate", globalThis, handleLocationStoreChange);
+
+		cleanupExternalListeners = () => {
+			popstateCleanup();
+			cleanupExternalListeners = null;
 		};
 	};
 
-	const subscribe: LocationStoreApi["subscribe"] = (onLocationStoreChange) => {
-		type ModifiedPopSateEvent = Omit<PopStateEvent, "state"> & { state?: LocationInfo };
+	const hasNoInternalListeners = () => internalStore.getListeners().size === 0;
 
-		const handleLocationStoreChange = (event: ModifiedPopSateEvent) => {
-			const previousLocationState = currentLocationState;
-
-			currentLocationState = {
-				...getCurrentLocationObject(),
-				...event.state,
-			};
-
-			onLocationStoreChange(currentLocationState, previousLocationState);
-		};
-
-		const cleanup = on("popstate", globalThis, handleLocationStoreChange);
-
-		return cleanup;
-	};
-
-	subscribe.withSelector = (selector, onStoreChange, subscribeOptions = {}) => {
-		const { equalityFn: sliceEqualityFn = equalityFn, fireListenerImmediately = false } =
-			subscribeOptions;
-
-		if (fireListenerImmediately) {
-			const slice = selector(getState());
-
-			onStoreChange(slice, slice);
+	const subscribe: LocationStoreApi["subscribe"] = (onLocationStoreChange, subscribeOptions) => {
+		if (hasNoInternalListeners()) {
+			setupExternalListeners();
 		}
 
-		const unsubscribe = subscribe((state, prevState) => {
-			const previousSlice = selector(prevState);
-			const slice = selector(state);
+		const unsubscribe = internalStore.subscribe(onLocationStoreChange, subscribeOptions);
 
-			if (sliceEqualityFn(slice as never, previousSlice as never)) return;
+		return () => {
+			unsubscribe();
 
-			onStoreChange(slice, previousSlice);
-		});
-
-		return unsubscribe;
+			if (hasNoInternalListeners()) {
+				cleanupExternalListeners?.();
+			}
+		};
 	};
+	subscribe.withSelector = internalStore.subscribe.withSelector;
 
 	const api = {
-		getInitialState,
-		getState,
+		getInitialState: internalStore.getInitialState,
+		getListeners: internalStore.getListeners,
+		getState: internalStore.getState,
 		push,
 		replace,
 		subscribe,

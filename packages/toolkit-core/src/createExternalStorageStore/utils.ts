@@ -1,9 +1,9 @@
-import { isJsonString } from "@zayne-labs/toolkit-type-helpers";
 import type { StorageOptions } from "./types";
 
 export type DispatchOptions = StorageEventInit & {
 	key: string;
 	storageArea: Storage | undefined;
+	storeId: string;
 };
 
 export const getStorage = <TValue>(
@@ -21,23 +21,27 @@ export const dispatchStorageEvent = (dispatchOptions: DispatchOptions) => {
 
 	globalThis.dispatchEvent(new CustomEvent("storage-store-change", { detail: storageDetails }));
 
-	// 	// == This manual event dispatch is necessary to ensure the storage event is triggered on the current window/tab, not just on other windows
-	// 	globalThis.dispatchEvent(new StorageEvent("storage", storageDetails));
+	// == Manual StorageEvent dispatch is unnecessary and dangerous for same-tab sync because it lacks storeId tracking.
+	// == Same-tab sync is already handled by the CustomEvent above. Native StorageEvent is for other tabs.
+	// globalThis.dispatchEvent(new StorageEvent("storage", storageDetails));
 };
 
-export const safeParser = <TState>(
-	value: string | null,
-	parser: StorageOptions<TState>["parser"],
-	logger: StorageOptions<TState>["logger"]
-): TState => {
+export const safeParser = <TState>(options: {
+	fallbackValue: TState;
+	logger: NonNullable<StorageOptions<TState>["logger"]>;
+	parser: NonNullable<NoInfer<StorageOptions<TState>["parser"]>>;
+	value: string | null | undefined;
+}): TState => {
+	const { fallbackValue, logger, parser, value } = options;
+
 	try {
-		if (isJsonString(value)) {
-			return parser?.(value) as TState;
+		if (value == null) {
+			return fallbackValue;
 		}
 
-		return value as TState;
+		return parser(value);
 	} catch (error) {
-		logger?.(error);
-		return null as never;
+		logger(error);
+		return fallbackValue;
 	}
 };

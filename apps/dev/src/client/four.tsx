@@ -42,4 +42,4 @@ function AppFour() {
 	);
 }
 
-export default AppFour;
+export { AppFour };

@@ -1,4 +1,5 @@
-import type { UnmaskType } from "@zayne-labs/toolkit-type-helpers";
+import type { Prettify, UnmaskType } from "@zayne-labs/toolkit-type-helpers";
+import type { ScheduleBatchOptions } from "@/createBatchManager";
 
 export type StoreStateSetter<TState, TResult = TState> = UnmaskType<(prevState: TState) => TResult>;
 
@@ -7,13 +8,19 @@ type FullStateUpdate<TState> = TState | StoreStateSetter<TState, TState>;
 
 type PartialStateUpdate<TState> = Partial<TState> | StoreStateSetter<TState, Partial<TState>>;
 
-type SetStateOptions = UnmaskType<{
-	shouldNotifySync?: boolean;
-}>;
+type SetStateOptions<TState> = UnmaskType<
+	Prettify<Partial<Omit<ScheduleBatchOptions<TState>, "context">> & { shouldNotifySync?: boolean }>
+>;
 
 export type SetState<TState> = UnmaskType<{
-	(stateUpdate: PartialStateUpdate<TState>, options?: SetStateOptions & { shouldReplace?: false }): void;
-	(stateUpdate: FullStateUpdate<TState>, options?: SetStateOptions & { shouldReplace: true }): void;
+	(
+		stateUpdate: PartialStateUpdate<TState>,
+		options?: SetStateOptions<TState> & { shouldReplace?: false }
+	): void;
+	(
+		stateUpdate: FullStateUpdate<TState>,
+		options?: SetStateOptions<TState> & { shouldReplace: true }
+	): void;
 }>;
 
 export type Listener<TState> = UnmaskType<(state: TState, prevState: TState) => void>;
@@ -29,21 +36,30 @@ export type SubscribeOptions<TState> = {
 	fireListenerImmediately?: boolean;
 };
 
+export type CreateStoreOptions<TState> = {
+	equalityFn?: EqualityFn<TState>;
+	shouldNotifySync?: boolean;
+};
+
+type Subscribe<TState> = {
+	(
+		onStoreChange: Listener<TState>,
+		subscribeOptions?: Pick<SubscribeOptions<TState>, "fireListenerImmediately">
+	): () => void;
+	withSelector: <TSlice = TState>(
+		selector: SelectorFn<TState, TSlice>,
+		onStoreChange: Listener<TSlice>,
+		options?: SubscribeOptions<TSlice>
+	) => () => void;
+};
+
 export type StoreApi<in out TState> = {
 	getInitialState: () => TState;
+	getListeners: () => Set<Listener<TState>>;
 	getState: () => TState;
 	resetState: () => void;
 	setState: SetState<TState>;
-	subscribe: {
-		// prettier-ignore
-		(onStoreChange: Listener<TState>, subscribeOptions?: Pick< SubscribeOptions<TState>,"fireListenerImmediately">): () => void;
-
-		withSelector: <TSlice = TState>(
-			selector: SelectorFn<TState, TSlice>,
-			onStoreChange: Listener<TSlice>,
-			options?: SubscribeOptions<TSlice>
-		) => () => void;
-	};
+	subscribe: Subscribe<TState>;
 };
 
 export type StateInitializer<TState, TResult = TState> = (

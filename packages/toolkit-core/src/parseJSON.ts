@@ -4,13 +4,12 @@ import { isString } from "@zayne-labs/toolkit-type-helpers";
 type ParseJSON = {
 	<TResult>(value: string): TResult;
 	<TResult>(value: string | null | undefined): TResult | null;
-	<TResult>(value: string | null | undefined, defaultValue: TResult): TResult;
+	<TResult>(value: string | null | undefined, fallbackValue: TResult): TResult;
 };
 
-// Implementation
-const parseJSON: ParseJSON = <TResult>(value: unknown, defaultValue = null) => {
+const parseJSON: ParseJSON = <TResult>(value: unknown, fallbackValue = null) => {
 	if (!isString(value)) {
-		return defaultValue;
+		return fallbackValue;
 	}
 
 	try {
@@ -18,7 +17,7 @@ const parseJSON: ParseJSON = <TResult>(value: unknown, defaultValue = null) => {
 	} catch (error) {
 		console.error(error);
 
-		return defaultValue;
+		return fallbackValue;
 	}
 };
 

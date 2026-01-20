@@ -9,7 +9,7 @@ type RecordWithEntries = {
 };
 
 export type CompareFn = UnmaskType<
-	<TValue>(valueA: TValue, valueB: TValue, options?: CompareFnOptions) => boolean
+	(valueA: unknown, valueB: unknown, options?: CompareFnOptions) => boolean
 >;
 
 export type CompareFnOptions = {

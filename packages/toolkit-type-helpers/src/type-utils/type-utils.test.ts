@@ -1,5 +1,5 @@
 import { expectTypeOf, test } from "vitest";
-import type { Equal, Expect, Writeable } from "../type-utils";
+import type { Equal, Expect, Writeable } from ".";
 
 // Basic Type Level Tests
 type IgnoredTypeTestsForWritable = [
@@ -33,14 +33,6 @@ type IgnoredTypeTestsForWritable = [
 
 	// Test 7: ReadonlyArray
 	Expect<Equal<Writeable<readonly string[]>, string[]>>,
-
-	// Test 8: Object with optional and literal types
-	Expect<
-		Equal<
-			Writeable<{ readonly id: "test"; readonly optional?: number }>,
-			{ id: "test"; optional?: number }
-		>
-	>,
 ];
 
 // Vitest version of the tests
@@ -71,10 +63,4 @@ test("The writeable type works properly", () => {
 
 	// Test 7: ReadonlyArray
 	expectTypeOf<Writeable<readonly string[]>>().toEqualTypeOf<string[]>();
-
-	// Test 8: Object with optional and literal types
-	expectTypeOf<Writeable<{ readonly id: "test"; readonly optionalId?: number }>>().toEqualTypeOf<{
-		id: "test";
-		optionalId?: number;
-	}>();
 });

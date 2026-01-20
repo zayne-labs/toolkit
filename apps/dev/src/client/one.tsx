@@ -76,7 +76,7 @@ const scopedCss = css`
 
 const onClick = composeEventHandlers();
 
-function AnotherApp() {
+function AppOne() {
 	return (
 		<main>
 			<style>{scopedCss}</style>
@@ -181,4 +181,4 @@ function ParentTwoFooter(props: { children: React.ReactNode }) {
 }
 ParentTwoFooter.slotSymbol = Symbol("footer");
 
-export default AnotherApp;
+export { AppOne };

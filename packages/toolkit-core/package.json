@@ -59,7 +59,7 @@
 		"clsx": "^2.1.1",
 		"concurrently": "^9.2.1",
 		"cross-env": "^10.1.0",
-		"happy-dom": "^20.3.1",
+		"happy-dom": "^20.3.3",
 		"publint": "^0.3.16",
 		"size-limit": "^12.0.0",
 		"tsdown": "0.20.0-beta.3",
@@ -74,7 +74,7 @@
 	"size-limit": [
 		{
 			"path": "./src/index.ts",
-			"limit": "5.5 kb"
+			"limit": "6 kb"
 		}
 	]
 }

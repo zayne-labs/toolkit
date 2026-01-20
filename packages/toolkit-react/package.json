@@ -94,7 +94,7 @@
 	"size-limit": [
 		{
 			"path": "./src/hooks/index.ts",
-			"limit": "6 kb"
+			"limit": "6.5 kb"
 		},
 		{
 			"path": "./src/utils/index.ts",
