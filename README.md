@@ -36,16 +36,13 @@ yarn add @zayne-labs/toolkit
 
 ```typescript
 // Core utilities
-import { copyToClipboard } from '@zayne-labs/toolkit/core'
-
+import { copyToClipboard } from "@zayne-labs/toolkit/core";
 // React hooks
-import { useToggle } from '@zayne-labs/toolkit/react'
-
+import { useToggle } from "@zayne-labs/toolkit/react";
 // React utilities
-import { composeRefs } from '@zayne-labs/toolkit/react/utils'
-
+import { composeRefs } from "@zayne-labs/toolkit/react/utils";
 // Type helpers
-import type { Prettify } from '@zayne-labs/toolkit/type-helpers'
+import type { Prettify } from "@zayne-labs/toolkit/type-helpers";
 ```
 
 ## Development
