@@ -1,12 +1,15 @@
 import { isBoolean, isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
 import { createBatchManager } from "../createBatchManager";
 import { initializeStorePlugins } from "./plugins";
-import type { CreateStoreOptions, Listener, StateInitializer, StoreApi } from "./types";
+import type { CreateStoreOptions, Listener, StoreApi, StoreStateInitializer } from "./types";
 
+// TODO - Implement a way to properties to the storeApi, taking inspo from callapi
 const createStore = <TState>(
-	initializer: StateInitializer<TState>,
-	options: CreateStoreOptions<TState> = {}
+	storeStateInitializer: StoreStateInitializer<TState>,
+	storeOptions: CreateStoreOptions<TState> = {}
 ): StoreApi<TState> => {
+	const { equalityFn = Object.is, shouldNotifySync: globalShouldNotifySync = false } = storeOptions;
+
 	let currentState: TState;
 
 	const listeners = new Set<Listener<TState>>();
@@ -15,7 +18,7 @@ const createStore = <TState>(
 
 	const getInitialState = () => initialState;
 
-	const { equalityFn = Object.is, shouldNotifySync: globalShouldNotifySync = false } = options;
+	const getListeners = () => listeners;
 
 	const notifyListeners: Listener<TState> = (state, prevState) => {
 		for (const listener of listeners) {
@@ -85,14 +88,17 @@ const createStore = <TState>(
 			onStoreChange(slice, slice);
 		}
 
-		const unsubscribe = resolvedApi.subscribe((state, prevState) => {
-			const previousSlice = selector(prevState);
-			const slice = selector(state);
+		const unsubscribe = resolvedApi.subscribe(
+			(state, prevState) => {
+				const previousSlice = selector(prevState);
+				const slice = selector(state);
 
-			if (sliceEqualityFn(slice as never, previousSlice as never)) return;
+				if (sliceEqualityFn(slice as never, previousSlice as never)) return;
 
-			onStoreChange(slice, previousSlice);
-		});
+				onStoreChange(slice, previousSlice);
+			},
+			{ fireListenerImmediately: false }
+		);
 
 		return unsubscribe;
 	};
@@ -103,16 +109,16 @@ const createStore = <TState>(
 
 	const storeApi: InternalStoreApi = {
 		getInitialState,
-		getListeners: () => listeners,
+		getListeners,
 		getState,
 		resetState,
 		setState,
 		subscribe,
 	};
 
-	const resolvedApi = initializeStorePlugins({ plugins: options.plugins, storeApi });
+	const resolvedApi = initializeStorePlugins({ plugins: storeOptions.plugins, storeApi });
 
-	const initialState = (currentState = initializer(
+	const initialState = (currentState = storeStateInitializer(
 		resolvedApi.setState,
 		resolvedApi.getState,
 		resolvedApi

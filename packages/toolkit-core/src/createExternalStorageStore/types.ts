@@ -1,4 +1,4 @@
-import type { CreateStoreOptions, StoreApi } from "../createStore";
+import type { CreateStoreOptions, SetState, SetStateOptions, StoreApi } from "../createStore";
 
 export type StorageOptions<TState> = CreateStoreOptions<TState> & {
 	/**
@@ -40,4 +40,11 @@ export type StorageOptions<TState> = CreateStoreOptions<TState> & {
 	syncStateAcrossTabs?: boolean;
 };
 
-export type StorageStoreApi<TState> = StoreApi<TState> & { removeState: () => void };
+export type StorageSetStateOptions<TState> = SetStateOptions<TState> & {
+	storageAction?: "remove-item" | "set-item";
+};
+
+export type StorageStoreApi<TState> = Omit<StoreApi<TState>, "setState"> & {
+	removeState: () => void;
+	setState: SetState<TState, StorageSetStateOptions<TState>>;
+};

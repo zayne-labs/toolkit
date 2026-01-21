@@ -8,19 +8,13 @@ type FullStateUpdate<TState> = TState | StoreStateSetter<TState, TState>;
 
 type PartialStateUpdate<TState> = Partial<TState> | StoreStateSetter<TState, Partial<TState>>;
 
-type SetStateOptions<TState> = UnmaskType<
-	Prettify<Partial<Omit<ScheduleBatchOptions<TState>, "context">> & { shouldNotifySync?: boolean }>
+export type SetStateOptions<TState> = UnmaskType<
+	Prettify<Omit<Partial<ScheduleBatchOptions<TState>>, "context"> & { shouldNotifySync?: boolean }>
 >;
 
-export type SetState<TState> = UnmaskType<{
-	(
-		stateUpdate: PartialStateUpdate<TState>,
-		options?: SetStateOptions<TState> & { shouldReplace?: false }
-	): void;
-	(
-		stateUpdate: FullStateUpdate<TState>,
-		options?: SetStateOptions<TState> & { shouldReplace: true }
-	): void;
+export type SetState<TState, TSetStateOptions = SetStateOptions<TState>> = UnmaskType<{
+	(stateUpdate: PartialStateUpdate<TState>, options?: TSetStateOptions & { shouldReplace?: false }): void;
+	(stateUpdate: FullStateUpdate<TState>, options?: TSetStateOptions & { shouldReplace: true }): void;
 }>;
 
 export type Listener<TState> = UnmaskType<(state: TState, prevState: TState) => void>;
@@ -36,7 +30,7 @@ export type SubscribeOptions<TState> = {
 	fireListenerImmediately?: boolean;
 };
 
-export interface StorePlugin<TState> {
+export interface StorePlugin {
 	/**
 	 *  A unique id for the plugin
 	 */
@@ -64,7 +58,7 @@ export interface StorePlugin<TState> {
 	 * ```
 	 */
 	// eslint-disable-next-line ts-eslint/no-invalid-void-type -- Ignore
-	setup?: (api: StoreApi<TState>) => Partial<StoreApi<TState>> | void;
+	setup?: (api: StoreApi<never>) => Partial<StoreApi<NoInfer<never>>> | void;
 	/**
 	 *  A version for the plugin
 	 */
@@ -73,7 +67,7 @@ export interface StorePlugin<TState> {
 
 export type CreateStoreOptions<TState> = {
 	equalityFn?: EqualityFn<TState>;
-	plugins?: Array<StorePlugin<TState>>;
+	plugins?: StorePlugin[];
 	shouldNotifySync?: boolean;
 };
 
@@ -105,10 +99,16 @@ export type StoreApi<in out TState> = {
 	subscribe: SubscribeFn<TState>;
 };
 
-export type StateInitializer<TState, TResult = TState> = (
+export type StoreStateInitializer<TState, TResult = TState> = (
 	set: StoreApi<TState>["setState"],
 	get: StoreApi<TState>["getState"],
 	api: StoreApi<TState>
 ) => TResult;
+
+export type StoreActionsInitializer<TState, TActions> = (
+	set: StoreApi<TState>["setState"],
+	get: StoreApi<TState>["getState"],
+	api: StoreApi<TState>
+) => TActions;
 
 export type ExtractState<TStoreApi> = TStoreApi extends { getState: () => infer TState } ? TState : never;

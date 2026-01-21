@@ -1,6 +1,6 @@
 import { createStore } from "../createStore";
 import { on } from "../on";
-import type { StorageOptions, StorageStoreApi } from "./types";
+import type { StorageOptions, StorageSetStateOptions, StorageStoreApi } from "./types";
 import { dispatchStorageEvent, getStorage, safeParser, type DispatchOptions } from "./utils";
 
 const createExternalStorageStore = <TState>(
@@ -48,33 +48,56 @@ const createExternalStorageStore = <TState>(
 	const handleItemStorageAndEventDispatch = (
 		state: TState,
 		prevState: TState,
-		action: "remove-item" | "set-item"
+		storageAction: StorageSetStateOptions<TState>["storageAction"] = "set-item"
 	) => {
-		const currentStateSnapshot = partialize(state);
-
 		try {
-			const newValue = serializer(currentStateSnapshot);
+			const newValue = serializer(partialize(state));
 
 			const oldValue = serializer(partialize(prevState));
 
-			action === "set-item" ?
-				selectedStorage?.setItem(key, newValue)
-			:	selectedStorage?.removeItem(key);
+			switch (storageAction) {
+				case "remove-item": {
+					selectedStorage?.removeItem(key);
+					break;
+				}
+				case "set-item": {
+					selectedStorage?.setItem(key, newValue);
+					break;
+				}
+				default: {
+					storageAction satisfies never;
+					throw new Error(`Unsupported storage action: ${storageAction}`);
+				}
+			}
 
-			dispatchStorageEvent({ key, newValue, oldValue, storageArea: selectedStorage, storeId });
+			dispatchStorageEvent({
+				key,
+				newValue,
+				oldValue,
+				storageArea: selectedStorage,
+				storeId,
+			});
 		} catch (error) {
 			logger(error);
 		}
 	};
 
-	const setState: typeof internalStore.setState = (stateUpdate, setStateOptions) => {
+	const setState: StorageStoreApi<TState>["setState"] = (stateUpdate, setStateOptions) => {
 		internalStore.setState(stateUpdate, {
 			...(setStateOptions as object),
 			onNotifySync: (prevState) => {
-				handleItemStorageAndEventDispatch(internalStore.getState(), prevState, "set-item");
+				handleItemStorageAndEventDispatch(
+					internalStore.getState(),
+					prevState,
+					setStateOptions?.storageAction
+				);
 			},
 			onNotifyViaBatch: (previousStateSnapshot) => {
-				handleItemStorageAndEventDispatch(internalStore.getState(), previousStateSnapshot, "set-item");
+				handleItemStorageAndEventDispatch(
+					internalStore.getState(),
+					previousStateSnapshot,
+					setStateOptions?.storageAction
+				);
 			},
 		});
 	};
@@ -133,12 +156,6 @@ const createExternalStorageStore = <TState>(
 	subscribe.withSelector = internalStore.subscribe.withSelector;
 
 	const removeState = () => {
-		try {
-			selectedStorage?.removeItem(key);
-		} catch (error) {
-			logger(error);
-		}
-
 		internalStore.setState(defaultValue, {
 			onNotifySync: (prevState) => {
 				handleItemStorageAndEventDispatch(internalStore.getState(), prevState, "remove-item");

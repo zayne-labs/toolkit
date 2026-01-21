@@ -1,7 +1,7 @@
 import type { StoreApi, StorePlugin } from "./types";
 
 type InitializeStorePluginsContext<TState> = {
-	plugins: Array<StorePlugin<TState>> | undefined;
+	plugins: StorePlugin[] | undefined;
 	storeApi: StoreApi<TState>;
 };
 
@@ -13,7 +13,7 @@ export const initializeStorePlugins = <TState>(
 	const resolvedStoreApi: StoreApi<TState> = { ...storeApi };
 
 	for (const plugin of plugins ?? []) {
-		const initResult = plugin.setup?.(storeApi);
+		const initResult = plugin.setup?.(storeApi as unknown as StoreApi<never>);
 
 		if (!initResult) continue;
 
@@ -32,4 +32,4 @@ export const initializeStorePlugins = <TState>(
 	return resolvedStoreApi;
 };
 
-export const defineStorePlugin = <TState>(plugin: StorePlugin<TState>) => plugin;
+export const defineStorePlugin = (plugin: StorePlugin) => plugin;

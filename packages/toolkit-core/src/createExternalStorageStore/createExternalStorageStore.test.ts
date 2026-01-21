@@ -154,7 +154,7 @@ test("Same-Tab Sync - reflect changes between two stores in same window", async 
 	expect(localStorage.getItem(key)).toBe(JSON.stringify({ count: 50 }));
 });
 
-test("Reset/Remove - resetState reverts to initial value immediately", async () => {
+test("Reset - resetState reverts to initial value immediately", async () => {
 	const key = "test-reset-key";
 	// Note: initialState is set from storage if present. Fallback is defaultValue.
 	localStorage.setItem(key, JSON.stringify({ count: 10 }));
@@ -178,7 +178,7 @@ test("Reset/Remove - resetState reverts to initial value immediately", async () 
 	expect(localStorage.getItem(key)).toBe(JSON.stringify({ count: 10 }));
 });
 
-test("Reset/Remove - removeState deletes from storage", async () => {
+test("Remove - removeState deletes from storage", async () => {
 	const key = "test-remove-key";
 	localStorage.setItem(key, JSON.stringify({ count: 10 }));
 

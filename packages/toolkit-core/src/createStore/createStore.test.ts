@@ -2,7 +2,6 @@ import { expect, test, vi } from "vitest";
 import { deepCompare } from "../compare";
 import { createStore } from "./createStore";
 import { defineStorePlugin } from "./plugins";
-import type { StoreApi } from "./types";
 
 /**
  * @description Helper to wait for all pending microtasks to complete.
@@ -1181,10 +1180,10 @@ test("Plugin Edge case - internal resetState should use wrapped setState", () =>
 });
 
 test("Plugin - should preserve sub-properties like withSelector when subscribe is wrapped", async () => {
-	const subscribePlugin = defineStorePlugin<TestState>({
+	const subscribePlugin = defineStorePlugin({
 		id: "subscribe-plugin",
 		name: "Subscribe Plugin",
-		setup: (api: StoreApi<TestState>) => {
+		setup: (api) => {
 			return {
 				subscribe: ((onStoreChange, options) => {
 					return api.subscribe(onStoreChange, options);
