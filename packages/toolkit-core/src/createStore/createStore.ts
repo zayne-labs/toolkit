@@ -1,5 +1,6 @@
 import { isBoolean, isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
 import { createBatchManager } from "../createBatchManager";
+import { initializeStorePlugins } from "./plugins";
 import type { CreateStoreOptions, Listener, StateInitializer, StoreApi } from "./types";
 
 const createStore = <TState>(
@@ -64,7 +65,7 @@ const createStore = <TState>(
 		const { fireListenerImmediately = false } = subscribeOptions;
 
 		if (fireListenerImmediately) {
-			const state = getState();
+			const state = resolvedApi.getState();
 
 			onStoreChange(state, state);
 		}
@@ -79,12 +80,12 @@ const createStore = <TState>(
 			subscribeOptions;
 
 		if (fireListenerImmediately) {
-			const slice = selector(getState());
+			const slice = selector(resolvedApi.getState());
 
 			onStoreChange(slice, slice);
 		}
 
-		const unsubscribe = subscribe((state, prevState) => {
+		const unsubscribe = resolvedApi.subscribe((state, prevState) => {
 			const previousSlice = selector(prevState);
 			const slice = selector(state);
 
@@ -97,16 +98,10 @@ const createStore = <TState>(
 	};
 
 	const resetState = () => {
-		setState(getInitialState(), { shouldNotifySync: true, shouldReplace: true });
+		resolvedApi.setState(resolvedApi.getInitialState(), { shouldNotifySync: true, shouldReplace: true });
 	};
 
-	// Initialize the batch manager reference.
-	// It's assigned later because createBatchManager needs the initial state,
-	// which is derived from the initializer, which might call setState,
-	// which depends on batchManager.
-	// We handle this circular dependency by checking if batchManager is defined in setState.
-
-	const api: InternalStoreApi = {
+	const storeApi: InternalStoreApi = {
 		getInitialState,
 		getListeners: () => listeners,
 		getState,
@@ -115,9 +110,15 @@ const createStore = <TState>(
 		subscribe,
 	};
 
-	const initialState = (currentState = initializer(setState, getState, api));
+	const resolvedApi = initializeStorePlugins({ plugins: options.plugins, storeApi });
 
-	return api;
+	const initialState = (currentState = initializer(
+		resolvedApi.setState,
+		resolvedApi.getState,
+		resolvedApi
+	));
+
+	return resolvedApi;
 };
 
 export { createStore };

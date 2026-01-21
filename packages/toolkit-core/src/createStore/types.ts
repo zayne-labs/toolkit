@@ -36,22 +36,65 @@ export type SubscribeOptions<TState> = {
 	fireListenerImmediately?: boolean;
 };
 
+export interface StorePlugin<TState> {
+	/**
+	 *  A unique id for the plugin
+	 */
+	id: string;
+
+	/**
+	 * The name of the plugin.
+	 */
+	name: string;
+
+	/**
+	 * A function called during store initialization to configure the plugin.
+	 * It receives the base `StoreApi` and can return an object containing methods to extend the existing API.
+	 *
+	 * @example
+	 * ```ts
+	 * setup: (api) => {
+	 *   return {
+	 *     setState: (stateUpdate, options) => {
+	 *       console.log("State is being updated");
+	 *       return api.setState(stateUpdate, options);
+	 *     }
+	 *   };
+	 * }
+	 * ```
+	 */
+	// eslint-disable-next-line ts-eslint/no-invalid-void-type -- Ignore
+	setup?: (api: StoreApi<TState>) => Partial<StoreApi<TState>> | void;
+	/**
+	 *  A version for the plugin
+	 */
+	version?: string;
+}
+
 export type CreateStoreOptions<TState> = {
 	equalityFn?: EqualityFn<TState>;
+	plugins?: Array<StorePlugin<TState>>;
 	shouldNotifySync?: boolean;
 };
 
-type Subscribe<TState> = {
+type UnsubscribeFn = () => void;
+
+export type SubscribeFnMain<TState> = UnmaskType<
 	(
 		onStoreChange: Listener<TState>,
 		subscribeOptions?: Pick<SubscribeOptions<TState>, "fireListenerImmediately">
-	): () => void;
+	) => UnsubscribeFn
+>;
+
+type SubscribeFnWithSelector<TState> = UnmaskType<{
 	withSelector: <TSlice = TState>(
 		selector: SelectorFn<TState, TSlice>,
 		onStoreChange: Listener<TSlice>,
-		options?: SubscribeOptions<TSlice>
-	) => () => void;
-};
+		subscribeOptions?: SubscribeOptions<TSlice>
+	) => UnsubscribeFn;
+}>;
+
+export type SubscribeFn<TState> = SubscribeFnMain<TState> & SubscribeFnWithSelector<TState>;
 
 export type StoreApi<in out TState> = {
 	getInitialState: () => TState;
@@ -59,7 +102,7 @@ export type StoreApi<in out TState> = {
 	getState: () => TState;
 	resetState: () => void;
 	setState: SetState<TState>;
-	subscribe: Subscribe<TState>;
+	subscribe: SubscribeFn<TState>;
 };
 
 export type StateInitializer<TState, TResult = TState> = (

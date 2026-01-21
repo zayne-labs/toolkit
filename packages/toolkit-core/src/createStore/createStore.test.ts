@@ -1,11 +1,15 @@
 import { expect, test, vi } from "vitest";
 import { deepCompare } from "../compare";
 import { createStore } from "./createStore";
+import { defineStorePlugin } from "./plugins";
+import type { StoreApi } from "./types";
 
 /**
  * @description Helper to wait for all pending microtasks to complete.
  */
 const flushMicrotasks = () => new Promise<void>((resolve) => queueMicrotask(() => resolve()));
+
+type TestState = { count: number; multiplier?: number; name?: string };
 
 /**
  * @description Creates a disposable spy on an object's method that automatically restores when disposed.
@@ -1143,4 +1147,68 @@ test("Initializer Arguments - should be able to use set directly in initializer"
 
 	// Expect return value { count: 0 } to be the state
 	expect(store.getState()).toEqual({ count: 0 });
+});
+
+test("Plugin Edge case - internal resetState should use wrapped setState", () => {
+	const wrappedSetState = vi.fn();
+
+	const store = createStore<{ count: number }>(() => ({ count: 0 }), {
+		plugins: [
+			{
+				id: "test-plugin",
+				name: "Test Plugin",
+				setup: (api) => {
+					return {
+						setState: (stateUpdate, options) => {
+							wrappedSetState();
+							return api.setState(stateUpdate, options as object);
+						},
+					};
+				},
+			},
+		],
+	});
+
+	// Initial state is 0.
+	// Manual setState should trigger the wrapper
+	store.setState({ count: 1 });
+	expect(wrappedSetState).toHaveBeenCalledTimes(1);
+
+	// resetState should trigger the wrapper too!
+	// IF THIS FAILS, IT'S THE ALIASING BUG.
+	store.resetState();
+	expect(wrappedSetState).toHaveBeenCalledTimes(2);
+});
+
+test("Plugin - should preserve sub-properties like withSelector when subscribe is wrapped", async () => {
+	const subscribePlugin = defineStorePlugin<TestState>({
+		id: "subscribe-plugin",
+		name: "Subscribe Plugin",
+		setup: (api: StoreApi<TestState>) => {
+			return {
+				subscribe: ((onStoreChange, options) => {
+					return api.subscribe(onStoreChange, options);
+				}) as typeof api.subscribe,
+			};
+		},
+	});
+
+	const store = createStore<TestState>(() => ({ count: 0 }), {
+		plugins: [subscribePlugin],
+	});
+
+	expect(store.subscribe.withSelector).toBeDefined();
+	expect(typeof store.subscribe.withSelector).toBe("function");
+
+	let slice = -1;
+	store.subscribe.withSelector(
+		(state) => state.count,
+		(val) => {
+			slice = val;
+		}
+	);
+
+	store.setState({ count: 1 });
+	await flushMicrotasks();
+	expect(slice).toBe(1);
 });

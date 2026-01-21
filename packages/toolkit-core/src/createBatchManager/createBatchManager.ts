@@ -48,10 +48,11 @@ export type ScheduleBatchOptions<TState> = {
  *
  * See BATCHING_EXPLAINED.md for detailed behavior documentation.
  */
+
+const defaultInitialStateSymbol = Symbol("initialStateSnapshot");
+
 export const createBatchManager = <TState>(options: { initialState: TState | (() => TState) }) => {
 	const { initialState } = options;
-
-	const defaultInitialStateSymbol = Symbol.for("initialStateSnapshot");
 
 	const getInitialState = () => (isFunction(initialState) ? initialState() : initialState);
 

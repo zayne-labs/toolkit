@@ -74,7 +74,7 @@
 		"@size-limit/preset-small-lib": "^12.0.0",
 		"@total-typescript/ts-reset": "^0.6.1",
 		"@types/node": "^25.0.9",
-		"@types/react": "^19.2.8",
+		"@types/react": "^19.2.9",
 		"@zayne-labs/tsconfig": "0.11.19",
 		"concurrently": "^9.2.1",
 		"cross-env": "^10.1.0",
@@ -82,7 +82,7 @@
 		"react": "^19.2.3",
 		"size-limit": "^12.0.0",
 		"tailwind-merge": "3.4.0",
-		"tsdown": "0.20.0-beta.3",
+		"tsdown": "0.20.0-beta.4",
 		"typescript": "5.9.3",
 		"zustand": "^5.0.10"
 	},
@@ -102,7 +102,11 @@
 		},
 		{
 			"path": "./src/zustand/index.ts",
-			"limit": "2 kb"
+			"limit": "2.5 kb"
+		},
+		{
+			"path": "./src/zustand/compatible/index.ts",
+			"limit": "2.5 kb"
 		}
 	]
 }
