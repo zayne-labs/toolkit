@@ -1,15 +1,15 @@
-import { throttleByFrame, throttleBySetTimeout, throttleByTime } from "@zayne-labs/toolkit-core";
+import { throttleByFrame, throttleByTime, throttleByTimeout } from "@zayne-labs/toolkit-core";
 import type { CallbackFn } from "@zayne-labs/toolkit-type-helpers";
 import { useMemo } from "react";
 import { useUnmountEffect } from "./effects";
 import { useCallbackRef } from "./useCallbackRef";
 import { useConstant } from "./useConstant";
 
-export const useThrottleBySetTimeout = <TParams>(callbackFn: CallbackFn<TParams>, delay: number) => {
+export const useThrottleByTimeout = <TParams>(callbackFn: CallbackFn<TParams>, delay: number) => {
 	const latestCallback = useCallbackRef(callbackFn);
 
 	const throttledCallback = useMemo(
-		() => throttleBySetTimeout(latestCallback, delay),
+		() => throttleByTimeout(latestCallback, delay),
 		[delay, latestCallback]
 	);
 

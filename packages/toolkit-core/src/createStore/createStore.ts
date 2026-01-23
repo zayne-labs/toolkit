@@ -1,130 +1,138 @@
-import { isBoolean, isFunction, isObject } from "@zayne-labs/toolkit-type-helpers";
+import { isBoolean, isFunction, isObject, type DeepPrettify } from "@zayne-labs/toolkit-type-helpers";
 import { createBatchManager } from "../createBatchManager";
-import { initializeStorePlugins } from "./plugins";
-import type { CreateStoreOptions, Listener, StoreApi, StoreStateInitializer } from "./types";
+import { initializeStorePlugins, type InferPluginExtraOptions } from "./plugins";
+import type { CreateStoreOptions, Listener, StoreApi, StorePlugin, StoreStateInitializer } from "./types";
 
-// TODO - Implement a way to properties to the storeApi, taking inspo from callapi
-const createStore = <TState>(
-	storeStateInitializer: StoreStateInitializer<TState>,
-	storeOptions: CreateStoreOptions<TState> = {}
-): StoreApi<TState> => {
-	const { equalityFn = Object.is, shouldNotifySync: globalShouldNotifySync = false } = storeOptions;
+export const createStoreWithContext = <TBaseState>() => {
+	const createStore = <TState = TBaseState, const TPlugins extends StorePlugin[] = StorePlugin[]>(
+		storeStateInitializer: StoreStateInitializer<TState>,
+		storeOptions: CreateStoreOptions<TState, TPlugins> = {}
+	): StoreApi<TState, DeepPrettify<InferPluginExtraOptions<TPlugins>>> => {
+		const { equalityFn = Object.is, shouldNotifySync: globalShouldNotifySync = false } = storeOptions;
 
-	let currentState: TState;
+		const listeners = new Set<Listener<TState>>();
 
-	const listeners = new Set<Listener<TState>>();
+		let currentState: TState;
 
-	const getState = () => currentState;
+		const getState = () => currentState;
 
-	const getInitialState = () => initialState;
+		let initialState: TState;
 
-	const getListeners = () => listeners;
+		const getInitialState = () => initialState;
 
-	const notifyListeners: Listener<TState> = (state, prevState) => {
-		for (const listener of listeners) {
-			listener(state, prevState);
-		}
-	};
+		const getListeners = () => listeners;
 
-	type InternalStoreApi = StoreApi<TState>;
+		const notifyListeners: Listener<TState> = (state, prevState) => {
+			for (const listener of listeners) {
+				listener(state, prevState);
+			}
+		};
 
-	const batchManager = createBatchManager<TState>({ initialState: getInitialState });
+		type InternalStoreApi = StoreApi<TState>;
 
-	const setState: InternalStoreApi["setState"] = (stateUpdate, setStateOptions = {}) => {
-		const {
-			onNotifySync,
-			onNotifyViaBatch,
-			shouldNotifySync = globalShouldNotifySync,
-			shouldReplace = isBoolean(setStateOptions) ? setStateOptions : false,
-		} = setStateOptions;
+		const batchManager = createBatchManager<TState>({ initialState: getInitialState });
 
-		const previousState = currentState;
+		const setState: InternalStoreApi["setState"] = (stateUpdate, setStateOptions = {}) => {
+			const {
+				onNotifySync,
+				onNotifyViaBatch,
+				shouldNotifySync = globalShouldNotifySync,
+				shouldReplace = isBoolean(setStateOptions) ? setStateOptions : false,
+			} = setStateOptions;
 
-		const nextState = isFunction(stateUpdate) ? stateUpdate(previousState) : stateUpdate;
+			const previousState = currentState;
 
-		if (equalityFn(nextState, previousState)) return;
+			const nextState = isFunction(stateUpdate) ? stateUpdate(previousState) : stateUpdate;
 
-		currentState =
-			!shouldReplace && isObject(previousState) && isObject(nextState) ?
-				{ ...previousState, ...nextState }
-			:	(nextState as TState);
+			if (equalityFn(nextState, previousState)) return;
 
-		batchManager.actions.schedule({
-			context: { previousState, shouldNotifySync },
-			onNotifySync: (prevState) => {
-				onNotifySync?.(prevState);
-				notifyListeners(currentState, prevState);
-			},
-			onNotifyViaBatch: (previousStateSnapshot) => {
-				if (equalityFn(currentState, previousStateSnapshot)) return;
+			currentState =
+				!shouldReplace && isObject(previousState) && isObject(nextState) ?
+					{ ...previousState, ...nextState }
+				:	(nextState as TState);
 
-				onNotifyViaBatch?.(previousStateSnapshot);
-				notifyListeners(currentState, previousStateSnapshot);
-			},
-		});
-	};
+			batchManager.actions.schedule({
+				context: { previousState, shouldNotifySync },
+				onNotifySync: (prevState) => {
+					onNotifySync?.(prevState);
+					notifyListeners(currentState, prevState);
+				},
+				onNotifyViaBatch: (previousStateSnapshot) => {
+					if (equalityFn(currentState, previousStateSnapshot)) return;
 
-	const subscribe: InternalStoreApi["subscribe"] = (onStoreChange, subscribeOptions = {}) => {
-		const { fireListenerImmediately = false } = subscribeOptions;
+					onNotifyViaBatch?.(previousStateSnapshot);
+					notifyListeners(currentState, previousStateSnapshot);
+				},
+			});
+		};
 
-		if (fireListenerImmediately) {
-			const state = resolvedApi.getState();
+		const subscribe: InternalStoreApi["subscribe"] = (onStoreChange, subscribeOptions = {}) => {
+			const { fireListenerImmediately = false } = subscribeOptions;
 
-			onStoreChange(state, state);
-		}
+			if (fireListenerImmediately) {
+				const state = resolvedApi.getState();
 
-		listeners.add(onStoreChange);
+				onStoreChange(state, state);
+			}
 
-		return () => listeners.delete(onStoreChange);
-	};
+			listeners.add(onStoreChange);
 
-	subscribe.withSelector = (selector, onStoreChange, subscribeOptions = {}) => {
-		const { equalityFn: sliceEqualityFn = equalityFn, fireListenerImmediately = false } =
-			subscribeOptions;
+			return () => listeners.delete(onStoreChange);
+		};
 
-		if (fireListenerImmediately) {
-			const slice = selector(resolvedApi.getState());
+		subscribe.withSelector = (selector, onStoreChange, subscribeOptions = {}) => {
+			const { equalityFn: sliceEqualityFn = equalityFn, fireListenerImmediately = false } =
+				subscribeOptions;
 
-			onStoreChange(slice, slice);
-		}
+			if (fireListenerImmediately) {
+				const slice = selector(resolvedApi.getState());
 
-		const unsubscribe = resolvedApi.subscribe(
-			(state, prevState) => {
-				const previousSlice = selector(prevState);
-				const slice = selector(state);
+				onStoreChange(slice, slice);
+			}
 
-				if (sliceEqualityFn(slice as never, previousSlice as never)) return;
+			const unsubscribe = resolvedApi.subscribe(
+				(state, prevState) => {
+					const previousSlice = selector(prevState);
+					const slice = selector(state);
 
-				onStoreChange(slice, previousSlice);
-			},
-			{ fireListenerImmediately: false }
+					if (sliceEqualityFn(slice as never, previousSlice as never)) return;
+
+					onStoreChange(slice, previousSlice);
+				},
+				{ fireListenerImmediately: false }
+			);
+
+			return unsubscribe;
+		};
+
+		const resetState = () => {
+			resolvedApi.setState(resolvedApi.getInitialState(), {
+				shouldNotifySync: true,
+				shouldReplace: true,
+			});
+		};
+
+		const storeApi: InternalStoreApi = {
+			getInitialState,
+			getListeners,
+			getState,
+			resetState,
+			setState,
+			subscribe,
+		};
+
+		const resolvedApi = initializeStorePlugins({ plugins: storeOptions.plugins, storeApi });
+
+		initialState = currentState = storeStateInitializer(
+			resolvedApi.setState,
+			resolvedApi.getState,
+			resolvedApi
 		);
 
-		return unsubscribe;
+		return resolvedApi as never;
 	};
 
-	const resetState = () => {
-		resolvedApi.setState(resolvedApi.getInitialState(), { shouldNotifySync: true, shouldReplace: true });
-	};
-
-	const storeApi: InternalStoreApi = {
-		getInitialState,
-		getListeners,
-		getState,
-		resetState,
-		setState,
-		subscribe,
-	};
-
-	const resolvedApi = initializeStorePlugins({ plugins: storeOptions.plugins, storeApi });
-
-	const initialState = (currentState = storeStateInitializer(
-		resolvedApi.setState,
-		resolvedApi.getState,
-		resolvedApi
-	));
-
-	return resolvedApi;
+	return createStore;
 };
 
-export { createStore };
+export const createStore = createStoreWithContext();

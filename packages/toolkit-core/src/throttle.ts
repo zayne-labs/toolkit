@@ -1,9 +1,24 @@
-import type { CallbackFn } from "@zayne-labs/toolkit-type-helpers";
+import type { AnyFunction, UnmaskType } from "@zayne-labs/toolkit-type-helpers";
 
-export const throttleBySetTimeout = <TParams>(callbackFn: CallbackFn<TParams>, delay: number) => {
-	let timeoutId: number | null = null;
+type ThrottledByTimeoutFn<TCallbackFn extends AnyFunction> = UnmaskType<{
+	(...parameters: Parameters<TCallbackFn>): void;
+	cancelTimeout: () => void;
+}>;
 
-	const throttledCallback = (...params: TParams[]) => {
+type ThrottledByTimeFn<TCallbackFn extends AnyFunction> = (...parameters: Parameters<TCallbackFn>) => void;
+
+type ThrottledByFrameFn<TCallbackFn extends AnyFunction> = UnmaskType<{
+	(...parameters: Parameters<TCallbackFn>): void;
+	cancelAnimation: () => void;
+}>;
+
+export const throttleByTimeout = <TCallbackFn extends AnyFunction>(
+	callbackFn: TCallbackFn,
+	delay: number
+): ThrottledByTimeoutFn<TCallbackFn> => {
+	let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+	const throttledCallback: ThrottledByTimeoutFn<TCallbackFn> = (...params) => {
 		if (timeoutId !== null) return;
 
 		timeoutId = setTimeout(() => {
@@ -19,10 +34,13 @@ export const throttleBySetTimeout = <TParams>(callbackFn: CallbackFn<TParams>, d
 	return throttledCallback;
 };
 
-export const throttleByTime = <TParams>(callbackFn: CallbackFn<TParams>, delay: number) => {
+export const throttleByTime = <TCallbackFn extends AnyFunction>(
+	callbackFn: TCallbackFn,
+	delay: number
+): ThrottledByTimeFn<TCallbackFn> => {
 	let lastCallTime = 0;
 
-	const throttledCallback = (...params: TParams[]) => {
+	const throttledCallback: ThrottledByTimeFn<TCallbackFn> = (...params) => {
 		const elapsedTime = Date.now() - lastCallTime;
 
 		if (elapsedTime >= delay) {
@@ -34,10 +52,10 @@ export const throttleByTime = <TParams>(callbackFn: CallbackFn<TParams>, delay: 
 	return throttledCallback;
 };
 
-export const throttleByFrame = <TParams>(callbackFn: CallbackFn<TParams>) => {
-	let animationFrameId: number | null = null;
+export const throttleByFrame = <TCallbackFn extends AnyFunction>(callbackFn: TCallbackFn) => {
+	let animationFrameId: ReturnType<typeof requestAnimationFrame> | null = null;
 
-	const throttledCallback = (...params: TParams[]) => {
+	const throttledCallback: ThrottledByFrameFn<TCallbackFn> = (...params) => {
 		if (animationFrameId !== null) return;
 
 		animationFrameId = requestAnimationFrame(() => {

@@ -1,3 +1,9 @@
+import type {
+	AnyFunction,
+	DeepPrettify,
+	UnionToIntersection,
+	Writeable,
+} from "@zayne-labs/toolkit-type-helpers";
 import type { StoreApi, StorePlugin } from "./types";
 
 type InitializeStorePluginsContext<TState> = {
@@ -32,4 +38,18 @@ export const initializeStorePlugins = <TState>(
 	return resolvedStoreApi;
 };
 
-export const defineStorePlugin = (plugin: StorePlugin) => plugin;
+export type InferPluginExtraOptions<TPluginArray extends StorePlugin[]> = DeepPrettify<
+	UnionToIntersection<
+		TPluginArray extends Array<infer TPlugin> ?
+			TPlugin extends StorePlugin ?
+				TPlugin["setup"] extends AnyFunction<infer TResult> ?
+					TResult
+				:	never
+			:	never
+		:	never
+	>
+>;
+
+export const defineStorePlugin = <const TPlugin extends StorePlugin>(plugin: TPlugin) => {
+	return plugin as Writeable<TPlugin>;
+};

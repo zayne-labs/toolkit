@@ -1,8 +1,4 @@
-import { isArray, isObject, type CallbackFn } from "@zayne-labs/toolkit-type-helpers";
-
-type DebouncedFnParams<TParams> =
-	| [params: TParams | TParams[], overrideOptions: { $delay: number }]
-	| TParams[];
+import { isArray, isObject, type AnyFunction, type UnmaskType } from "@zayne-labs/toolkit-type-helpers";
 
 type DebounceOptions = {
 	/**
@@ -10,6 +6,13 @@ type DebounceOptions = {
 	 */
 	maxWait?: number;
 };
+
+type DebouncedFn<TCallbackFn extends AnyFunction> = UnmaskType<{
+	(...parameters: Parameters<TCallbackFn>): void;
+	(...parameters: [parameters: Parameters<TCallbackFn>, overrideOptions: { $delay: number }]): void;
+	cancel: () => void;
+	cancelMaxWait: () => void;
+}>;
 
 /**
  * Creates a debounced function that delays invoking `callbackFn` until after `delay` milliseconds have elapsed
@@ -21,60 +24,71 @@ type DebounceOptions = {
  * @returns the new debounced function.
  */
 
-const debounce = <TParams>(
-	callbackFn: CallbackFn<TParams>,
+const debounce = <TCallbackFn extends AnyFunction>(
+	callbackFn: TCallbackFn,
 	delay: number | undefined,
 	options: DebounceOptions = {}
-) => {
-	let timeoutId: number | null;
-	let maxWaitTimeoutId: number | null;
+): DebouncedFn<TCallbackFn> => {
+	const emptySymbol = Symbol("emptyParam");
 
-	const $clearMainTimeout = (): void => void (timeoutId && clearTimeout(timeoutId));
+	let timeoutId: ReturnType<typeof setTimeout> | typeof emptySymbol = emptySymbol;
+	let maxWaitTimeoutId: ReturnType<typeof setTimeout> | typeof emptySymbol = emptySymbol;
+	let storedParameters: Parameters<TCallbackFn> | typeof emptySymbol = emptySymbol;
 
-	// Overloads
-	/**
-	 * @description - The debounced function
-	 * @param params - The parameters to pass to the callbackFn
-	 */
-	function debouncedFn(...params: TParams[]): void;
-	function debouncedFn(params: TParams | TParams[], overrideOptions: { $delay: number }): void;
+	const clearMainTimeout = () => {
+		if (timeoutId === emptySymbol) return;
 
-	// Implementation
-	function debouncedFn(...params: DebouncedFnParams<TParams>) {
-		const overrideOptions = isObject(params[1]) && "$delay" in params[1] ? params[1] : null;
+		clearTimeout(timeoutId);
+		timeoutId = emptySymbol;
+	};
 
-		const resolvedParams = overrideOptions ? params[0] : params;
+	const clearMaxWaitTimeout = () => {
+		if (maxWaitTimeoutId === emptySymbol) return;
 
-		$clearMainTimeout();
+		clearTimeout(maxWaitTimeoutId);
+		maxWaitTimeoutId = emptySymbol;
+	};
 
-		timeoutId = setTimeout(() => {
-			isArray(resolvedParams) ?
-				callbackFn(...(resolvedParams as TParams[]))
-			:	callbackFn(resolvedParams);
+	const clearAll = () => {
+		clearMainTimeout();
+		clearMaxWaitTimeout();
+		storedParameters = emptySymbol;
+	};
 
-			timeoutId = null;
-		}, overrideOptions?.$delay ?? delay) as never;
+	const invokeCallback = () => {
+		const parameters = storedParameters;
 
-		if (!options.maxWait) return;
+		clearAll();
 
-		// == Only register a new maxWaitTimeout if it's timeoutId is set to null, which implies the previous one has been executed
-		if (maxWaitTimeoutId !== null) return;
+		if (parameters === emptySymbol) return;
 
-		maxWaitTimeoutId = setTimeout(() => {
-			// == Cancel the main timeout before invoking callbackFn
-			$clearMainTimeout();
+		callbackFn(...parameters);
+	};
 
-			isArray(resolvedParams) ?
-				callbackFn(...(resolvedParams as TParams[]))
-			:	callbackFn(resolvedParams);
+	const debouncedFn: DebouncedFn<TCallbackFn> = (...parameters) => {
+		const hasOverrideOptions = parameters.length === 2 && isArray(parameters[0]);
 
-			maxWaitTimeoutId = null;
-		}, options.maxWait) as never;
-	}
+		const overrideOptions =
+			hasOverrideOptions && isObject(parameters[1]) && "$delay" in parameters[1] ? parameters[1] : null;
 
-	debouncedFn.cancel = $clearMainTimeout;
-	// prettier-ignore
-	debouncedFn.cancelMaxWait = (): void => void (maxWaitTimeoutId && clearTimeout(maxWaitTimeoutId));
+		const resolvedDelay = overrideOptions?.$delay ?? delay;
+
+		storedParameters = (overrideOptions ? parameters[0] : parameters) as Parameters<TCallbackFn>;
+
+		clearMainTimeout();
+
+		timeoutId = setTimeout(() => invokeCallback(), resolvedDelay);
+
+		if (options.maxWait === undefined) return;
+
+		if (maxWaitTimeoutId !== emptySymbol) return;
+
+		maxWaitTimeoutId = setTimeout(() => invokeCallback(), options.maxWait);
+	};
+
+	debouncedFn.cancel = clearAll;
+
+	debouncedFn.cancelMaxWait = clearMaxWaitTimeout;
 
 	return debouncedFn;
 };

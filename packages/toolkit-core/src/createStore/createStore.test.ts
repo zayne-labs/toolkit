@@ -1,6 +1,6 @@
 import { expect, test, vi } from "vitest";
-import { deepCompare } from "../compare";
-import { createStore } from "./createStore";
+import { shallowCompare } from "../compare";
+import { createStore, createStoreWithContext } from "./createStore";
 import { defineStorePlugin } from "./plugins";
 
 /**
@@ -8,7 +8,9 @@ import { defineStorePlugin } from "./plugins";
  */
 const flushMicrotasks = () => new Promise<void>((resolve) => queueMicrotask(() => resolve()));
 
-type TestState = { count: number; multiplier?: number; name?: string };
+type TestState = {
+	count: number;
+};
 
 /**
  * @description Creates a disposable spy on an object's method that automatically restores when disposed.
@@ -30,15 +32,15 @@ const spyOnDisposable = <TObject extends object, TKey extends keyof TObject>(
 /**
  * @description Common setup for store tests that creates a store and subscribes a mock listener.
  */
-function setupStore<T extends object>(initialState: () => T) {
-	const store = createStore(initialState);
+const setupStore = <TState>(...params: Parameters<typeof createStore<TState>>) => {
+	const store = createStore(...params);
 
 	const listener = vi.fn();
 
 	store.subscribe(listener);
 
 	return { listener, store };
-}
+};
 
 test("Basic Batching - batch multiple synchronous calls and result in single listener notification", async () => {
 	const { listener, store } = setupStore(() => ({ count: 0, name: "test" }));
@@ -117,6 +119,7 @@ test("Basic Batching - prevent multiple microtask schedules with guard clause", 
 
 test("Basic Batching - allow new batch after previous batch completes", async () => {
 	const { store } = setupStore(() => ({ count: 0 }));
+
 	using queueMicrotaskSpy = spyOnDisposable(globalThis, "queueMicrotask");
 
 	// Act - First batch
@@ -248,6 +251,7 @@ test("Update Merging - handle mixed object and function updates together", async
 
 test("Update Merging - preserve update order during merging", async () => {
 	const { store } = setupStore(() => ({ value: 0 }));
+
 	const updateOrder: number[] = [];
 
 	// Act - Track order of updates
@@ -557,12 +561,13 @@ test("Immediate Notifications - return updated state from getState immediately e
 
 test("Immediate Notifications - work with subscribe for batched updates", async () => {
 	const { store } = setupStore(() => ({ value: 0 }));
-	const listener1 = vi.fn();
-	const listener2 = vi.fn();
+
+	const listenerOne = vi.fn();
+	const listenerTwo = vi.fn();
 
 	// Subscribe multiple listeners
-	const unsubscribe1 = store.subscribe(listener1);
-	const unsubscribe2 = store.subscribe(listener2);
+	const unsubscribeOne = store.subscribe(listenerOne);
+	const unsubscribeTwo = store.subscribe(listenerTwo);
 
 	// Act - Batched updates
 	store.setState({ value: 1 });
@@ -572,24 +577,24 @@ test("Immediate Notifications - work with subscribe for batched updates", async 
 	await flushMicrotasks();
 
 	// Assert - both listeners called once with final state
-	expect(listener1).toHaveBeenCalledTimes(1);
-	expect(listener1).toHaveBeenCalledWith({ value: 3 }, { value: 0 });
-	expect(listener2).toHaveBeenCalledTimes(1);
-	expect(listener2).toHaveBeenCalledWith({ value: 3 }, { value: 0 });
+	expect(listenerOne).toHaveBeenCalledTimes(1);
+	expect(listenerOne).toHaveBeenCalledWith({ value: 3 }, { value: 0 });
+	expect(listenerTwo).toHaveBeenCalledTimes(1);
+	expect(listenerTwo).toHaveBeenCalledWith({ value: 3 }, { value: 0 });
 
 	// Act - Unsubscribe and batch again
-	unsubscribe1();
-	listener2.mockClear();
+	unsubscribeOne();
+	listenerTwo.mockClear();
 
 	store.setState({ value: 4 });
 	await flushMicrotasks();
 
 	// Assert - only listener2 called
-	expect(listener1).toHaveBeenCalledTimes(1); // Still 1 from before
-	expect(listener2).toHaveBeenCalledTimes(1);
-	expect(listener2).toHaveBeenCalledWith({ value: 4 }, { value: 3 });
+	expect(listenerOne).toHaveBeenCalledTimes(1); // Still 1 from before
+	expect(listenerTwo).toHaveBeenCalledTimes(1);
+	expect(listenerTwo).toHaveBeenCalledWith({ value: 4 }, { value: 3 });
 
-	unsubscribe2();
+	unsubscribeTwo();
 });
 
 test("Immediate Notifications - work with subscribe.withSelector for batched updates", async () => {
@@ -993,22 +998,22 @@ test("Subscription Edge Cases - handle unsubscribe called during pending batch",
 });
 
 test("Subscription Edge Cases - handle new subscription added during pending batch", async () => {
-	const { listener: listener1, store } = setupStore(() => ({ count: 0 }));
+	const { listener: listenerOne, store } = setupStore(() => ({ count: 0 }));
 
 	store.setState({ count: 1 });
 	store.setState({ count: 2 });
 
 	// Add new listener before batch flushes
-	const listener2 = vi.fn();
-	store.subscribe(listener2);
+	const listenerTwo = vi.fn();
+	store.subscribe(listenerTwo);
 
 	await flushMicrotasks();
 
 	// Assert - Both listeners should be called
-	expect(listener1).toHaveBeenCalledTimes(1);
-	expect(listener2).toHaveBeenCalledTimes(1);
-	expect(listener1).toHaveBeenCalledWith({ count: 2 }, { count: 0 });
-	expect(listener2).toHaveBeenCalledWith({ count: 2 }, { count: 0 });
+	expect(listenerOne).toHaveBeenCalledTimes(1);
+	expect(listenerTwo).toHaveBeenCalledTimes(1);
+	expect(listenerOne).toHaveBeenCalledWith({ count: 2 }, { count: 0 });
+	expect(listenerTwo).toHaveBeenCalledWith({ count: 2 }, { count: 0 });
 });
 
 test("Complex Async - handle nested async operations with shouldNotifySync", async () => {
@@ -1056,9 +1061,7 @@ test("Global Options - respect global shouldNotifySync option", async () => {
 });
 
 test("Global Options - allow overriding global shouldNotifySync per call", async () => {
-	const store = createStore(() => ({ count: 0 }), { shouldNotifySync: true });
-	const listener = vi.fn();
-	store.subscribe(listener);
+	const { listener, store } = setupStore(() => ({ count: 0 }), { shouldNotifySync: true });
 
 	// Act - Override to use batching
 	store.setState({ count: 1 }, { shouldNotifySync: false });
@@ -1076,34 +1079,37 @@ test("Global Options - allow overriding global shouldNotifySync per call", async
 
 test("Subscription Options - fireListenerImmediately should notify listener immediately on subscribe", () => {
 	const { store } = setupStore(() => ({ count: 0 }));
-	const listener = vi.fn();
 
-	store.subscribe(listener, { fireListenerImmediately: true });
+	const listenerOne = vi.fn();
+
+	store.subscribe(listenerOne, { fireListenerImmediately: true });
 
 	// Assert - listener called immediately with current state
-	expect(listener).toHaveBeenCalledTimes(1);
-	expect(listener).toHaveBeenCalledWith({ count: 0 }, { count: 0 });
+	expect(listenerOne).toHaveBeenCalledTimes(1);
+	expect(listenerOne).toHaveBeenCalledWith({ count: 0 }, { count: 0 });
 });
 
 test("Subscription Options - withSelector fireListenerImmediately should notify listener immediately", () => {
 	const { store } = setupStore(() => ({ count: 10 }));
-	const listener = vi.fn();
 
-	store.subscribe.withSelector((s) => s.count, listener, { fireListenerImmediately: true });
+	const listenerOne = vi.fn();
+
+	store.subscribe.withSelector((s) => s.count, listenerOne, { fireListenerImmediately: true });
 
 	// Assert - listener called immediately with selected slice
-	expect(listener).toHaveBeenCalledTimes(1);
-	expect(listener).toHaveBeenCalledWith(10, 10);
+	expect(listenerOne).toHaveBeenCalledTimes(1);
+	expect(listenerOne).toHaveBeenCalledWith(10, 10);
 });
 
 test("Subscription Options - withSelector should respect custom equalityFn", async () => {
 	const { store } = setupStore(() => ({ items: [1, 2, 3] }));
-	const listener = vi.fn();
+
+	const listenerOne = vi.fn();
 
 	store.subscribe.withSelector(
 		(s) => [...s.items], // Returns new reference every time
-		listener,
-		{ equalityFn: deepCompare }
+		listenerOne,
+		{ equalityFn: shallowCompare }
 	);
 
 	// Act - Update that doesn't change items content
@@ -1111,15 +1117,15 @@ test("Subscription Options - withSelector should respect custom equalityFn", asy
 	await flushMicrotasks();
 
 	// Assert - listener NOT called because contents are equal
-	expect(listener).not.toHaveBeenCalled();
+	expect(listenerOne).not.toHaveBeenCalled();
 
 	// Act - Update that changes items
 	store.setState({ items: [1, 2, 3, 4] });
 	await flushMicrotasks();
 
 	// Assert - listener called
-	expect(listener).toHaveBeenCalledTimes(1);
-	expect(listener).toHaveBeenCalledWith([1, 2, 3, 4], [1, 2, 3]);
+	expect(listenerOne).toHaveBeenCalledTimes(1);
+	expect(listenerOne).toHaveBeenCalledWith([1, 2, 3, 4], [1, 2, 3]);
 });
 
 test("Initializer Arguments - should receive set, get, and api in initializer", () => {
@@ -1138,9 +1144,10 @@ test("Initializer Arguments - should receive set, get, and api in initializer", 
 });
 
 test("Initializer Arguments - should be able to use set directly in initializer", () => {
-	const store = createStore((set) => {
+	const store = createStore<TestState>((set) => {
 		// Immediately set state
 		set({ count: 10 });
+
 		return { count: 0 };
 	});
 
@@ -1151,7 +1158,7 @@ test("Initializer Arguments - should be able to use set directly in initializer"
 test("Plugin Edge case - internal resetState should use wrapped setState", () => {
 	const wrappedSetState = vi.fn();
 
-	const store = createStore<{ count: number }>(() => ({ count: 0 }), {
+	const store = createStoreWithContext<TestState>()(() => ({ count: 0 }), {
 		plugins: [
 			{
 				id: "test-plugin",
@@ -1185,16 +1192,31 @@ test("Plugin - should preserve sub-properties like withSelector when subscribe i
 		name: "Subscribe Plugin",
 		setup: (api) => {
 			return {
-				subscribe: ((onStoreChange, options) => {
+				setMansion: (_option: { mad: "" }) => ({}),
+				subscribe: (onStoreChange, options) => {
 					return api.subscribe(onStoreChange, options);
-				}) as typeof api.subscribe,
+				},
+			};
+		},
+	});
+	const subscribePlugin2 = defineStorePlugin({
+		id: "subscribe-plugin",
+		name: "Subscribe Plugin",
+		setup: (api) => {
+			return {
+				setMansion: (_newOption?: { mad: "" }) => ({}),
+				subscribe: (onStoreChange, options) => {
+					return api.subscribe(onStoreChange, options);
+				},
 			};
 		},
 	});
 
-	const store = createStore<TestState>(() => ({ count: 0 }), {
-		plugins: [subscribePlugin],
+	const store = createStoreWithContext<TestState>()(() => ({ count: 0 }), {
+		plugins: [subscribePlugin, subscribePlugin2],
 	});
+
+	store.setMansion();
 
 	expect(store.subscribe.withSelector).toBeDefined();
 	expect(typeof store.subscribe.withSelector).toBe("function");

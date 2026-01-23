@@ -10,7 +10,8 @@ export type WriteableLevel = "deep" | "shallow";
  */
 
 export type Writeable<TObject, TLevel extends WriteableLevel = "shallow"> =
-	TObject extends ArrayOrObject ?
+	TObject extends (...args: infer TArgs) => infer TReturn ? (...args: TArgs) => Writeable<TReturn, TLevel>
+	: TObject extends ArrayOrObject ?
 		{
 			-readonly [Key in keyof TObject]: TLevel extends "deep" ?
 				NonNullable<TObject[Key]> extends ArrayOrObject ?
