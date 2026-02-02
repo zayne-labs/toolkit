@@ -1,7 +1,7 @@
 import type { ExtractUnion, InferredUnionVariant, Writeable, WriteableLevel } from "./type-utils";
 
 type DefineEnumOptions = {
-	inferredUnionVariant?: InferredUnionVariant;
+	inferredUnionVariant?: "none" | InferredUnionVariant;
 	writeableLevel?: WriteableLevel;
 };
 
@@ -17,19 +17,21 @@ type Enum<TValue extends object, TInferredUnionVariant extends InferredUnionVari
 export const defineEnum = <
 	const TValue extends object,
 	TOptions extends DefineEnumOptions = DefineEnumOptions,
-	TComputedWriteableLevel extends WriteableLevel = [TOptions["writeableLevel"]] extends [WriteableLevel] ?
+	TComputedWriteableLevel extends NonNullable<DefineEnumOptions["writeableLevel"]> = undefined extends (
 		TOptions["writeableLevel"]
-	:	DefaultDefineEnumOptions["writeableLevel"],
-	TComputedInferredUnionVariant extends InferredUnionVariant = [
-		TOptions["inferredUnionVariant"],
-	] extends [InferredUnionVariant] ?
-		TOptions["inferredUnionVariant"]
-	:	DefaultDefineEnumOptions["inferredUnionVariant"],
+	) ?
+		DefaultDefineEnumOptions["writeableLevel"]
+	:	NonNullable<TOptions["writeableLevel"]>,
+	TComputedInferredUnionVariant extends NonNullable<DefineEnumOptions["inferredUnionVariant"]> =
+		undefined extends TOptions["inferredUnionVariant"] ? DefaultDefineEnumOptions["inferredUnionVariant"]
+		:	NonNullable<TOptions["inferredUnionVariant"]>,
 >(
 	value: TValue,
 	_options?: TOptions
 ) => {
-	return value as Enum<Writeable<TValue, TComputedWriteableLevel>, TComputedInferredUnionVariant>;
+	return value as TComputedInferredUnionVariant extends InferredUnionVariant ?
+		Enum<Writeable<TValue, TComputedWriteableLevel>, TComputedInferredUnionVariant>
+	:	Writeable<TValue, TComputedWriteableLevel>;
 };
 
 type DefineEnumDeepOptions = Pick<DefineEnumOptions, "inferredUnionVariant">;
