@@ -1,7 +1,7 @@
 {
 	"name": "@zayne-labs/toolkit-core",
 	"type": "module",
-	"version": "0.12.30",
+	"version": "0.12.31",
 	"description": "A collection of utility functions, types and composables used by my other projects. Nothing too fancy but can be useful.",
 	"author": "Ryan Zayne",
 	"license": "MIT",
@@ -54,17 +54,17 @@
 		"@size-limit/esbuild-why": "^12.0.0",
 		"@size-limit/preset-small-lib": "^12.0.0",
 		"@total-typescript/ts-reset": "^0.6.1",
-		"@types/node": "^25.0.9",
-		"@zayne-labs/tsconfig": "0.11.21",
+		"@types/node": "^25.2.0",
+		"@zayne-labs/tsconfig": "0.11.23",
 		"clsx": "^2.1.1",
 		"concurrently": "^9.2.1",
 		"cross-env": "^10.1.0",
-		"happy-dom": "^20.3.4",
-		"publint": "^0.3.16",
+		"happy-dom": "^20.4.0",
+		"publint": "^0.3.17",
 		"size-limit": "^12.0.0",
-		"tsdown": "0.20.0-beta.4",
+		"tsdown": "0.20.1",
 		"typescript": "5.9.3",
-		"vitest": "^4.0.17"
+		"vitest": "^4.0.18"
 	},
 	"publishConfig": {
 		"access": "public",
