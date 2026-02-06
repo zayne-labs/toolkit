@@ -1,5 +1,6 @@
 export * from "./checkIsDeviceMobile";
 export * from "./common-utils";
+export * from "./compare";
 export * from "./constants";
 export * from "./copyToClipboard";
 export * from "./createBatchManager";
@@ -18,7 +19,6 @@ export * from "./parseJSON";
 export * from "./pickKeys";
 export * from "./promise";
 export * from "./setAnimationInterval";
-export * from "./compare";
 export * from "./syncStateWithStorage";
 export * from "./throttle";
 export * from "./wait";

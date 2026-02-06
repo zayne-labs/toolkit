@@ -15,6 +15,11 @@ export type BatchManagerActions<TState> = {
 	start: () => void;
 };
 
+type BatchManager<TState> = {
+	actions: BatchManagerActions<TState>;
+	state: BatchManagerState<TState>;
+};
+
 export type ScheduleBatchOptions<TState> = {
 	context: {
 		previousState: TState;
@@ -51,76 +56,80 @@ export type ScheduleBatchOptions<TState> = {
 
 const defaultInitialStateSymbol = Symbol("initialStateSnapshot");
 
-export const createBatchManager = <TState>(options: { initialState: TState | (() => TState) }) => {
+export const createBatchManager = <TState>(options: {
+	initialState: TState | (() => TState);
+}): BatchManager<TState> => {
 	const { initialState } = options;
 
 	const getInitialState = () => (isFunction(initialState) ? initialState() : initialState);
 
-	const batchManager = {
-		state: {
-			isCancelled: false,
-			previousStateSnapshot: defaultInitialStateSymbol as never,
-			status: "idle",
-		} satisfies BatchManagerState<TState> as BatchManagerState<TState>,
+	const state = {
+		isCancelled: false,
+		previousStateSnapshot: defaultInitialStateSymbol as never,
+		status: "idle",
+	} satisfies BatchManagerState<TState> as BatchManagerState<TState>;
 
-		// eslint-disable-next-line perfectionist/sort-objects -- I want state to come first
-		actions: {
-			cancel: () => {
-				batchManager.state.isCancelled = true;
-			},
+	const cancel: BatchManagerActions<TState>["cancel"] = () => {
+		state.isCancelled = true;
+	};
 
-			end: () => {
-				batchManager.state.status = "idle";
-			},
+	const end: BatchManagerActions<TState>["end"] = () => {
+		state.status = "idle";
+	};
 
-			resetCancel: () => {
-				batchManager.state.isCancelled = false;
-			},
+	const resetCancel: BatchManagerActions<TState>["resetCancel"] = () => {
+		state.isCancelled = false;
+	};
 
-			schedule: (scheduleOptions) => {
-				const { context, onNotifySync, onNotifyViaBatch } = scheduleOptions;
+	const setPreviousStateSnapshot: BatchManagerActions<TState>["setPreviousStateSnapshot"] = (
+		prevState
+	) => {
+		state.previousStateSnapshot = prevState;
+	};
 
-				const { previousState, shouldNotifySync } = context;
+	const schedule: BatchManagerActions<TState>["schedule"] = (scheduleOptions) => {
+		const { context, onNotifySync, onNotifyViaBatch } = scheduleOptions;
 
-				if (shouldNotifySync) {
-					batchManager.state.status === "active" && batchManager.actions.cancel();
+		const { previousState, shouldNotifySync } = context;
 
-					onNotifySync(previousState);
+		if (shouldNotifySync) {
+			state.status === "active" && cancel();
 
-					return;
-				}
+			onNotifySync(previousState);
 
-				if (batchManager.state.status === "active") return;
+			return;
+		}
 
-				batchManager.actions.start();
+		if (state.status === "active") return;
 
-				batchManager.actions.setPreviousStateSnapshot(previousState);
+		start();
 
-				queueMicrotask(() => {
-					batchManager.actions.end();
+		setPreviousStateSnapshot(previousState);
 
-					if (batchManager.state.isCancelled) {
-						batchManager.actions.resetCancel();
-						return;
-					}
+		queueMicrotask(() => {
+			end();
 
-					const previousStateSnapshot =
-						batchManager.state.previousStateSnapshot === defaultInitialStateSymbol ?
-							getInitialState()
-						:	batchManager.state.previousStateSnapshot;
+			if (state.isCancelled) {
+				resetCancel();
+				return;
+			}
 
-					onNotifyViaBatch(previousStateSnapshot);
-				});
-			},
+			const previousStateSnapshot =
+				state.previousStateSnapshot === defaultInitialStateSymbol ?
+					getInitialState()
+				:	state.previousStateSnapshot;
 
-			setPreviousStateSnapshot: (prevState) => {
-				batchManager.state.previousStateSnapshot = prevState;
-			},
+			onNotifyViaBatch(previousStateSnapshot);
+		});
+	};
 
-			start: () => {
-				batchManager.state.status = "active";
-			},
-		} satisfies BatchManagerActions<TState> as BatchManagerActions<TState>,
+	const start: BatchManagerActions<TState>["start"] = () => {
+		state.status = "active";
+	};
+
+	const batchManager: BatchManager<TState> = {
+		actions: { cancel, end, resetCancel, schedule, setPreviousStateSnapshot, start },
+		state,
 	};
 
 	return batchManager;
