@@ -24,24 +24,26 @@ const createScrollLock = (): ScrollLockAPI => {
 		originalPaddingRight: null,
 	};
 
+	const elementToLock = document.documentElement;
+
 	const isLocked = () => state.isLocked;
 
 	const lock = () => {
 		if (!isBrowser() || state.isLocked || !hasVerticalScrollBar()) return;
 
 		// == Store original styles
-		const computedStyle = globalThis.getComputedStyle(document.body);
+		const computedStyle = globalThis.getComputedStyle(elementToLock);
 
-		state.originalOverflow = document.body.style.overflow || null;
-		state.originalPaddingRight = document.body.style.paddingRight || null;
+		state.originalOverflow = elementToLock.style.overflow || null;
+		state.originalPaddingRight = elementToLock.style.paddingRight || null;
 
 		const scrollbarWidth = getScrollbarWidth();
-		const existingPaddingRight = Number(computedStyle.paddingRight || 0);
+		const existingPaddingRight = Number.parseFloat(computedStyle.paddingRight) || 0;
 		const updatedPaddingRight = existingPaddingRight + scrollbarWidth;
 
-		// == Apply scroll lock
-		document.body.style.overflow = "hidden";
-		document.body.style.paddingRight = `${updatedPaddingRight}px`;
+		elementToLock.style.overflow = "hidden";
+		elementToLock.style.paddingRight = `${updatedPaddingRight}px`;
+		elementToLock.style.setProperty("--scrollbar-width", `${scrollbarWidth}px`);
 
 		state.isLocked = true;
 	};
@@ -51,12 +53,14 @@ const createScrollLock = (): ScrollLockAPI => {
 
 		// == Restore original styles
 		state.originalOverflow === null ?
-			document.body.style.removeProperty("overflow")
-		:	(document.body.style.overflow = state.originalOverflow);
+			elementToLock.style.removeProperty("overflow")
+		:	(elementToLock.style.overflow = state.originalOverflow);
 
 		state.originalPaddingRight === null ?
-			document.body.style.removeProperty("padding-right")
-		:	(document.body.style.paddingRight = state.originalPaddingRight);
+			elementToLock.style.removeProperty("padding-right")
+		:	(elementToLock.style.paddingRight = state.originalPaddingRight);
+
+		elementToLock.style.removeProperty("--scrollbar-width");
 
 		// == Reset State
 		state.isLocked = false;
@@ -67,10 +71,10 @@ const createScrollLock = (): ScrollLockAPI => {
 	return { isLocked, lock, unlock };
 };
 
+const scrollLockApi = createScrollLock();
+
 export const lockScroll = (options: LockScrollOptions) => {
 	const { lock } = options;
-
-	const scrollLockApi = createScrollLock();
 
 	lock ? scrollLockApi.lock() : scrollLockApi.unlock();
 };
