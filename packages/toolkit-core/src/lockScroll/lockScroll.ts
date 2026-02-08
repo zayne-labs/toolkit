@@ -24,12 +24,12 @@ const createScrollLock = (): ScrollLockAPI => {
 		originalPaddingRight: null,
 	};
 
-	const elementToLock = document.documentElement;
-
 	const isLocked = () => state.isLocked;
 
 	const lock = () => {
 		if (!isBrowser() || state.isLocked || !hasVerticalScrollBar()) return;
+
+		const elementToLock = document.documentElement;
 
 		// == Store original styles
 		const computedStyle = globalThis.getComputedStyle(elementToLock);
@@ -50,6 +50,8 @@ const createScrollLock = (): ScrollLockAPI => {
 
 	const unlock = () => {
 		if (!isBrowser() || !state.isLocked) return;
+
+		const elementToLock = document.documentElement;
 
 		// == Restore original styles
 		state.originalOverflow === null ?
