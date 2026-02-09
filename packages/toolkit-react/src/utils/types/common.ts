@@ -10,7 +10,7 @@ export type InferProps<TElement extends ValidElementType> =
 	TElement extends React.ElementType ? React.ComponentProps<TElement> : React.HTMLAttributes<TElement>;
 
 type RemoveStringSignature<TObject extends object> = {
-	[Key in keyof TObject as string extends Key ? never : Key]: TObject[Key];
+	[Key in keyof TObject]: string extends Key ? never : TObject[Key];
 };
 
 export type InferPropsStrict<TElement extends ValidElementType> = RemoveStringSignature<
