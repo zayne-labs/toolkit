@@ -17,13 +17,13 @@
 		"react-dom": "19.2.4"
 	},
 	"devDependencies": {
-		"@types/node": "^25.2.0",
-		"@types/react": "19.2.10",
+		"@types/node": "^25.2.3",
+		"@types/react": "19.2.14",
 		"@types/react-dom": "19.2.3",
-		"@vitejs/plugin-react": "^5.1.3",
-		"@zayne-labs/tsconfig": "0.11.23",
+		"@vitejs/plugin-react": "^5.1.4",
+		"@zayne-labs/tsconfig": "0.11.27",
 		"tsx": "^4.21.0",
 		"typescript": "5.9.3",
-		"vite": "8.0.0-beta.11"
+		"vite": "8.0.0-beta.13"
 	}
 }

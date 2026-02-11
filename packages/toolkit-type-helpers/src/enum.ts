@@ -1,4 +1,10 @@
-import type { ExtractUnion, InferredUnionVariant, Writeable, WriteableLevel } from "./type-utils";
+import type {
+	ExtractUnion,
+	InferredUnionVariant,
+	UnmaskType,
+	Writeable,
+	WriteableLevel,
+} from "./type-utils";
 
 type DefineEnumOptions = {
 	inferredUnionVariant?: "none" | InferredUnionVariant;
@@ -6,13 +12,15 @@ type DefineEnumOptions = {
 };
 
 type DefaultDefineEnumOptions = {
-	inferredUnionVariant: "keys";
+	inferredUnionVariant: "none";
 	writeableLevel: "shallow";
 };
 
-type Enum<TValue extends object, TInferredUnionVariant extends InferredUnionVariant> = TValue & {
-	$inferUnion: ExtractUnion<TValue, TInferredUnionVariant>;
-};
+type Enum<TValue extends object, TInferredUnionVariant extends InferredUnionVariant> = UnmaskType<
+	TValue & {
+		$inferUnion: ExtractUnion<TValue, TInferredUnionVariant>;
+	}
+>;
 
 export const defineEnum = <
 	const TValue extends object,
