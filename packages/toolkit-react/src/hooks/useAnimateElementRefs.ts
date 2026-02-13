@@ -21,7 +21,7 @@ const useAnimateElementRefs = <TTargetElement extends string>(
 ) => {
 	const elementsRef = useRef<Record<TTargetElement, HTMLElement | null>>({} as never);
 
-	const setNode = (targetElement: TTargetElement, node: HTMLElement) => {
+	const setAnimatedNode = (targetElement: TTargetElement) => (node: HTMLElement | null) => {
 		elementsRef.current[targetElement] = node;
 	};
 
@@ -74,7 +74,7 @@ const useAnimateElementRefs = <TTargetElement extends string>(
 		removeAnimationClasses();
 	}, [addAnimationClasses, removeAnimationClasses]);
 
-	return { animatedElementsRef: elementsRef, handleElementsAnimation, setNode };
+	return { animatedElementsRef: elementsRef, handleElementsAnimation, setAnimatedNode };
 };
 
 export { useAnimateElementRefs };
