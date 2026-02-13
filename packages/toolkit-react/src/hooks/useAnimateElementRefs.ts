@@ -21,6 +21,10 @@ const useAnimateElementRefs = <TTargetElement extends string>(
 ) => {
 	const elementsRef = useRef<Record<TTargetElement, HTMLElement | null>>({} as never);
 
+	const setNode = (targetElement: TTargetElement, node: HTMLElement) => {
+		elementsRef.current[targetElement] = node;
+	};
+
 	const addAnimationClasses = useCallbackRef(() => {
 		if (!isArray(elementsInfoArray)) {
 			console.error("elementsInfo is not an Array");
@@ -70,8 +74,7 @@ const useAnimateElementRefs = <TTargetElement extends string>(
 		removeAnimationClasses();
 	}, [addAnimationClasses, removeAnimationClasses]);
 
-	// eslint-disable-next-line react-hooks/refs -- Allow this for convenience
-	return { animatedElements: elementsRef.current, handleElementsAnimation };
+	return { animatedElementsRef: elementsRef, handleElementsAnimation, setNode };
 };
 
 export { useAnimateElementRefs };
