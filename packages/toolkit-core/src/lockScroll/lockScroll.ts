@@ -1,41 +1,20 @@
-import { isBrowser } from "../constants";
+import { isBrowser } from "@zayne-labs/toolkit-core";
 import { getScrollbarWidth, hasVerticalScrollBar } from "./utils";
 
 type LockScrollOptions = {
 	lock: boolean;
+	targetElement?: () => HTMLElement;
 };
 
-type ScrollLockAPI = {
-	isLocked: () => boolean;
-	lock: () => void;
-	unlock: () => void;
-};
+export const lockScroll = (options: LockScrollOptions) => {
+	const { lock, targetElement } = options;
 
-type ScrollLockState = {
-	isLocked: boolean;
-	originalOverflow: string | null;
-	originalPaddingRight: string | null;
-};
+	if (!isBrowser() || !hasVerticalScrollBar()) return;
 
-const createScrollLock = (): ScrollLockAPI => {
-	const state: ScrollLockState = {
-		isLocked: false,
-		originalOverflow: null,
-		originalPaddingRight: null,
-	};
+	const elementToLock = targetElement?.() ?? document.body;
 
-	const isLocked = () => state.isLocked;
-
-	const lock = () => {
-		if (!isBrowser() || state.isLocked || !hasVerticalScrollBar()) return;
-
-		const elementToLock = document.documentElement;
-
-		// == Store original styles
+	const lockFn = () => {
 		const computedStyle = globalThis.getComputedStyle(elementToLock);
-
-		state.originalOverflow = elementToLock.style.overflow || null;
-		state.originalPaddingRight = elementToLock.style.paddingRight || null;
 
 		const scrollbarWidth = getScrollbarWidth();
 		const existingPaddingRight = Number.parseFloat(computedStyle.paddingRight) || 0;
@@ -44,39 +23,13 @@ const createScrollLock = (): ScrollLockAPI => {
 		elementToLock.style.overflow = "hidden";
 		elementToLock.style.paddingRight = `${updatedPaddingRight}px`;
 		elementToLock.style.setProperty("--scrollbar-width", `${scrollbarWidth}px`);
-
-		state.isLocked = true;
 	};
 
-	const unlock = () => {
-		if (!isBrowser() || !state.isLocked) return;
-
-		const elementToLock = document.documentElement;
-
-		// == Restore original styles
-		state.originalOverflow === null ?
-			elementToLock.style.removeProperty("overflow")
-		:	(elementToLock.style.overflow = state.originalOverflow);
-
-		state.originalPaddingRight === null ?
-			elementToLock.style.removeProperty("padding-right")
-		:	(elementToLock.style.paddingRight = state.originalPaddingRight);
-
+	const unlockFn = () => {
+		elementToLock.style.removeProperty("overflow");
+		elementToLock.style.removeProperty("padding-right");
 		elementToLock.style.removeProperty("--scrollbar-width");
-
-		// == Reset State
-		state.isLocked = false;
-		state.originalOverflow = null;
-		state.originalPaddingRight = null;
 	};
 
-	return { isLocked, lock, unlock };
-};
-
-const scrollLockApi = createScrollLock();
-
-export const lockScroll = (options: LockScrollOptions) => {
-	const { lock } = options;
-
-	lock ? scrollLockApi.lock() : scrollLockApi.unlock();
+	lock ? lockFn() : unlockFn();
 };
