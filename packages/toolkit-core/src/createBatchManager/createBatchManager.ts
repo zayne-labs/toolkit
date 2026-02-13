@@ -1,5 +1,3 @@
-import { isFunction } from "@zayne-labs/toolkit-type-helpers";
-
 export type BatchManagerState<TState> = {
 	isCancelled: boolean;
 	previousStateSnapshot: TState;
@@ -57,11 +55,9 @@ export type ScheduleBatchOptions<TState> = {
 const defaultInitialStateSymbol = Symbol("initialStateSnapshot");
 
 export const createBatchManager = <TState>(options: {
-	initialState: TState | (() => TState);
+	initialState: () => TState;
 }): BatchManager<TState> => {
 	const { initialState } = options;
-
-	const getInitialState = () => (isFunction(initialState) ? initialState() : initialState);
 
 	const state = {
 		isCancelled: false,
@@ -116,7 +112,7 @@ export const createBatchManager = <TState>(options: {
 
 			const previousStateSnapshot =
 				state.previousStateSnapshot === defaultInitialStateSymbol ?
-					getInitialState()
+					initialState()
 				:	state.previousStateSnapshot;
 
 			onNotifyViaBatch(previousStateSnapshot);
