@@ -21,9 +21,11 @@ const useAnimateElementRefs = <TTargetElement extends string>(
 ) => {
 	const elementsRef = useRef<Record<TTargetElement, HTMLElement | null>>({} as never);
 
-	const setAnimatedNode = (targetElement: TTargetElement) => (node: HTMLElement | null) => {
-		elementsRef.current[targetElement] = node;
-	};
+	const setAnimatedNode =
+		(targetElement: TTargetElement): React.RefCallback<HTMLElement> =>
+		(node) => {
+			elementsRef.current[targetElement] = node;
+		};
 
 	const addAnimationClasses = useCallbackRef(() => {
 		if (!isArray(elementsInfoArray)) {

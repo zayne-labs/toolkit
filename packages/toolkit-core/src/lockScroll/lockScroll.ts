@@ -1,4 +1,4 @@
-import { isBrowser } from "@zayne-labs/toolkit-core";
+import { isBrowser } from "../constants";
 import { getScrollbarWidth, hasVerticalScrollBar } from "./utils";
 
 type LockScrollOptions = {
