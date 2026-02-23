@@ -1,9 +1,14 @@
-import { isFunction, isObject, isString } from "@zayne-labs/toolkit-type-helpers";
+import {
+	isFunction,
+	isObject,
+	isString,
+	type UnknownObjectWithAnyKey,
+} from "@zayne-labs/toolkit-type-helpers";
 import { cnMerge } from "@/lib/utils/cn";
 import { composeTwoEventHandlers } from "../composeEventHandlers";
 import { isEventHandler } from "./utils";
 
-export const mergeTwoProps = <TProps extends Record<never, never>>(
+export const mergeTwoProps = <TProps extends UnknownObjectWithAnyKey>(
 	formerProps: TProps | undefined,
 	latterProps: TProps | undefined
 ): TProps => {
@@ -16,7 +21,8 @@ export const mergeTwoProps = <TProps extends Record<never, never>>(
 		...formerProps,
 	};
 
-	for (const [latterPropName, latterPropValue] of Object.entries(latterProps)) {
+	for (const latterPropName of Object.keys(latterProps)) {
+		const latterPropValue = latterProps[latterPropName];
 		const accumulatedPropValue = propsAccumulator[latterPropName];
 
 		if (

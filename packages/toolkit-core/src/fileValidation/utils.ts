@@ -85,9 +85,9 @@ export const toBytes = (size: Required<FileValidationSettings>["maxFileSize"] | 
 		return size;
 	}
 
-	const sizeEntries = Object.entries(size) as Array<[keyof typeof size, number]>;
+	const unit = Object.keys(size)[0] as keyof typeof size;
 
-	const [unit, value] = sizeEntries[0] ?? [];
+	const value = size[unit];
 
 	if (!isString(unit) || !isNumber(value)) return;
 

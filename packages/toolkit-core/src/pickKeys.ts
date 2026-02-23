@@ -1,8 +1,15 @@
-import type { UnknownObject } from "@zayne-labs/toolkit-type-helpers";
+import type {
+	ExtractUnion,
+	Prettify,
+	UnknownObject,
+	UnknownObjectWithAnyValue,
+} from "@zayne-labs/toolkit-type-helpers";
 
-type PickKeys<TKeys extends keyof TObject, TObject extends UnknownObject> = Pick<TObject, TKeys>;
-
-export const pickKeys = <TObject extends UnknownObject, const TPickArray extends Array<keyof TObject>>(
+export const pickKeys = <
+	TObject extends UnknownObjectWithAnyValue,
+	const TPickArray extends Array<keyof TObject>,
+	TPickedKeys extends ExtractUnion<TPickArray> = ExtractUnion<TPickArray>,
+>(
 	initialObject: TObject,
 	keysToPick: TPickArray
 ) => {
@@ -10,41 +17,40 @@ export const pickKeys = <TObject extends UnknownObject, const TPickArray extends
 
 	const keysToPickSet = new Set(keysToPick);
 
-	for (const [key, value] of Object.entries(initialObject)) {
+	for (const key of Object.keys(initialObject)) {
 		if (keysToPickSet.has(key)) {
-			updatedObject[key] = value;
+			updatedObject[key] = initialObject[key];
 		}
 	}
 
-	return updatedObject as PickKeys<TPickArray[number], TObject>;
+	return updatedObject as Prettify<Pick<TObject, TPickedKeys>>;
 };
 
 export const pickKeysWithReduce = <
-	TObject extends UnknownObject,
+	TObject extends UnknownObjectWithAnyValue,
 	const TPickArray extends Array<keyof TObject>,
+	TPickedKeys extends ExtractUnion<TPickArray> = ExtractUnion<TPickArray>,
 >(
 	initialObject: TObject,
 	keysToPick: TPickArray
 ) => {
 	const keysToPickSet = new Set(keysToPick);
 
-	const updatedObject = Object.entries(initialObject).reduce<UnknownObject>(
-		(accumulator, [key, value]) => {
-			if (keysToPickSet.has(key)) {
-				accumulator[key] = value;
-			}
+	const updatedObject = Object.keys(initialObject).reduce<UnknownObject>((accumulator, key) => {
+		if (keysToPickSet.has(key)) {
+			accumulator[key] = initialObject[key];
+		}
 
-			return accumulator;
-		},
-		{}
-	);
+		return accumulator;
+	}, {});
 
-	return updatedObject as PickKeys<TPickArray[number], TObject>;
+	return updatedObject as Prettify<Pick<TObject, TPickedKeys>>;
 };
 
 export const pickKeysWithFilter = <
-	TObject extends UnknownObject,
+	TObject extends UnknownObjectWithAnyValue,
 	const TPickArray extends Array<keyof TObject>,
+	TPickedKeys extends ExtractUnion<TPickArray> = ExtractUnion<TPickArray>,
 >(
 	initialObject: TObject,
 	keysToPick: TPickArray
@@ -55,5 +61,5 @@ export const pickKeysWithFilter = <
 
 	const updatedObject = Object.fromEntries(arrayFromFilteredObject);
 
-	return updatedObject as PickKeys<TPickArray[number], TObject>;
+	return updatedObject as Prettify<Pick<TObject, TPickedKeys>>;
 };

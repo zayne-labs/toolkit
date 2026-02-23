@@ -1,8 +1,10 @@
-import type { UnknownObject } from "@zayne-labs/toolkit-type-helpers";
+import type { ExtractUnion, Prettify, UnknownObject } from "@zayne-labs/toolkit-type-helpers";
 
-type OmitKeys<TKeys extends keyof TObject, TObject extends UnknownObject> = Omit<TObject, TKeys>;
-
-export const omitKeys = <TObject extends UnknownObject, const TOmitArray extends Array<keyof TObject>>(
+export const omitKeys = <
+	TObject extends UnknownObject,
+	const TOmitArray extends Array<keyof TObject>,
+	TOmittedKeys extends ExtractUnion<TOmitArray> = ExtractUnion<TOmitArray>,
+>(
 	initialObject: TObject,
 	keysToOmit: TOmitArray
 ) => {
@@ -10,41 +12,40 @@ export const omitKeys = <TObject extends UnknownObject, const TOmitArray extends
 
 	const keysToOmitSet = new Set(keysToOmit);
 
-	for (const [key, value] of Object.entries(initialObject)) {
+	for (const key of Object.keys(initialObject)) {
 		if (!keysToOmitSet.has(key)) {
-			updatedObject[key] = value;
+			updatedObject[key] = initialObject[key];
 		}
 	}
 
-	return updatedObject as OmitKeys<TOmitArray[number], TObject>;
+	return updatedObject as Prettify<Omit<TObject, TOmittedKeys>>;
 };
 
 export const omitKeysWithReduce = <
 	TObject extends UnknownObject,
 	const TOmitArray extends Array<keyof TObject>,
+	TOmittedKeys extends ExtractUnion<TOmitArray> = ExtractUnion<TOmitArray>,
 >(
 	initialObject: TObject,
 	keysToOmit: TOmitArray
 ) => {
 	const keysToOmitSet = new Set(keysToOmit);
 
-	const updatedObject = Object.entries(initialObject).reduce<UnknownObject>(
-		(accumulator, [key, value]) => {
-			if (!keysToOmitSet.has(key)) {
-				accumulator[key] = value;
-			}
+	const updatedObject = Object.keys(initialObject).reduce<UnknownObject>((accumulator, key) => {
+		if (!keysToOmitSet.has(key)) {
+			accumulator[key] = initialObject[key];
+		}
 
-			return accumulator;
-		},
-		{}
-	);
+		return accumulator;
+	}, {});
 
-	return updatedObject as OmitKeys<TOmitArray[number], TObject>;
+	return updatedObject as Prettify<Omit<TObject, TOmittedKeys>>;
 };
 
 export const omitKeysWithFilter = <
 	TObject extends UnknownObject,
 	const TOmitArray extends Array<keyof TObject>,
+	TOmittedKeys extends ExtractUnion<TOmitArray> = ExtractUnion<TOmitArray>,
 >(
 	initialObject: TObject,
 	keysToOmit: TOmitArray
@@ -57,12 +58,13 @@ export const omitKeysWithFilter = <
 
 	const updatedObject = Object.fromEntries(arrayFromFilteredObject);
 
-	return updatedObject as OmitKeys<TOmitArray[number], TObject>;
+	return updatedObject as Prettify<Omit<TObject, TOmittedKeys>>;
 };
 
 export const omitKeysWithDelete = <
 	TObject extends UnknownObject,
 	const TOmitArray extends Array<keyof TObject>,
+	TOmittedKeys extends ExtractUnion<TOmitArray> = ExtractUnion<TOmitArray>,
 >(
 	initialObject: TObject,
 	keysToOmit: TOmitArray
@@ -77,5 +79,5 @@ export const omitKeysWithDelete = <
 		}
 	}
 
-	return updatedObject as OmitKeys<TOmitArray[number], TObject>;
+	return updatedObject as Prettify<Omit<TObject, TOmittedKeys>>;
 };

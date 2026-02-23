@@ -42,15 +42,16 @@ export type NonEmptyArray<TArrayItem> = [TArrayItem, ...TArrayItem[]];
 
 export type UnknownObject = UnmaskType<Record<string, unknown>>;
 
-export type EmptyObject = NonNullable<unknown>;
-
-/* eslint-disable ts-eslint/no-explicit-any -- Any is needed so one can pass any prop type without type errors */
+/* eslint-disable ts-eslint/no-explicit-any -- Any is needed */
 export type UnknownObjectWithAnyKey = UnmaskType<Record<keyof any, unknown>>;
+
+export type AnyObject = UnmaskType<Record<keyof any, any>>;
+
+export type EmptyObject = NonNullable<unknown>;
 
 export type Awaitable<TValue> = Promise<TValue> | TValue;
 
-export type AnyObject = UnmaskType<Record<keyof any, any>>;
-/* eslint-enable ts-eslint/no-explicit-any -- Any is needed so one can pass any prop type without type errors */
+/* eslint-enable ts-eslint/no-explicit-any -- Any is needed */
 
 /* eslint-disable ts-eslint/no-explicit-any -- `Any` is required here so that one can pass custom function type without type errors */
 export type AnyFunction<TResult = any> = UnmaskType<(...args: any[]) => TResult>;

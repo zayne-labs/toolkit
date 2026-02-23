@@ -15,14 +15,16 @@ export const createSearchParams = (paramsInit: URLSearchParamsInit = ""): URLSea
 
 	const keyValuePair: KeyValuePair[] = [];
 
-	for (const [key, value] of Object.entries(paramsInit)) {
+	for (const key of Object.keys(paramsInit)) {
+		const value = paramsInit[key];
+
 		if (isArray(value)) {
 			keyValuePair.push(...value.map((v) => defineEnum([key, v])));
 
 			continue;
 		}
 
-		keyValuePair.push(defineEnum([key, value]));
+		value && keyValuePair.push(defineEnum([key, value]));
 	}
 
 	return new URLSearchParams(keyValuePair);
