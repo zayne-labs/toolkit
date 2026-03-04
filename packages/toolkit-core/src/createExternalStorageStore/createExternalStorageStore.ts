@@ -125,9 +125,9 @@ const createExternalStorageStore = <TState>(
 	let cleanupExternalListeners: (() => void) | null = null;
 
 	const setupExternalListeners = () => {
-		const storageStoreCleanup = on("storage-store-change" as never, globalThis, handleStorageChange);
+		const storageStoreCleanup = on(globalThis, "storage-store-change" as never, handleStorageChange);
 
-		const storageCleanup = syncStateAcrossTabs ? on("storage", globalThis, handleStorageChange) : null;
+		const storageCleanup = syncStateAcrossTabs ? on(globalThis, "storage", handleStorageChange) : null;
 
 		cleanupExternalListeners = () => {
 			storageStoreCleanup();

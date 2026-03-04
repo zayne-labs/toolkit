@@ -1,12 +1,7 @@
-import type {
-	ExtractUnion,
-	Prettify,
-	UnknownObject,
-	UnknownObjectWithAnyValue,
-} from "@zayne-labs/toolkit-type-helpers";
+import type { AnyObject, ExtractUnion, Prettify, UnknownObject } from "@zayne-labs/toolkit-type-helpers";
 
 export const pickKeys = <
-	TObject extends UnknownObjectWithAnyValue,
+	TObject extends AnyObject,
 	const TPickArray extends Array<keyof TObject>,
 	TPickedKeys extends ExtractUnion<TPickArray> = ExtractUnion<TPickArray>,
 >(
@@ -27,7 +22,7 @@ export const pickKeys = <
 };
 
 export const pickKeysWithReduce = <
-	TObject extends UnknownObjectWithAnyValue,
+	TObject extends AnyObject,
 	const TPickArray extends Array<keyof TObject>,
 	TPickedKeys extends ExtractUnion<TPickArray> = ExtractUnion<TPickArray>,
 >(
@@ -48,7 +43,7 @@ export const pickKeysWithReduce = <
 };
 
 export const pickKeysWithFilter = <
-	TObject extends UnknownObjectWithAnyValue,
+	TObject extends AnyObject,
 	const TPickArray extends Array<keyof TObject>,
 	TPickedKeys extends ExtractUnion<TPickArray> = ExtractUnion<TPickArray>,
 >(

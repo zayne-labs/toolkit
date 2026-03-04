@@ -1,7 +1,7 @@
-import type { ExtractUnion, Prettify, UnknownObject } from "@zayne-labs/toolkit-type-helpers";
+import type { AnyObject, ExtractUnion, Prettify, UnknownObject } from "@zayne-labs/toolkit-type-helpers";
 
 export const omitKeys = <
-	TObject extends UnknownObject,
+	TObject extends AnyObject,
 	const TOmitArray extends Array<keyof TObject>,
 	TOmittedKeys extends ExtractUnion<TOmitArray> = ExtractUnion<TOmitArray>,
 >(
@@ -22,7 +22,7 @@ export const omitKeys = <
 };
 
 export const omitKeysWithReduce = <
-	TObject extends UnknownObject,
+	TObject extends AnyObject,
 	const TOmitArray extends Array<keyof TObject>,
 	TOmittedKeys extends ExtractUnion<TOmitArray> = ExtractUnion<TOmitArray>,
 >(
@@ -43,7 +43,7 @@ export const omitKeysWithReduce = <
 };
 
 export const omitKeysWithFilter = <
-	TObject extends UnknownObject,
+	TObject extends AnyObject,
 	const TOmitArray extends Array<keyof TObject>,
 	TOmittedKeys extends ExtractUnion<TOmitArray> = ExtractUnion<TOmitArray>,
 >(
@@ -62,7 +62,7 @@ export const omitKeysWithFilter = <
 };
 
 export const omitKeysWithDelete = <
-	TObject extends UnknownObject,
+	TObject extends AnyObject,
 	const TOmitArray extends Array<keyof TObject>,
 	TOmittedKeys extends ExtractUnion<TOmitArray> = ExtractUnion<TOmitArray>,
 >(

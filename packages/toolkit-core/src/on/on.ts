@@ -2,7 +2,7 @@ import { registerEvent } from "./registerEvent";
 import type { AddEventParams, ON } from "./types";
 
 export const on: ON = (...params: AddEventParams) => {
-	const [event, element, listener, options] = params;
+	const [element, event, listener, options] = params;
 
 	const attachEvent = () => {
 		registerEvent(element, { event, listener, options, type: "add" });

@@ -90,7 +90,7 @@ const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreA
 	let cleanupExternalListeners: (() => void) | null = null;
 
 	const setupExternalListeners = () => {
-		const popstateCleanup = on("popstate", globalThis, handleLocationStoreChange);
+		const popstateCleanup = on(globalThis, "popstate", handleLocationStoreChange);
 
 		cleanupExternalListeners = () => {
 			popstateCleanup();

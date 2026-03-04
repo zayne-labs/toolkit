@@ -17,8 +17,8 @@ export type AddHtmlEvents<
 	TEvent extends keyof HTMLElementEventMap = keyof HTMLElementEventMap,
 	TNode extends ElementOrSelector | ElementOrSelectorArray = ElementOrSelector | ElementOrSelectorArray,
 > = [
-	event: TEvent,
 	element: TNode,
+	event: TEvent,
 	listener: Listener<TEvent, TNode, HTMLElementEventMap>,
 	options?: boolean | AddEventListenerOptions,
 ];
@@ -27,8 +27,8 @@ export type AddWindowEvents<
 	TEvent extends keyof WindowEventMap = keyof WindowEventMap,
 	TNode extends WindowOrGlobalThis = WindowOrGlobalThis,
 > = [
-	event: TEvent,
 	element: TNode,
+	event: TEvent,
 	listener: Listener<TEvent, TNode, WindowEventMap>,
 	options?: boolean | AddEventListenerOptions,
 ];
@@ -37,8 +37,8 @@ export type AddDocumentEvents<
 	TEvent extends keyof DocumentEventMap = keyof DocumentEventMap,
 	TNode extends Document = Document,
 > = [
-	event: TEvent,
 	element: TNode,
+	event: TEvent,
 	listener: Listener<TEvent, TNode, DocumentEventMap>,
 	options?: boolean | AddEventListenerOptions,
 ];
@@ -47,8 +47,8 @@ export type AddMediaEvents<
 	TEvent extends keyof MediaQueryListEventMap = keyof MediaQueryListEventMap,
 	TNode extends MediaQueryList = MediaQueryList,
 > = [
-	event: TEvent,
 	element: TNode,
+	event: TEvent,
 	listener: Listener<TEvent, TNode, MediaQueryListEventMap>,
 	options?: boolean | AddEventListenerOptions,
 ];

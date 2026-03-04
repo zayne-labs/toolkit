@@ -20,7 +20,7 @@ export const onClickOutside = <TElement extends HTMLElement>(
 		}
 	};
 
-	const cleanup = on("click", document, onClick, options);
+	const cleanup = on(document, "click", onClick, options);
 
 	return cleanup;
 };

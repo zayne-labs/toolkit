@@ -56,14 +56,14 @@ const useAnimateElementRefs = <TTargetElement extends string>(
 			}
 
 			on(
-				"transitionend",
 				elementsRef.current[targetElement],
+				"transitionend",
 				removeClass(elementsRef.current[targetElement], animationClass)
 			);
 
 			on(
-				"animationend",
 				elementsRef.current[targetElement],
+				"animationend",
 				removeClass(elementsRef.current[targetElement], animationClass)
 			);
 		}
