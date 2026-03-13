@@ -2,11 +2,12 @@ import { zayne } from "@zayne-labs/eslint-config";
 
 export default zayne(
 	{
-		ignores: ["packages/**/dist/**"],
+		ignores: ["eslint.config.js"],
 		react: true,
 		type: "lib",
 		typescript: {
-			tsconfigPath: ["**/tsconfig.json"],
+			tsconfigPath: ["tsconfig.json", "packages/*/tsconfig.json", "apps/*/tsconfig.json"],
+			// tsconfigPath: ["**/tsconfig.json"],
 		},
 	},
 	{

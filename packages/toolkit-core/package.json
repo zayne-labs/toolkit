@@ -51,20 +51,20 @@
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.18.2",
 		"@changesets/cli": "^2.30.0",
-		"@size-limit/esbuild-why": "^12.0.0",
-		"@size-limit/preset-small-lib": "^12.0.0",
+		"@size-limit/esbuild-why": "^12.0.1",
+		"@size-limit/preset-small-lib": "^12.0.1",
 		"@total-typescript/ts-reset": "^0.6.1",
-		"@types/node": "^25.3.3",
-		"@zayne-labs/tsconfig": "0.11.30",
+		"@types/node": "^25.5.0",
+		"@zayne-labs/tsconfig": "0.11.31",
 		"clsx": "^2.1.1",
 		"concurrently": "^9.2.1",
 		"cross-env": "^10.1.0",
-		"happy-dom": "^20.8.3",
+		"happy-dom": "^20.8.4",
 		"publint": "^0.3.18",
-		"size-limit": "^12.0.0",
-		"tsdown": "0.20.3",
+		"size-limit": "^12.0.1",
+		"tsdown": "0.21.2",
 		"typescript": "5.9.3",
-		"vitest": "^4.0.18"
+		"vitest": "^4.1.0"
 	},
 	"publishConfig": {
 		"access": "public",
