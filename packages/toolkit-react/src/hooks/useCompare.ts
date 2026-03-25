@@ -7,18 +7,26 @@ type UseCompareSelectorOptions = {
 	type?: "deep" | "shallow";
 };
 
-export const useCompareSelector = <TState, TResult>(
-	selector: SelectorFn<TState, TResult> | undefined,
+export const useCompareSelector = <
+	TState = never,
+	TResult = unknown,
+	TSelector extends SelectorFn<TState, TResult> | undefined = undefined,
+>(
+	selector: TSelector,
 	options: UseCompareSelectorOptions = {}
-) => {
+): TSelector => {
 	const { compareFnOptions, type = "shallow" } = options;
 
 	const prevStateRef = useRef<TResult>(undefined as never);
 
+	if (!selector) {
+		return selector as never;
+	}
+
 	const compareFn = type === "shallow" ? shallowCompare : deepCompare;
 
 	const compareSelector = (state: TState): TResult => {
-		const nextState = selector?.(state);
+		const nextState = selector(state);
 
 		if (!nextState) {
 			return prevStateRef.current;
@@ -31,7 +39,7 @@ export const useCompareSelector = <TState, TResult>(
 		return (prevStateRef.current = nextState);
 	};
 
-	return compareSelector;
+	return compareSelector as never;
 };
 
 export const useCompareValue = <TValue>(value: TValue, options: UseCompareSelectorOptions = {}) => {
