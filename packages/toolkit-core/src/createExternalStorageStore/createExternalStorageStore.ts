@@ -1,7 +1,7 @@
 import { createStore } from "../createStore";
 import { on } from "../on";
 import type { StorageOptions, StorageSetStateOptions, StorageStoreApi } from "./types";
-import { dispatchStorageEvent, getStorage, safeParser, type DispatchOptions } from "./utils";
+import { getStorage, safeParser, triggerStorageEvent, type DispatchOptions } from "./utils";
 
 const createExternalStorageStore = <TState>(
 	options: StorageOptions<TState> = {} as never
@@ -70,7 +70,7 @@ const createExternalStorageStore = <TState>(
 				}
 			}
 
-			dispatchStorageEvent({
+			triggerStorageEvent({
 				key,
 				newValue,
 				oldValue,

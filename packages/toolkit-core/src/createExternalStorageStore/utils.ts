@@ -14,7 +14,7 @@ export const getStorage = <TValue>(
 	return selectedStorage;
 };
 
-export const dispatchStorageEvent = (dispatchOptions: DispatchOptions) => {
+export const triggerStorageEvent = (dispatchOptions: DispatchOptions) => {
 	const { url = globalThis.location.href, ...restOfOptions } = dispatchOptions;
 
 	const storageDetails = { url, ...restOfOptions };

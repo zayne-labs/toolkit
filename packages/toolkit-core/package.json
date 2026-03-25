@@ -55,16 +55,16 @@
 		"@size-limit/preset-small-lib": "^12.0.1",
 		"@total-typescript/ts-reset": "^0.6.1",
 		"@types/node": "^25.5.0",
-		"@zayne-labs/tsconfig": "0.11.31",
+		"@zayne-labs/tsconfig": "0.12.4",
 		"clsx": "^2.1.1",
 		"concurrently": "^9.2.1",
 		"cross-env": "^10.1.0",
-		"happy-dom": "^20.8.4",
+		"happy-dom": "^20.8.8",
 		"publint": "^0.3.18",
 		"size-limit": "^12.0.1",
-		"tsdown": "0.21.2",
-		"typescript": "5.9.3",
-		"vitest": "^4.1.0"
+		"tsdown": "0.21.5",
+		"typescript": "6.0.2",
+		"vitest": "^4.1.1"
 	},
 	"publishConfig": {
 		"access": "public",

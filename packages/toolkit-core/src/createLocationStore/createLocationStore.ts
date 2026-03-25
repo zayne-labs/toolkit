@@ -18,6 +18,8 @@ const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreA
 		shouldNotifySync: globalShouldNotifySync = false,
 	} = options;
 
+	const storeId = crypto.randomUUID();
+
 	const getInitialLocationStoreInfo = () => {
 		const initialSearchParam =
 			defaultValues?.search ? createSearchParams(defaultValues.search) : getSearchParam();
@@ -51,9 +53,19 @@ const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreA
 		const nextLocationState = {
 			...nextUrlObject,
 			state: urlState !== undefined ? urlState : nextUrlObject.state,
-		} satisfies LocationStoreInfo;
+			storeId,
+		} satisfies LocationStoreInfo & { storeId: string };
 
-		internalStore.setState(nextLocationState, { shouldNotifySync, shouldReplace: true });
+		internalStore.setState(nextLocationState, {
+			onNotifySync: () => {
+				triggerPopstateEvent(nextLocationState);
+			},
+			onNotifyViaBatch: () => {
+				triggerPopstateEvent(nextLocationState);
+			},
+			shouldNotifySync,
+			shouldReplace: true,
+		});
 
 		try {
 			action === "push" ?
@@ -69,6 +81,12 @@ const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreA
 	const replace: LocationStoreApi["replace"] = (...parameters) => navigate("replace", ...parameters);
 
 	const handleLocationStoreChange = (event: PopStateEvent) => {
+		const eventState = event.state as (LocationStoreInfo & { storeId?: string }) | null;
+
+		const isSameStoreInstance = eventState?.storeId === storeId;
+
+		if (isSameStoreInstance) return;
+
 		const currentSearchParams = getSearchParam();
 
 		const currentLocationInfo = {
@@ -81,7 +99,7 @@ const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreA
 
 		const nextLocationState = {
 			...currentLocationInfo,
-			...(event.state as LocationStoreInfo),
+			...(eventState as LocationStoreInfo),
 		};
 
 		internalStore.setState(nextLocationState, { shouldNotifySync: true, shouldReplace: true });

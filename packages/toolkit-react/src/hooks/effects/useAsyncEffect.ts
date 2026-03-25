@@ -18,7 +18,6 @@ export function useAsyncEffect(
 		void execute();
 
 		return () => void destroy?.();
-		// eslint-disable-next-line react-hooks/rule-suppression -- Ignore
-		// eslint-disable-next-line react-hooks/exhaustive-deps -- Ignore
+		// eslint-disable-next-line react-x/exhaustive-deps -- Ignore
 	}, [destroy, stableEffectCallback, ...(deps ?? [])]);
 }

@@ -31,6 +31,7 @@ export const createCustomContext = <TContextValue = null, TStrict extends boolea
 
 	Context.displayName = name;
 
+	// eslint-disable-next-line react-x/component-hook-factories -- Ignore
 	const useCustomContext: UseCustomContext<TContextValue, TStrict> = () => {
 		const contextValue = use(Context);
 
