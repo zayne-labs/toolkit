@@ -82,3 +82,13 @@ type GetGenericFn<TType> = <TGenericFnParam>() => TGenericFnParam extends TType 
 
 export type Equal<TTypeOne, TTypeTwo> =
 	GetGenericFn<TTypeOne> extends GetGenericFn<TTypeTwo> ? true : false;
+
+export type Satisfies<TActualType extends TExpectedTypeShape, TExpectedTypeShape> = TActualType;
+
+export type SatisfiesStrictOnValue<TActualType extends TExpectedTypeShape, TExpectedTypeShape> = {
+	[Key in keyof TActualType]: Key extends keyof TExpectedTypeShape ? TActualType[Key] : never;
+};
+
+export type SatisfiesStrictOnKey<TActualType extends TExpectedTypeShape, TExpectedTypeShape> = {
+	[Key in keyof TActualType as Key extends keyof TExpectedTypeShape ? Key : never]: TActualType[Key];
+};

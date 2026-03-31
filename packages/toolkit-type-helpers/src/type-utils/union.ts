@@ -76,3 +76,20 @@ export type UnionToIntersection<TUnion> =
 	(TUnion extends unknown ? (param: TUnion) => void : never) extends (param: infer TParam) => void ?
 		TParam
 	:	never;
+
+type LastOf<TValue> =
+	UnionToIntersection<TValue extends unknown ? () => TValue : never> extends () => infer R ? R : never;
+
+type Push<TArray extends unknown[], TArrayItem> = [...TArray, TArrayItem];
+
+type UnionToTupleImpl<
+	TUnion,
+	TComputedLastUnion = LastOf<TUnion>,
+	TComputedIsUnionEqualToNever = [TUnion] extends [never] ? true : false,
+> =
+	true extends TComputedIsUnionEqualToNever ? []
+	:	Push<UnionToTupleImpl<Exclude<TUnion, TComputedLastUnion>>, TComputedLastUnion>;
+
+export type UnionToTuple<TUnion, TArray extends TUnion[] = []> =
+	UnionToTupleImpl<TUnion>["length"] extends TArray["length"] ? [...TArray]
+	:	UnionToTuple<TUnion, [TUnion, ...TArray]>;
