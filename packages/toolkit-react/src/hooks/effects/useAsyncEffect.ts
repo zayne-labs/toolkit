@@ -18,6 +18,6 @@ export function useAsyncEffect(
 		void execute();
 
 		return () => void destroy?.();
-		// eslint-disable-next-line react-x/exhaustive-deps -- Ignore
+		// eslint-disable-next-line react/exhaustive-deps -- Ignore
 	}, [destroy, stableEffectCallback, ...(deps ?? [])]);
 }

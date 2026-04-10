@@ -12,7 +12,7 @@ const useAfterMountEffect: typeof useEffect = (callBackFn, deps) => {
 		}
 
 		stableCallback();
-		// eslint-disable-next-line react-x/exhaustive-deps -- Ignore
+		// eslint-disable-next-line react/exhaustive-deps -- Ignore
 	}, [stableCallback, ...(deps ?? [])]);
 };
 export { useAfterMountEffect };

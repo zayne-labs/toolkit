@@ -45,7 +45,7 @@ export const useCompareSelector = <
 export const useCompareValue = <TValue>(value: TValue, options: UseCompareSelectorOptions = {}) => {
 	const { compareFnOptions, type = "shallow" } = options;
 
-	const prevValueRef = useRef<TValue>(value);
+	const prevValueRef = useRef(value);
 
 	const compareFn = type === "shallow" ? shallowCompare : deepCompare;
 

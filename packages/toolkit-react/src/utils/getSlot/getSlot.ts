@@ -112,7 +112,7 @@ export const getSingleSlot = (
 			children.props.children
 		:	children;
 
-	const childrenArray = toArray<React.ReactNode>(actualChildren);
+	const childrenArray = toArray(actualChildren);
 
 	const shouldThrow =
 		throwOnMultipleSlotMatch && calculateSlotOccurrences(childrenArray, SlotComponent) > 1;
@@ -183,7 +183,7 @@ export const getRegularChildren = (
 			children.props.children
 		:	children;
 
-	const childrenArray = toArray<React.ReactNode>(actualChildren);
+	const childrenArray = toArray(actualChildren);
 
 	const regularChildren = childrenArray.filter(
 		(child) => !matchesAnySlotComponent(child, toArray(SlotComponentOrComponents))

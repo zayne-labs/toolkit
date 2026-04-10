@@ -20,7 +20,7 @@ export const createUseLocationState = (options?: LocationStoreOptions) => {
 			selector?: SelectorFn<LocationStoreInfo, TSlice>
 		) => UseLocationResult<TSlice>);
 
-	// eslint-disable-next-line react-x/component-hook-factories -- Ignore
+	// eslint-disable-next-line react/component-hook-factories -- Ignore
 	const useLocationState = <TSlice = LocationStoreInfo>(
 		selector?: SelectorFn<LocationStoreInfo, TSlice>
 	): UseLocationResult<TSlice> => {
