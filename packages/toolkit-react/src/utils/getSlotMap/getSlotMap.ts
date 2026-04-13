@@ -78,7 +78,7 @@ export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
 
 	const actualChildren = isFragment ? children.props.children : children;
 
-	const childrenArray = toArray(actualChildren);
+	const childrenArray = toArray<React.ReactNode>(actualChildren);
 
 	for (const child of childrenArray) {
 		if (!isValidElement<TSlotComponentProps>(child) || !isFunction(child.type)) {

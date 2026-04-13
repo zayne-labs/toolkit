@@ -183,7 +183,7 @@ export const getRegularChildren = (
 			children.props.children
 		:	children;
 
-	const childrenArray = toArray(actualChildren);
+	const childrenArray = toArray<React.ReactNode>(actualChildren);
 
 	const regularChildren = childrenArray.filter(
 		(child) => !matchesAnySlotComponent(child, toArray(SlotComponentOrComponents))

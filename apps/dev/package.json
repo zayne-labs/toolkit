@@ -13,15 +13,15 @@
 		"@zayne-labs/toolkit-core": "workspace:*",
 		"@zayne-labs/toolkit-react": "workspace:*",
 		"@zayne-labs/toolkit-type-helpers": "workspace:*",
-		"react": "19.2.5",
-		"react-dom": "19.2.5"
+		"react": "catalog:react:peer",
+		"react-dom": "catalog:react:peer"
 	},
 	"devDependencies": {
 		"@types/node": "^25.6.0",
 		"@types/react": "19.2.14",
 		"@types/react-dom": "19.2.3",
 		"@vitejs/plugin-react": "^6.0.1",
-		"@zayne-labs/tsconfig": "0.12.10",
+		"@zayne-labs/tsconfig": "0.13.1",
 		"tsx": "^4.21.0",
 		"typescript": "6.0.2",
 		"vite": "8.0.8"

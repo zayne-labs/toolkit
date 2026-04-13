@@ -47,15 +47,11 @@
 		"release:test": "pnpx pkg-pr-new publish"
 	},
 	"peerDependencies": {
-		"@types/react": ">=19.0.0",
-		"react": ">=19.0.0",
-		"tailwind-merge": "^2.5.0 || ^3.0.0",
-		"zustand": "5.x.x"
+		"react": "catalog:react:peer",
+		"tailwind-merge": "catalog:react:peer",
+		"zustand": "catalog:react:peer"
 	},
 	"peerDependenciesMeta": {
-		"@types/react": {
-			"optional": true
-		},
 		"react": {
 			"optional": true
 		},
@@ -75,16 +71,16 @@
 		"@total-typescript/ts-reset": "^0.6.1",
 		"@types/node": "^25.6.0",
 		"@types/react": "^19.2.14",
-		"@zayne-labs/tsconfig": "0.12.10",
+		"@zayne-labs/tsconfig": "0.13.1",
 		"concurrently": "^9.2.1",
 		"cross-env": "^10.1.0",
 		"publint": "^0.3.18",
-		"react": "^19.2.5",
+		"react": "catalog:react:peer",
 		"size-limit": "^12.0.1",
 		"tailwind-merge": "3.5.0",
 		"tsdown": "0.21.7",
 		"typescript": "6.0.2",
-		"zustand": "^5.0.12"
+		"zustand": "catalog:react:peer"
 	},
 	"publishConfig": {
 		"access": "public",

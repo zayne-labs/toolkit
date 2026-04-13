@@ -1,4 +1,4 @@
-name: Lint and Type
+name: Lint, Type and Test
 
 on:
    pull_request:
@@ -40,5 +40,4 @@ jobs:
          - name: Run linters
            run: |
               pnpm lint:type-check
-              pnpm lint:eslint
-
+              pnpm lint:eslint:root

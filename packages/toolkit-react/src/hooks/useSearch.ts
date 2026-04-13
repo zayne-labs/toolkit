@@ -1,17 +1,19 @@
 import { isPlainObject } from "@zayne-labs/toolkit-type-helpers";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useAfterMountEffect } from "./effects/useAfterMountEffect";
 import { useDebouncedFn } from "./useDebounce";
 
-const isSerializable = (item: unknown): item is boolean | number | string =>
-	typeof item === "string" || typeof item === "number" || typeof item === "boolean";
+const isSerializable = (item: unknown) => {
+	return typeof item === "string" || typeof item === "number" || typeof item === "boolean";
+};
 
 const checkObjectPropsForQuery = (item: Record<string, unknown>, query: string): boolean => {
 	for (const value of Object.values(item)) {
-		if (isSerializable(value) && value.toString().toLowerCase().includes(query)) {
+		if (isSerializable(value) && String(value).toLowerCase().includes(query)) {
 			return true;
 		}
 	}
+
 	return false;
 };
 
@@ -47,7 +49,12 @@ const useSearch = <TData>(initialData: TData[], delay?: number) => {
 		handleDebouncedSearch();
 	}, [searchQuery]);
 
-	return { data: filteredData, isLoading, query: searchQuery, setQuery: setSearchQuery };
+	const result = useMemo(
+		() => ({ data: filteredData, isLoading, query: searchQuery, setQuery: setSearchQuery }),
+		[filteredData, isLoading, searchQuery]
+	);
+
+	return result;
 };
 
 export { useSearch };
