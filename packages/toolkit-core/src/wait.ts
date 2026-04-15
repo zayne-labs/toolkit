@@ -1,18 +1,18 @@
-import type { UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
+import { isNumber, type UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
 import { createPromiseWithResolvers } from "./promise";
 
 type Delay = UnionDiscriminator<[{ milliseconds: number }, { seconds: number }]>;
 
 export const waitFor = (delay: number | Delay) => {
-	if (typeof delay === "number" || delay.seconds === 0 || delay.milliseconds === 0) return;
-
 	const { promise, resolve } = createPromiseWithResolvers();
 
 	const delayInMs =
-		typeof delay === "number" ? delay
+		isNumber(delay) ? delay
 			// eslint-disable-next-line unicorn/no-nested-ternary -- ignore for now
-		: typeof delay.seconds === "number" ? delay.seconds * 1000
+		: isNumber(delay.seconds) ? delay.seconds * 1000
 		: delay.milliseconds;
+
+	if (delayInMs === undefined || delayInMs === 0) return;
 
 	setTimeout(resolve, delayInMs);
 
@@ -20,15 +20,15 @@ export const waitFor = (delay: number | Delay) => {
 };
 
 export const waitForSync = (delay: number | Delay) => {
-	if (typeof delay === "number" || delay.seconds === 0 || delay.milliseconds === 0) return;
-
 	const startTime = performance.now();
 
 	const delayInMs =
-		typeof delay === "number" ? delay
+		isNumber(delay) ? delay
 			// eslint-disable-next-line unicorn/no-nested-ternary -- ignore for now
-		: typeof delay.seconds === "number" ? delay.seconds * 1000
+		: isNumber(delay.seconds) ? delay.seconds * 1000
 		: delay.milliseconds;
+
+	if (delayInMs === undefined || delayInMs === 0) return;
 
 	for (
 		let currentTime = startTime;
