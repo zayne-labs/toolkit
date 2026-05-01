@@ -21,7 +21,6 @@ export const createUseStorageState = <TState>(baseOptions: StorageOptions<TState
 	type UseBoundStorageState = StorageStoreApi<TState>
 		& (<TSlice = TState>(selector?: SelectorFn<TState, TSlice>) => UseStorageResult<TState, TSlice>);
 
-	// eslint-disable-next-line react/component-hook-factories -- Ignore
 	const useStorageState = <TSlice = TState>(
 		selector?: SelectorFn<TState, TSlice>
 	): UseStorageResult<TState, TSlice> => {

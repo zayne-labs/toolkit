@@ -85,7 +85,7 @@ export const createStoreWithContext = <TBaseState>() => {
 		};
 
 		subscribe.withSelector = (selector, onStoreChange, subscribeOptions = {}) => {
-			const { equalityFn: sliceEqualityFn = equalityFn, fireListenerImmediately = false } =
+			const { equalityFn: sliceEqualityFn = equalityFn as never, fireListenerImmediately = false } =
 				subscribeOptions;
 
 			if (fireListenerImmediately) {
@@ -99,7 +99,7 @@ export const createStoreWithContext = <TBaseState>() => {
 					const previousSlice = selector(prevState);
 					const slice = selector(state);
 
-					if (sliceEqualityFn(slice as never, previousSlice as never)) return;
+					if (sliceEqualityFn(slice, previousSlice)) return;
 
 					onStoreChange(slice, previousSlice);
 				},

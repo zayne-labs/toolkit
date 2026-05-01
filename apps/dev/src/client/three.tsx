@@ -10,7 +10,7 @@ function AppThree() {
 	);
 
 	const onClick = () => {
-		actions.setState({ value: crypto.randomUUID() as never });
+		actions.setState({ value: crypto.randomUUID() });
 	};
 
 	return (

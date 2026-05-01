@@ -11,7 +11,6 @@ type CreateReactStore = {
 const createReactStoreImpl = <TState>(createState: StoreStateInitializer<TState>) => {
 	const store = createStore(createState);
 
-	// eslint-disable-next-line react/component-hook-factories -- Ignore
 	const useBoundStore = (selector?: SelectorFn<TState, unknown>) => useStore(store, selector);
 
 	Object.assign(useBoundStore, store);

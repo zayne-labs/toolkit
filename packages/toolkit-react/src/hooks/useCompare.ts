@@ -55,6 +55,6 @@ export const useCompareValue = <TValue>(value: TValue, options: UseCompareSelect
 		prevValueRef.current = value;
 	});
 
-	// eslint-disable-next-line react-hooks/refs -- Allow this for convenience
+	// eslint-disable-next-line react/refs -- Allow this for convenience
 	return prevValueRef.current;
 };

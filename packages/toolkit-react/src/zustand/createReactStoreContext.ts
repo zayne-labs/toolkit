@@ -16,14 +16,12 @@ const createReactStoreContext = <
 		store: TStore;
 	};
 
-	// eslint-disable-next-line react/component-hook-factories -- Ignore
 	function ZustandStoreContextProvider(props: ZustandStoreContextProviderProps) {
 		const { children, store } = props;
 
 		return createElement(Provider, { value: store }, children);
 	}
 
-	// eslint-disable-next-line react/component-hook-factories -- Ignore
 	const useZustandStoreContext = <TResult = TState>(selector?: SelectorFn<TState, TResult>): TResult => {
 		const zustandStore = useCustomContext();
 

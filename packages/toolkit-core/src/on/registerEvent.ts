@@ -19,6 +19,7 @@ const registerSingleElement = (element: ElementOrSelector, config: RegisterConfi
 	}
 
 	if (isString(element)) {
+		// eslint-disable-next-line ts-eslint/no-unnecessary-type-assertion -- Ignore
 		const nodeOrNodeList = (queryScope[queryType] as Document["querySelector"])(element);
 
 		if (nodeOrNodeList instanceof NodeList) {

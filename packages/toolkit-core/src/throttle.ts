@@ -24,7 +24,7 @@ export const throttleByTimeout = <TCallbackFn extends AnyFunction>(
 		timeoutId = setTimeout(() => {
 			callbackFn(...params);
 			timeoutId = null;
-		}, delay) as never;
+		}, delay);
 	};
 
 	throttledCallback.cancelTimeout = () => {

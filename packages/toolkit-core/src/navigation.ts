@@ -66,7 +66,7 @@ export const formatUrl = (newURL: string | PartialURLInfo): FormUrlResult => {
 			searchString: search.toString(),
 		} satisfies URLInfoObject;
 
-		return { urlObject, urlString } as never;
+		return { urlObject, urlString };
 	}
 
 	const search = createSearchParams(newURL.search);
@@ -86,7 +86,7 @@ export const formatUrl = (newURL: string | PartialURLInfo): FormUrlResult => {
 
 	const urlString = urlConstruct.toString();
 
-	return { urlObject, urlString } as never;
+	return { urlObject, urlString };
 };
 
 export const pushState = (url: string | PartialURLInfo, options?: { state?: PartialURLInfo["state"] }) => {
