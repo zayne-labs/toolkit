@@ -13,11 +13,6 @@ const registerSingleElement = (element: ElementOrSelector, config: RegisterConfi
 
 	const actionType = type === "add" ? "addEventListener" : "removeEventListener";
 
-	if (element == null) {
-		console.error("Element is either undefined or null");
-		return;
-	}
-
 	if (isString(element)) {
 		// eslint-disable-next-line ts-eslint/no-unnecessary-type-assertion -- Ignore
 		const nodeOrNodeList = (queryScope[queryType] as Document["querySelector"])(element);
