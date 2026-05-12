@@ -1,7 +1,6 @@
-import { createStore, type StoreApi } from "@zayne-labs/toolkit-core";
-import type { SelectorFn } from "@zayne-labs/toolkit-type-helpers";
+import type { StoreApi } from "@zayne-labs/toolkit-core";
 import type { Mutate, StoreMutatorIdentifier } from "zustand";
-import { useStore } from "../../hooks";
+import { createReactStore as createReactStoreOriginal } from "../createReactStore";
 import type { Get, UseBoundStore } from "../types";
 
 export type StateCreator<
@@ -24,15 +23,4 @@ type CreateReactStore = {
 	) => UseBoundStore<Mutate<StoreApi<T>, Mos>>;
 };
 
-const createReactStoreImpl = <TState>(createState: StateCreator<TState>) => {
-	const store = createStore(createState);
-
-	const useBoundStore = (selector?: SelectorFn<TState, unknown>) => useStore(store, selector);
-
-	Object.assign(useBoundStore, store);
-
-	return useBoundStore;
-};
-
-export const createReactStore = (<TState>(stateInitializer: StateCreator<TState> | undefined) =>
-	stateInitializer ? createReactStoreImpl(stateInitializer) : createReactStoreImpl) as CreateReactStore;
+export const createReactStore = createReactStoreOriginal as CreateReactStore;

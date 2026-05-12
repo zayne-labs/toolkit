@@ -9,7 +9,7 @@ const sharedOptions = {
 		"src/hooks/index.ts",
 		"src/utils/index.ts",
 		"src/zustand/index.ts",
-		"src/zustand/compatible/index.ts",
+		"src/zustand/compat/index.ts",
 	],
 	format: ["esm"],
 	ignoreWatch: [".turbo"],

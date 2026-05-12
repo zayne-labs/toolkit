@@ -2,9 +2,7 @@ import type { NonEmptyArray } from "@zayne-labs/toolkit-type-helpers";
 
 type WindowOrGlobalThis = typeof globalThis;
 
-export type PossibleNodes = Document | Element | HTMLElement | MediaQueryList | WindowOrGlobalThis | null;
-
-export type ElementOrSelector = string | PossibleNodes;
+export type ElementOrSelector = string | Element | HTMLElement;
 
 export type ElementOrSelectorArray = NonEmptyArray<ElementOrSelector>;
 
@@ -13,48 +11,34 @@ type Listener<TEvent extends keyof TNodeEventMap, TNode, TNodeEventMap> = (
 	event: TNodeEventMap[TEvent]
 ) => void;
 
+type GetAddEventParams<TEvent extends keyof TNodeEventMap, TNode, TNodeEventMap> = [
+	element: TNode,
+	event: TEvent,
+	listener: Listener<TEvent, TNode, TNodeEventMap>,
+	options?: boolean | AddEventListenerOptions,
+];
+
 export type AddHtmlEvents<
 	TEvent extends keyof HTMLElementEventMap = keyof HTMLElementEventMap,
 	TNode extends ElementOrSelector | ElementOrSelectorArray = ElementOrSelector | ElementOrSelectorArray,
-> = [
-	element: TNode,
-	event: TEvent,
-	listener: Listener<TEvent, TNode, HTMLElementEventMap>,
-	options?: boolean | AddEventListenerOptions,
-];
+> = GetAddEventParams<TEvent, TNode, HTMLElementEventMap>;
 
 export type AddWindowEvents<
 	TEvent extends keyof WindowEventMap = keyof WindowEventMap,
 	TNode extends WindowOrGlobalThis = WindowOrGlobalThis,
-> = [
-	element: TNode,
-	event: TEvent,
-	listener: Listener<TEvent, TNode, WindowEventMap>,
-	options?: boolean | AddEventListenerOptions,
-];
+> = GetAddEventParams<TEvent, TNode, WindowEventMap>;
 
 export type AddDocumentEvents<
 	TEvent extends keyof DocumentEventMap = keyof DocumentEventMap,
 	TNode extends Document = Document,
-> = [
-	element: TNode,
-	event: TEvent,
-	listener: Listener<TEvent, TNode, DocumentEventMap>,
-	options?: boolean | AddEventListenerOptions,
-];
+> = GetAddEventParams<TEvent, TNode, DocumentEventMap>;
 
 export type AddMediaEvents<
 	TEvent extends keyof MediaQueryListEventMap = keyof MediaQueryListEventMap,
 	TNode extends MediaQueryList = MediaQueryList,
-> = [
-	element: TNode,
-	event: TEvent,
-	listener: Listener<TEvent, TNode, MediaQueryListEventMap>,
-	options?: boolean | AddEventListenerOptions,
-];
+> = GetAddEventParams<TEvent, TNode, MediaQueryListEventMap>;
 
-// eslint-disable-next-line perfectionist/sort-union-types -- This order is important
-export type AddEventParams = AddHtmlEvents | AddMediaEvents | AddWindowEvents | AddDocumentEvents;
+export type AddEventParams = AddDocumentEvents | AddHtmlEvents | AddMediaEvents | AddWindowEvents;
 
 export interface RegisterConfig {
 	/**
@@ -90,32 +74,19 @@ export interface RegisterConfig {
 }
 type CleanupFn = () => void;
 
-export interface ON {
+export interface ON<TReturn = CleanupFn> {
 	<TEvent extends keyof HTMLElementEventMap, TNode extends ElementOrSelector | ElementOrSelectorArray>(
 		...params: AddHtmlEvents<TEvent, TNode>
-	): CleanupFn;
+	): TReturn;
 	<TEvent extends keyof DocumentEventMap, TNode extends Document>(
 		...params: AddDocumentEvents<TEvent, TNode>
-	): CleanupFn;
-	<TEvent extends keyof MediaQueryListEventMap, TNode extends MediaQueryList>(
-		...params: AddMediaEvents<TEvent, TNode>
-	): CleanupFn;
+	): TReturn;
 	<TEvent extends keyof WindowEventMap, TNode extends WindowOrGlobalThis>(
 		...params: AddWindowEvents<TEvent, TNode>
-	): CleanupFn;
+	): TReturn;
+	<TEvent extends keyof MediaQueryListEventMap, TNode extends MediaQueryList>(
+		...params: AddMediaEvents<TEvent, TNode>
+	): TReturn;
 }
 
-export interface OFF {
-	<TEvent extends keyof HTMLElementEventMap, TNode extends ElementOrSelector | ElementOrSelectorArray>(
-		...params: AddHtmlEvents<TEvent, TNode>
-	): void;
-	<TEvent extends keyof DocumentEventMap, TNode extends Document>(
-		...params: AddDocumentEvents<TEvent, TNode>
-	): void;
-	<TEvent extends keyof MediaQueryListEventMap, TNode extends MediaQueryList>(
-		...params: AddMediaEvents<TEvent, TNode>
-	): void;
-	<TEvent extends keyof WindowEventMap, TNode extends WindowOrGlobalThis>(
-		...params: AddWindowEvents<TEvent, TNode>
-	): void;
-}
+export type OFF = ON<void>;

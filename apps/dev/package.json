@@ -17,13 +17,13 @@
 		"react-dom": "catalog:react:peer"
 	},
 	"devDependencies": {
-		"@types/node": "^25.6.0",
+		"@types/node": "^25.7.0",
 		"@types/react": "19.2.14",
 		"@types/react-dom": "19.2.3",
 		"@vitejs/plugin-react": "^6.0.1",
-		"@zayne-labs/tsconfig": "0.13.7",
+		"@zayne-labs/tsconfig": "0.13.12",
 		"tsx": "^4.21.0",
 		"typescript": "6.0.3",
-		"vite": "8.0.10"
+		"vite": "8.0.12"
 	}
 }

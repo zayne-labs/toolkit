@@ -5,13 +5,13 @@ export const on: ON = (...params: AddEventParams) => {
 	const [element, event, listener, options] = params;
 
 	const attachEvent = () => {
-		registerEvent(element, { event, listener, options, type: "add" });
+		registerEvent(element as never, { event, listener, options, type: "add" });
 
 		return cleanup;
 	};
 
 	const cleanup = () => {
-		registerEvent(element, { event, listener, options, type: "remove" });
+		registerEvent(element as never, { event, listener, options, type: "remove" });
 
 		return attachEvent;
 	};
