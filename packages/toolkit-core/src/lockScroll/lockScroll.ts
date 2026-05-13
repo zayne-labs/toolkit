@@ -9,11 +9,13 @@ type LockScrollOptions = {
 export const lockScroll = (options: LockScrollOptions) => {
 	const { lock, targetElement } = options;
 
-	if (!isBrowser() || !hasVerticalScrollBar()) return;
+	if (!isBrowser()) return;
 
 	const elementToLock = targetElement?.() ?? document.body;
 
 	const lockFn = () => {
+		if (!hasVerticalScrollBar()) return;
+
 		const computedStyle = globalThis.getComputedStyle(elementToLock);
 
 		const scrollbarWidth = getScrollbarWidth();
