@@ -4,10 +4,14 @@ import { initializeStorePlugins, type InferPluginExtraOptions } from "./plugins"
 import type { CreateStoreOptions, Listener, StoreApi, StorePlugin, StoreStateInitializer } from "./types";
 
 export const createStoreWithContext = <TBaseState>() => {
-	const createStore = <TState = TBaseState, const TPlugins extends StorePlugin[] = StorePlugin[]>(
+	const createStore = <
+		TState = TBaseState,
+		const TPlugins extends Array<StorePlugin<TState>> = Array<StorePlugin<TState>>,
+		TInferredPluginExtraOptions = DeepPrettify<InferPluginExtraOptions<TState, TPlugins>>,
+	>(
 		storeStateInitializer: StoreStateInitializer<TState>,
 		storeOptions: CreateStoreOptions<TState, TPlugins> = {}
-	): StoreApi<TState, DeepPrettify<InferPluginExtraOptions<TPlugins>>> => {
+	): StoreApi<TState, TInferredPluginExtraOptions> => {
 		const { equalityFn = Object.is, shouldNotifySync: globalShouldNotifySync = false } = storeOptions;
 
 		const listeners = new Set<Listener<TState>>();

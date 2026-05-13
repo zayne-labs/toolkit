@@ -30,7 +30,7 @@ export type SubscribeOptions<TState> = {
 	fireListenerImmediately?: boolean;
 };
 
-export interface StorePlugin {
+export interface StorePlugin<TState = never> {
 	/**
 	 *  A unique id for the plugin
 	 */
@@ -58,8 +58,8 @@ export interface StorePlugin {
 	 * ```
 	 */
 
-	setup?: (api: StoreApi<never>) => Partial<
-		Prettify<Omit<StoreApi<NoInfer<never>>, "subscribe"> & { subscribe: SubscribeFnForPlugins<never> }>
+	setup?: (api: StoreApi<TState>) => Partial<
+		Prettify<Omit<StoreApi<NoInfer<TState>>, "subscribe"> & { subscribe: SubscribeFnForPlugins<TState> }>
 			& Record<string, unknown>
 		// eslint-disable-next-line ts-eslint/no-invalid-void-type -- Allow
 	> | void;
@@ -69,7 +69,10 @@ export interface StorePlugin {
 	version?: string;
 }
 
-export type CreateStoreOptions<TState, TPlugins extends StorePlugin[] = StorePlugin[]> = {
+export type CreateStoreOptions<
+	TState,
+	TPlugins extends Array<StorePlugin<TState>> = Array<StorePlugin<TState>>,
+> = {
 	equalityFn?: EqualityFn<TState>;
 	plugins?: TPlugins;
 	shouldNotifySync?: boolean;
@@ -97,15 +100,17 @@ export type SubscribeFn<TState> = SubscribeFnMain<TState> & SubscribeFnWithSelec
 export type SubscribeFnForPlugins<TState> = SubscribeFnMain<TState> // eslint-disable-next-line perfectionist/sort-intersection-types -- Ignore
 	& Partial<SubscribeFnWithSelector<TState>>;
 
-export type StoreApi<TState, TExtraApiOptions = unknown> = {
+export interface StoreApiImpl<TState> {
 	getInitialState: () => TState;
 	getListeners: () => Set<Listener<TState>>;
 	getState: () => TState;
 	resetState: () => void;
 	setState: SetState<TState>;
 	subscribe: SubscribeFn<TState>;
-	// eslint-disable-next-line perfectionist/sort-intersection-types -- Ignore
-} & TExtraApiOptions;
+}
+
+export type StoreApi<TState, TInferredPluginExtraOptions = unknown> = StoreApiImpl<TState>
+	& TInferredPluginExtraOptions;
 
 export type StoreStateInitializer<TState, TResult = TState> = (
 	set: StoreApi<TState>["setState"],

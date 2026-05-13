@@ -7,7 +7,7 @@ import type {
 import type { StoreApi, StorePlugin } from "./types";
 
 type InitializeStorePluginsContext<TState> = {
-	plugins: StorePlugin[] | undefined;
+	plugins: Array<StorePlugin<TState>> | undefined;
 	storeApi: StoreApi<TState>;
 };
 
@@ -19,7 +19,7 @@ export const initializeStorePlugins = <TState>(
 	const resolvedStoreApi: StoreApi<TState> = { ...storeApi };
 
 	for (const plugin of plugins ?? []) {
-		const initResult = plugin.setup?.(storeApi as unknown as StoreApi<never>);
+		const initResult = plugin.setup?.(storeApi);
 
 		if (!initResult) continue;
 
@@ -38,10 +38,13 @@ export const initializeStorePlugins = <TState>(
 	return resolvedStoreApi;
 };
 
-export type InferPluginExtraOptions<TPluginArray extends StorePlugin[]> = DeepPrettify<
+export type InferPluginExtraOptions<
+	TState,
+	TPluginArray extends Array<StorePlugin<TState>>,
+> = DeepPrettify<
 	UnionToIntersection<
 		TPluginArray extends Array<infer TPlugin> ?
-			TPlugin extends StorePlugin ?
+			TPlugin extends StorePlugin<TState> ?
 				TPlugin["setup"] extends AnyFunction<infer TResult> ?
 					TResult
 				:	never
@@ -50,6 +53,9 @@ export type InferPluginExtraOptions<TPluginArray extends StorePlugin[]> = DeepPr
 	>
 >;
 
-export const defineStorePlugin = <const TPlugin extends StorePlugin>(plugin: TPlugin) => {
-	return plugin as Writeable<TPlugin>;
+// eslint-disable-next-line ts-eslint/no-explicit-any -- Casting to `any` here is necessary for the generic to infer the plugin type without type errors
+export const defineStorePluginWithContext = <TState = any>() => {
+	return <const TPlugin extends StorePlugin<TState>>(plugin: TPlugin) => plugin as Writeable<TPlugin>;
 };
+
+export const defineStorePlugin = defineStorePluginWithContext();
