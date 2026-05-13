@@ -146,14 +146,14 @@ importers:
         specifier: ^20.9.0
         version: 20.9.0
       publint:
-        specifier: ^0.3.20
-        version: 0.3.20
+        specifier: ^0.3.21
+        version: 0.3.21
       size-limit:
         specifier: ^12.1.0
         version: 12.1.0(jiti@2.7.0)
       tsdown:
         specifier: 0.22.0
-        version: 0.22.0(@arethetypeswrong/core@0.18.2)(publint@0.3.20)(tsx@4.21.0)(typescript@6.0.3)(unrun@0.2.37(synckit@0.11.12))
+        version: 0.22.0(@arethetypeswrong/core@0.18.2)(publint@0.3.21)(tsx@4.21.0)(typescript@6.0.3)(unrun@0.2.37(synckit@0.11.12))
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -198,8 +198,8 @@ importers:
         specifier: ^10.1.0
         version: 10.1.0
       publint:
-        specifier: ^0.3.20
-        version: 0.3.20
+        specifier: ^0.3.21
+        version: 0.3.21
       react:
         specifier: catalog:react:peer
         version: 19.2.6
@@ -211,7 +211,7 @@ importers:
         version: 3.6.0
       tsdown:
         specifier: 0.22.0
-        version: 0.22.0(@arethetypeswrong/core@0.18.2)(publint@0.3.20)(tsx@4.21.0)(typescript@6.0.3)(unrun@0.2.37(synckit@0.11.12))
+        version: 0.22.0(@arethetypeswrong/core@0.18.2)(publint@0.3.21)(tsx@4.21.0)(typescript@6.0.3)(unrun@0.2.37(synckit@0.11.12))
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -249,14 +249,14 @@ importers:
         specifier: ^10.1.0
         version: 10.1.0
       publint:
-        specifier: ^0.3.20
-        version: 0.3.20
+        specifier: ^0.3.21
+        version: 0.3.21
       size-limit:
         specifier: ^12.1.0
         version: 12.1.0(jiti@2.7.0)
       tsdown:
         specifier: 0.22.0
-        version: 0.22.0(@arethetypeswrong/core@0.18.2)(publint@0.3.20)(tsx@4.21.0)(typescript@6.0.3)(unrun@0.2.37(synckit@0.11.12))
+        version: 0.22.0(@arethetypeswrong/core@0.18.2)(publint@0.3.21)(tsx@4.21.0)(typescript@6.0.3)(unrun@0.2.37(synckit@0.11.12))
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -2973,8 +2973,8 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
-  publint@0.3.20:
-    resolution: {integrity: sha512-UWqFYP7VBVCe9l/leEEGJrDs6Am4K4KapLmLi5qbt+9fA+Ny38ghdW+bw1nYfVqCK8/3kgsxjjhFjTYqYYRpyw==}
+  publint@0.3.21:
+    resolution: {integrity: sha512-OqejcnMV6E9zel2oCrUOJEiiFkGiAAni0A6ibfQNh1k9Gu5z4F+Yso8lllam7AzmV6Do0vp7u3UpZNRBwuXaHQ==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -6396,7 +6396,7 @@ snapshots:
 
   prettier@3.8.3: {}
 
-  publint@0.3.20:
+  publint@0.3.21:
     dependencies:
       '@publint/pack': 0.1.4
       package-manager-detector: 1.6.0
@@ -6664,7 +6664,7 @@ snapshots:
 
   ts-pattern@5.9.0: {}
 
-  tsdown@0.22.0(@arethetypeswrong/core@0.18.2)(publint@0.3.20)(tsx@4.21.0)(typescript@6.0.3)(unrun@0.2.37(synckit@0.11.12)):
+  tsdown@0.22.0(@arethetypeswrong/core@0.18.2)(publint@0.3.21)(tsx@4.21.0)(typescript@6.0.3)(unrun@0.2.37(synckit@0.11.12)):
     dependencies:
       ansis: 4.3.0
       cac: 7.0.0
@@ -6683,7 +6683,7 @@ snapshots:
       unconfig-core: 7.5.0
     optionalDependencies:
       '@arethetypeswrong/core': 0.18.2
-      publint: 0.3.20
+      publint: 0.3.21
       tsx: 4.21.0
       typescript: 6.0.3
       unrun: 0.2.37(synckit@0.11.12)

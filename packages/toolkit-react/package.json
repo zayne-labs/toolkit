@@ -1,7 +1,7 @@
 {
 	"name": "@zayne-labs/toolkit-react",
 	"type": "module",
-	"version": "0.12.53",
+	"version": "0.12.54",
 	"description": "A collection of utility functions, types and composables used by my other projects. Nothing too fancy but can be useful.",
 	"author": "Ryan Zayne",
 	"license": "MIT",
@@ -73,7 +73,7 @@
 		"@zayne-labs/tsconfig": "0.13.12",
 		"concurrently": "^9.2.1",
 		"cross-env": "^10.1.0",
-		"publint": "^0.3.20",
+		"publint": "^0.3.21",
 		"react": "catalog:react:peer",
 		"size-limit": "^12.1.0",
 		"tailwind-merge": "3.6.0",
