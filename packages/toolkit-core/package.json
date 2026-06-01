@@ -49,21 +49,21 @@
 		"@zayne-labs/toolkit-type-helpers": "workspace:*"
 	},
 	"devDependencies": {
-		"@arethetypeswrong/cli": "^0.18.2",
+		"@arethetypeswrong/cli": "^0.18.3",
 		"@size-limit/esbuild-why": "^12.1.0",
 		"@size-limit/preset-small-lib": "^12.1.0",
 		"@total-typescript/ts-reset": "^0.6.1",
-		"@types/node": "^25.7.0",
-		"@zayne-labs/tsconfig": "0.13.12",
+		"@types/node": "^25.9.1",
+		"@zayne-labs/tsconfig": "0.13.13",
 		"clsx": "^2.1.1",
-		"concurrently": "^9.2.1",
+		"concurrently": "^10.0.1",
 		"cross-env": "^10.1.0",
 		"happy-dom": "^20.9.0",
 		"publint": "^0.3.21",
 		"size-limit": "^12.1.0",
-		"tsdown": "0.22.0",
+		"tsdown": "0.22.1",
 		"typescript": "6.0.3",
-		"vitest": "^4.1.6"
+		"vitest": "^4.1.8"
 	},
 	"publishConfig": {
 		"access": "public",

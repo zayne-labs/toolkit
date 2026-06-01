@@ -13,7 +13,6 @@ type UseStorageResult<TState, TSlice = TState> = [state: TSlice, actions: Storag
 
 /**
  * @description Creates a custom hook that returns a storage state and actions to modify it. You can use this if you need shared options.
- * @note You must use this if you want to be able to prevent syncing state across tabs.
  */
 export const createUseStorageState = <TState>(baseOptions: StorageOptions<TState>) => {
 	const externalStore = createExternalStorageStore(baseOptions);

@@ -23,7 +23,7 @@ const createExternalStorageStore = <TState>(
 
 	const selectedStorage = getStorage(storageArea);
 
-	const getInitialValue = () => {
+	const getInitialValueFromStorage = () => {
 		try {
 			const rawStorageValue = selectedStorage?.getItem(key);
 
@@ -40,7 +40,7 @@ const createExternalStorageStore = <TState>(
 		}
 	};
 
-	const internalStore = createStore<TState>(() => getInitialValue(), {
+	const internalStore = createStore<TState>(() => getInitialValueFromStorage(), {
 		equalityFn,
 		shouldNotifySync: globalShouldNotifySync,
 	});
@@ -91,6 +91,7 @@ const createExternalStorageStore = <TState>(
 					prevState,
 					setStateOptions?.storageAction
 				);
+				setStateOptions?.onNotifySync?.(prevState);
 			},
 			onNotifyViaBatch: (previousStateSnapshot) => {
 				handleItemStorageAndEventDispatch(
@@ -98,6 +99,7 @@ const createExternalStorageStore = <TState>(
 					previousStateSnapshot,
 					setStateOptions?.storageAction
 				);
+				setStateOptions?.onNotifyViaBatch?.(previousStateSnapshot);
 			},
 		});
 	};
@@ -108,7 +110,10 @@ const createExternalStorageStore = <TState>(
 		const isSameStoreInstance = "storeId" in resolvedEvent && resolvedEvent.storeId === storeId;
 
 		const shouldSkipUpdate =
-			resolvedEvent.key !== key || resolvedEvent.storageArea !== selectedStorage || isSameStoreInstance;
+			resolvedEvent.key !== key
+			|| resolvedEvent.storageArea !== selectedStorage
+			|| isSameStoreInstance
+			|| resolvedEvent.newValue === resolvedEvent.oldValue;
 
 		if (shouldSkipUpdate) return;
 
@@ -156,17 +161,15 @@ const createExternalStorageStore = <TState>(
 	subscribe.withSelector = internalStore.subscribe.withSelector;
 
 	const removeState = () => {
-		internalStore.setState(defaultValue, {
-			onNotifySync: (prevState) => {
-				handleItemStorageAndEventDispatch(internalStore.getState(), prevState, "remove-item");
-			},
+		setState(defaultValue, {
 			shouldNotifySync: true,
 			shouldReplace: true,
+			storageAction: "remove-item",
 		});
 	};
 
 	const resetState = () => {
-		setState(internalStore.getInitialState(), { shouldNotifySync: true, shouldReplace: true });
+		setState(defaultValue, { shouldNotifySync: true, shouldReplace: true });
 	};
 
 	return {

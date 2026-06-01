@@ -156,8 +156,6 @@ test("Same-Tab Sync - reflect changes between two stores in same window", async 
 
 test("Reset - resetState reverts to initial value immediately", async () => {
 	const key = "test-reset-key";
-	// Note: initialState is set from storage if present. Fallback is defaultValue.
-	localStorage.setItem(key, JSON.stringify({ count: 10 }));
 
 	using storeSetup = setupStorageStore({
 		defaultValue: { count: 0 },
@@ -171,11 +169,11 @@ test("Reset - resetState reverts to initial value immediately", async () => {
 	await flushMicrotasks();
 	expect(store.getState()).toEqual({ count: 20 });
 
-	// Then reset to session initial (10)
+	// Then reset to session initial (0)
 	store.resetState();
 
-	expect(store.getState()).toEqual({ count: 10 });
-	expect(localStorage.getItem(key)).toBe(JSON.stringify({ count: 10 }));
+	expect(store.getState()).toEqual({ count: 0 });
+	expect(localStorage.getItem(key)).toBe(JSON.stringify({ count: 0 }));
 });
 
 test("Remove - removeState deletes from storage", async () => {
