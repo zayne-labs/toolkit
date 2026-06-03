@@ -19,7 +19,7 @@ const setupLocationStore = (options: Parameters<typeof createLocationStore>[0] =
 		store,
 		[Symbol.dispose]: () => {
 			unsubscribe();
-			// Reset history and location as much as possible
+
 			globalThis.history.replaceState(undefined, "", "/");
 			vi.clearAllMocks();
 		},
@@ -85,7 +85,7 @@ test("Replace - updates location and notifies listeners", async () => {
 
 	expect(store.getState().pathname).toBe("/replaced");
 	expect(store.getState().searchString).toBe("b=2");
-	// Note: environment might return absolute URL
+
 	expect(replaceStateSpy).toHaveBeenCalledWith(undefined, "", expect.stringMatching(/\/replaced\?b=2$/));
 	expect(listener).toHaveBeenCalledTimes(1);
 });
@@ -94,7 +94,7 @@ test("PopState - reacts to external history changes", () => {
 	using storeSetup = setupLocationStore();
 	const { listener, store } = storeSetup;
 
-	// Simulate browser back button
+
 	globalThis.history.replaceState({ val: 1 }, "", "/back");
 	globalThis.dispatchEvent(new PopStateEvent("popstate", { state: { val: 1 } }));
 
@@ -129,13 +129,13 @@ test("withSelector - only notifies when selected slice changes", async () => {
 	const sliceListener = vi.fn();
 	const unsubscribe = store.subscribe.withSelector((s) => s.pathname, sliceListener);
 
-	store.push("/path?query=1"); // Pathname changes
+	store.push("/path?query=1");
 	await flushMicrotasks();
 	expect(sliceListener).toHaveBeenCalledTimes(1);
 
-	store.push("/path?query=2"); // Pathname stays same
+	store.push("/path?query=2");
 	await flushMicrotasks();
-	expect(sliceListener).toHaveBeenCalledTimes(1); // Still 1
+	expect(sliceListener).toHaveBeenCalledTimes(1);
 
 	unsubscribe();
 });
@@ -165,8 +165,7 @@ test("Same-Tab Sync - reflect changes between two stores in same window", async 
 	store1.push("/shared-path");
 	await flushMicrotasks();
 
-	// Verify that manually triggering a popstate event synchronizes other store instances.
-	// This is necessary because history.pushState/replaceState do not natively trigger popstate.
+
 	store1.triggerPopstateEvent({ manual: true });
 
 	expect(listener2).toHaveBeenCalled();
@@ -184,10 +183,145 @@ test("Error Handling - History Write Error", async () => {
 	store.push("/error-path");
 	await flushMicrotasks();
 
-	// Store should assume success (optimistic)
+
 	expect(store.getState().pathname).toBe("/error-path");
-	// Logger should capture error
+
 	expect(logger).toHaveBeenCalledWith(expect.any(Error));
 
 	pushStateSpy.mockRestore();
+});
+
+test("Push - passes state parameter correctly", async () => {
+	using storeSetup = setupLocationStore();
+	const { store } = storeSetup;
+
+	const pushStateSpy = vi.spyOn(globalThis.history, "pushState");
+
+	store.push("/with-state", { state: { userId: 123 } });
+	await flushMicrotasks();
+
+	expect(store.getState().pathname).toBe("/with-state");
+	expect(pushStateSpy).toHaveBeenCalledWith({ userId: 123 }, "", expect.stringContaining("/with-state"));
+
+	pushStateSpy.mockRestore();
+});
+
+test("Replace - passes state parameter correctly", async () => {
+	using storeSetup = setupLocationStore();
+	const { store } = storeSetup;
+
+	const replaceStateSpy = vi.spyOn(globalThis.history, "replaceState");
+
+	store.replace("/replaced-with-state", { state: { token: "abc" } });
+	await flushMicrotasks();
+
+	expect(store.getState().pathname).toBe("/replaced-with-state");
+	expect(replaceStateSpy).toHaveBeenCalledWith(
+		{ token: "abc" },
+		"",
+		expect.stringContaining("/replaced-with-state")
+	);
+
+	replaceStateSpy.mockRestore();
+});
+
+test("Sync Notification - global shouldNotifySync notifies immediately", () => {
+	using storeSetup = setupLocationStore({ shouldNotifySync: true });
+	const { listener, store } = storeSetup;
+
+	store.push("/sync-path");
+
+
+	expect(listener).toHaveBeenCalledTimes(1);
+	expect(store.getState().pathname).toBe("/sync-path");
+});
+
+test("Sync Notification - per-call shouldNotifySync override", async () => {
+	using storeSetup = setupLocationStore();
+	const { listener, store } = storeSetup;
+
+	store.push("/immediate", { shouldNotifySync: true });
+
+
+	expect(listener).toHaveBeenCalledTimes(1);
+	expect(store.getState().pathname).toBe("/immediate");
+
+	await flushMicrotasks();
+
+
+	expect(listener).toHaveBeenCalledTimes(1);
+});
+
+test("PopState - same storeId is ignored", async () => {
+	using storeSetup = setupLocationStore();
+	const { listener, store } = storeSetup;
+
+
+	store.push("/first-path");
+	await flushMicrotasks();
+	listener.mockClear();
+
+
+	const stateWithStoreId = store.getState();
+
+
+	globalThis.dispatchEvent(
+		new PopStateEvent("popstate", {
+			state: { ...stateWithStoreId, storeId: (stateWithStoreId as Record<string, unknown>).storeId },
+		})
+	);
+
+
+	expect(listener).not.toHaveBeenCalled();
+});
+
+test("Unsubscribe - cleans up popstate listener when all subscribers leave", () => {
+	const store = createLocationStore();
+
+	const listener1 = vi.fn();
+	const listener2 = vi.fn();
+
+	const unsub1 = store.subscribe(listener1);
+	const unsub2 = store.subscribe(listener2);
+
+
+	globalThis.history.replaceState(undefined, "", "/active");
+	globalThis.dispatchEvent(new PopStateEvent("popstate"));
+	expect(store.getState().pathname).toBe("/active");
+
+
+	unsub1();
+
+
+	globalThis.history.replaceState(undefined, "", "/still-active");
+	globalThis.dispatchEvent(new PopStateEvent("popstate"));
+	expect(store.getState().pathname).toBe("/still-active");
+
+
+	unsub2();
+
+	globalThis.history.replaceState(undefined, "", "/ignored");
+	globalThis.dispatchEvent(new PopStateEvent("popstate"));
+
+	expect(store.getState().pathname).toBe("/still-active");
+
+
+	globalThis.history.replaceState(undefined, "", "/");
+});
+
+test("getInitialState - returns initial snapshot after mutations", async () => {
+	using storeSetup = setupLocationStore();
+	const { store } = storeSetup;
+
+	const initialState = store.getInitialState();
+
+	store.push("/mutated-path?x=1#changed");
+	await flushMicrotasks();
+
+
+	expect(store.getInitialState()).toEqual(initialState);
+	expect(store.getInitialState().pathname).toBe("/");
+
+
+	expect(store.getState().pathname).toBe("/mutated-path");
 });

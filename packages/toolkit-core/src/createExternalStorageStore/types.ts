@@ -41,7 +41,7 @@ export type StorageOptions<TState> = CreateStoreOptions<TState> & {
 };
 
 export type StorageSetStateOptions<TState> = SetStateOptions<TState> & {
-	storageAction?: "remove-item" | "set-item";
+	storageAction?: "none" | "remove-item" | "set-item";
 };
 
 export type StorageStoreApi<TState> = Omit<StoreApi<TState>, "setState"> & {

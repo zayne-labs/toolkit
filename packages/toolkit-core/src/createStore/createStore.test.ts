@@ -49,12 +49,10 @@ test("Basic Batching - batch multiple synchronous calls and result in single lis
 	store.setState({ count: 2 });
 	store.setState({ count: 3 });
 
-	// Assert - listener should not be called yet
 	expect(listener).not.toHaveBeenCalled();
 
 	await flushMicrotasks();
 
-	// Assert - listener should be called exactly once with final state
 	expect(listener).toHaveBeenCalledTimes(1);
 	expect(listener).toHaveBeenCalledWith({ count: 3, name: "test" }, { count: 0, name: "test" });
 });
@@ -68,7 +66,6 @@ test("Basic Batching - apply all updates in correct order and reflect final stat
 
 	await flushMicrotasks();
 
-	// Assert - final state should reflect all updates in order
 	const finalState = store.getState();
 	expect(finalState).toEqual({ count: 15, multiplier: 2 });
 });
@@ -76,22 +73,18 @@ test("Basic Batching - apply all updates in correct order and reflect final stat
 test("Basic Batching - clear the queue after flush", async () => {
 	const { listener, store } = setupStore(() => ({ count: 0 }));
 
-	// Act - First batch
 	store.setState({ count: 1 });
 	store.setState({ count: 2 });
 	await flushMicrotasks();
 
-	// Assert - First batch processed
 	expect(listener).toHaveBeenCalledTimes(1);
 	expect(store.getState()).toEqual({ count: 2 });
 
-	// Act - Second batch (queue should be clear from first batch)
 	listener.mockClear();
 	store.setState({ count: 3 });
 	store.setState({ count: 4 });
 	await flushMicrotasks();
 
-	// Assert - Second batch processed independently
 	expect(listener).toHaveBeenCalledTimes(1);
 	expect(listener).toHaveBeenCalledWith({ count: 4 }, { count: 2 });
 	expect(store.getState()).toEqual({ count: 4 });
@@ -108,12 +101,10 @@ test("Basic Batching - prevent multiple microtask schedules with guard clause", 
 	store.setState({ count: 4 });
 	store.setState({ count: 5 });
 
-	// Assert - queueMicrotask should only be called once
 	expect(queueMicrotaskSpy.spy).toHaveBeenCalledTimes(1);
 
 	await flushMicrotasks();
 
-	// Assert - final state is correct
 	expect(store.getState()).toEqual({ count: 5 });
 });
 
@@ -122,34 +113,28 @@ test("Basic Batching - allow new batch after previous batch completes", async ()
 
 	using queueMicrotaskSpy = spyOnDisposable(globalThis, "queueMicrotask");
 
-	// Act - First batch
 	store.setState({ count: 1 });
 	store.setState({ count: 2 });
 	expect(queueMicrotaskSpy.spy).toHaveBeenCalledTimes(1);
 
 	await flushMicrotasks();
 
-	// Act - Second batch (guard should be reset)
 	store.setState({ count: 3 });
 	store.setState({ count: 4 });
 
-	// Assert - queueMicrotask should be called again (total 2 times)
-	// Note: flushMicrotasks itself calls queueMicrotask, so we expect 3 total
 	expect(queueMicrotaskSpy.spy).toHaveBeenCalledTimes(3);
 
 	await flushMicrotasks();
 
-	// Assert - final state is correct
 	expect(store.getState()).toEqual({ count: 4 });
 });
 
 test("Basic Batching - handle function updates with correct accumulated state", async () => {
 	const { store } = setupStore(() => ({ count: 0, total: 0 }));
 
-	// Act - Mix of object and function updates
 	store.setState({ count: 5 });
-	store.setState((state) => ({ total: state.count + 10 })); // Should see count: 5
-	store.setState((state) => ({ count: state.count * 2 })); // Should see count: 5
+	store.setState((state) => ({ total: state.count + 10 }));
+	store.setState((state) => ({ count: state.count * 2 }));
 
 	await flushMicrotasks();
 
@@ -160,14 +145,11 @@ test("Basic Batching - handle function updates with correct accumulated state", 
 test("Basic Batching - respect equality check when final state equals current state", async () => {
 	const { listener, store } = setupStore(() => ({ count: 5 }));
 
-	// Act - Batched updates that create a new object with same values
 	store.setState({ count: 5 });
 	store.setState({ count: 5 });
 
 	await flushMicrotasks();
 
-	// Assert - listener is called because a new object is created (different reference)
-	// This is expected behavior with Object.is equality check
 	expect(listener).toHaveBeenCalledTimes(1);
 	expect(listener).toHaveBeenCalledWith({ count: 5 }, { count: 5 });
 	expect(store.getState()).toEqual({ count: 5 });
@@ -176,24 +158,20 @@ test("Basic Batching - respect equality check when final state equals current st
 test("Basic Batching - handle rapid successive batches correctly", async () => {
 	const { listener, store } = setupStore(() => ({ count: 0 }));
 
-	// Act - First batch
 	store.setState({ count: 1 });
 	store.setState({ count: 2 });
 
 	await flushMicrotasks();
 
-	// Act - Second batch immediately after
 	store.setState({ count: 3 });
 	store.setState({ count: 4 });
 
 	await flushMicrotasks();
 
-	// Act - Third batch
 	store.setState({ count: 5 });
 
 	await flushMicrotasks();
 
-	// Assert - listener called 3 times (once per batch)
 	expect(listener).toHaveBeenCalledTimes(3);
 	expect(store.getState()).toEqual({ count: 5 });
 });
@@ -201,29 +179,24 @@ test("Basic Batching - handle rapid successive batches correctly", async () => {
 test("Update Merging - merge object updates correctly", async () => {
 	const { store } = setupStore(() => ({ age: 25, city: "NYC", name: "John" }));
 
-	// Act - Multiple object updates
 	store.setState({ name: "Jane" });
 	store.setState({ age: 30 });
 	store.setState({ city: "LA" });
 
 	await flushMicrotasks();
 
-	// Assert - all properties should be merged
 	expect(store.getState()).toEqual({ age: 30, city: "LA", name: "Jane" });
 });
 
 test("Update Merging - provide correct accumulated state to function updates", async () => {
 	const { store } = setupStore(() => ({ count: 0, multiplier: 1 }));
 
-	// Act - Function updates should see accumulated state
 	store.setState({ count: 5 });
 	store.setState((state) => {
-		// Should see count: 5
 		expect(state.count).toBe(5);
 		return { multiplier: state.count * 2 };
 	});
 	store.setState((state) => {
-		// Should see count: 5, multiplier: 10
 		expect(state.count).toBe(5);
 		expect(state.multiplier).toBe(10);
 		return { count: state.count + state.multiplier };
@@ -231,18 +204,16 @@ test("Update Merging - provide correct accumulated state to function updates", a
 
 	await flushMicrotasks();
 
-	// Assert - final state reflects accumulated updates
 	expect(store.getState()).toEqual({ count: 15, multiplier: 10 });
 });
 
 test("Update Merging - handle mixed object and function updates together", async () => {
 	const { store } = setupStore(() => ({ a: 1, b: 2, c: 3 }));
 
-	// Act - Mix of object and function updates
-	store.setState({ a: 10 }); // Object update
-	store.setState((state) => ({ b: state.a + 5 })); // Function sees a: 10
-	store.setState({ c: 20 }); // Object update
-	store.setState((state) => ({ a: state.b + state.c })); // Function sees b: 15, c: 20
+	store.setState({ a: 10 });
+	store.setState((state) => ({ b: state.a + 5 }));
+	store.setState({ c: 20 });
+	store.setState((state) => ({ a: state.b + state.c }));
 
 	await flushMicrotasks();
 
@@ -254,7 +225,6 @@ test("Update Merging - preserve update order during merging", async () => {
 
 	const updateOrder: number[] = [];
 
-	// Act - Track order of updates
 	store.setState((state) => {
 		updateOrder.push(1);
 		return { value: state.value + 1 };
@@ -270,22 +240,18 @@ test("Update Merging - preserve update order during merging", async () => {
 
 	await flushMicrotasks();
 
-	// Assert - updates applied in order
 	expect(updateOrder).toEqual([1, 2, 3]);
-	expect(store.getState()).toEqual({ value: 111 }); // 0 + 1 + 10 + 100
+	expect(store.getState()).toEqual({ value: 111 });
 });
 
 test("Update Merging - use equality check to prevent unnecessary notifications when merged state equals current state", async () => {
 	const { listener, store } = setupStore(() => ({ count: 5, name: "test" }));
 
-	// Act - Updates that result in same values
 	store.setState({ count: 5 });
 	store.setState({ name: "test" });
 
 	await flushMicrotasks();
 
-	// Assert - listener is called because new object is created (different reference)
-	// This is expected with Object.is equality check
 	expect(listener).toHaveBeenCalledTimes(1);
 });
 
@@ -295,7 +261,6 @@ test("Update Merging - handle complex nested object merging", async () => {
 		simple: "value",
 	}));
 
-	// Act - Update nested property (note: shallow merge only)
 	store.setState({ simple: "updated" });
 	store.setState({ nested: { x: 10, y: 20 } });
 
@@ -310,7 +275,6 @@ test("Update Merging - handle complex nested object merging", async () => {
 test("Update Merging - handle function updates that depend on previous function updates", async () => {
 	const { store } = setupStore(() => ({ counter: 0 }));
 
-	// Act - Chain of dependent function updates
 	store.setState((state) => ({ counter: state.counter + 1 }));
 	store.setState((state) => ({ counter: state.counter * 2 }));
 	store.setState((state) => ({ counter: state.counter + 10 }));
@@ -318,19 +282,16 @@ test("Update Merging - handle function updates that depend on previous function 
 
 	await flushMicrotasks();
 
-	// Assert - ((0 + 1) * 2 + 10) / 2 = 6
 	expect(store.getState()).toEqual({ counter: 6 });
 });
 
 test("Update Merging - handle empty object updates", async () => {
 	const { listener, store } = setupStore(() => ({ count: 5 }));
 
-	// Act - Empty object update
 	store.setState({});
 
 	await flushMicrotasks();
 
-	// Assert - state unchanged but listener called (new object created)
 	expect(listener).toHaveBeenCalledTimes(1);
 	expect(store.getState()).toEqual({ count: 5 });
 });
@@ -338,10 +299,8 @@ test("Update Merging - handle empty object updates", async () => {
 test("Update Merging - correctly merge when function returns partial state", async () => {
 	const { store } = setupStore(() => ({ x: 1, y: 2, z: 3 }));
 
-	// Act - Function returns partial update
 	store.setState({ x: 10 });
-	store.setState((state) => ({ y: state.x + 5 })); // Only updates y
-	// z should remain unchanged
+	store.setState((state) => ({ y: state.x + 5 }));
 
 	await flushMicrotasks();
 
@@ -351,23 +310,19 @@ test("Update Merging - correctly merge when function returns partial state", asy
 test("Async Boundary - batch updates before await together", async () => {
 	const { listener, store } = setupStore(() => ({ count: 0, status: "idle" }));
 
-	// Act - Updates before await should be batched
 	const asyncOperation = async () => {
 		store.setState({ count: 1 });
 		store.setState({ count: 2 });
 		store.setState({ status: "loading" });
 
-		// These updates should be batched together before the await
 		await new Promise((resolve) => setTimeout(resolve, 10));
 
-		// This update happens after await (new batch)
 		store.setState({ status: "complete" });
 	};
 
 	await asyncOperation();
 	await flushMicrotasks();
 
-	// Assert - listener should be called twice (once for pre-await batch, once for post-await)
 	expect(listener).toHaveBeenCalledTimes(2);
 	expect(listener).toHaveBeenNthCalledWith(
 		1,
@@ -385,13 +340,11 @@ test("Async Boundary - form new batch for updates after await", async () => {
 	const { listener, store } = setupStore(() => ({ step: 0 }));
 
 	const asyncOperation = async () => {
-		// First batch - before await
 		store.setState({ step: 1 });
 		store.setState({ step: 2 });
 
 		await new Promise((resolve) => setTimeout(resolve, 10));
 
-		// Second batch - after await
 		store.setState({ step: 3 });
 		store.setState({ step: 4 });
 	};
@@ -399,7 +352,6 @@ test("Async Boundary - form new batch for updates after await", async () => {
 	await asyncOperation();
 	await flushMicrotasks();
 
-	// Assert - two separate batches
 	expect(listener).toHaveBeenCalledTimes(2);
 	expect(store.getState()).toEqual({ step: 4 });
 });
@@ -408,27 +360,23 @@ test("Async Boundary - result in single notification per batch across async boun
 	const { listener, store } = setupStore(() => ({ value: 0 }));
 
 	const asyncOperation = async () => {
-		// Batch 1
 		store.setState({ value: 1 });
 		store.setState({ value: 2 });
 		store.setState({ value: 3 });
 
 		await new Promise((resolve) => setTimeout(resolve, 5));
 
-		// Batch 2
 		store.setState({ value: 4 });
 		store.setState({ value: 5 });
 
 		await new Promise((resolve) => setTimeout(resolve, 5));
 
-		// Batch 3
 		store.setState({ value: 6 });
 	};
 
 	await asyncOperation();
 	await flushMicrotasks();
 
-	// Assert - exactly 3 notifications (one per batch)
 	expect(listener).toHaveBeenCalledTimes(3);
 	expect(listener).toHaveBeenNthCalledWith(1, { value: 3 }, { value: 0 });
 	expect(listener).toHaveBeenNthCalledWith(2, { value: 5 }, { value: 3 });
@@ -438,14 +386,11 @@ test("Async Boundary - result in single notification per batch across async boun
 test("Async Boundary - flush pending batch when async function completes", async () => {
 	const { listener, store } = setupStore(() => ({ count: 0 }));
 
-	// Act - Synchronous batched calls
 	store.setState({ count: 1 });
 	store.setState({ count: 2 });
 
-	// Explicitly wait for microtasks to ensure batch is flushed
 	await flushMicrotasks();
 
-	// Assert - batch should be flushed
 	expect(listener).toHaveBeenCalledTimes(1);
 	expect(store.getState()).toEqual({ count: 2 });
 });
@@ -453,7 +398,6 @@ test("Async Boundary - flush pending batch when async function completes", async
 test("Async Boundary - handle multiple async operations with independent batches", async () => {
 	const { listener, store } = setupStore(() => ({ counter: 0 }));
 
-	// Act - Run two async operations concurrently
 	const operation1 = async () => {
 		store.setState({ counter: 1 });
 		await new Promise((resolve) => setTimeout(resolve, 10));
@@ -469,9 +413,8 @@ test("Async Boundary - handle multiple async operations with independent batches
 	await Promise.all([operation1(), operation2()]);
 	await flushMicrotasks();
 
-	// Assert - multiple batches occurred
 	expect(listener).toHaveBeenCalled();
-	// Final state depends on timing, but should be either 10 or 20
+
 	const finalState = store.getState();
 	expect([10, 20]).toContain(finalState.counter);
 });
@@ -494,7 +437,6 @@ test("Async Boundary - handle nested async operations correctly", async () => {
 	await nestedAsync();
 	await flushMicrotasks();
 
-	// Assert - batches should be properly separated
 	expect(listener).toHaveBeenCalled();
 	expect(store.getState()).toEqual({ level: 4 });
 });
@@ -516,7 +458,6 @@ test("Async Boundary - handle async/await with Promise.all correctly", async () 
 	await asyncOperation();
 	await flushMicrotasks();
 
-	// Assert - multiple batches due to async boundaries
 	expect(listener).toHaveBeenCalled();
 	expect(store.getState()).toEqual({ result: 4 });
 });
@@ -524,18 +465,14 @@ test("Async Boundary - handle async/await with Promise.all correctly", async () 
 test("Immediate Notifications - notify immediately when shouldNotifySync is true", () => {
 	const { listener, store } = setupStore(() => ({ count: 0 }));
 
-	// Act - setState with shouldNotifySync
 	store.setState({ count: 1 }, { shouldNotifySync: true });
 
-	// Assert - listener should be called immediately (synchronously)
 	expect(listener).toHaveBeenCalledTimes(1);
 	expect(listener).toHaveBeenCalledWith({ count: 1 }, { count: 0 });
 	expect(store.getState()).toEqual({ count: 1 });
 
-	// Act - Another immediate setState
 	store.setState({ count: 2 }, { shouldNotifySync: true });
 
-	// Assert - listener called again immediately
 	expect(listener).toHaveBeenCalledTimes(2);
 	expect(listener).toHaveBeenCalledWith({ count: 2 }, { count: 1 });
 	expect(store.getState()).toEqual({ count: 2 });
@@ -549,13 +486,11 @@ test("Immediate Notifications - return updated state from getState immediately e
 	store.setState({ count: 2 });
 	store.setState({ name: "updated" });
 
-	// Assert - getState returns the latest state immediately (state is updated, notifications are batched)
 	expect(store.getState()).toEqual({ count: 2, name: "updated" });
 
 	// Wait for batch to flush
 	await flushMicrotasks();
 
-	// Assert - state remains the same
 	expect(store.getState()).toEqual({ count: 2, name: "updated" });
 });
 
@@ -565,7 +500,6 @@ test("Immediate Notifications - work with subscribe for batched updates", async 
 	const listenerOne = vi.fn();
 	const listenerTwo = vi.fn();
 
-	// Subscribe multiple listeners
 	const unsubscribeOne = store.subscribe(listenerOne);
 	const unsubscribeTwo = store.subscribe(listenerTwo);
 
@@ -576,21 +510,18 @@ test("Immediate Notifications - work with subscribe for batched updates", async 
 
 	await flushMicrotasks();
 
-	// Assert - both listeners called once with final state
 	expect(listenerOne).toHaveBeenCalledTimes(1);
 	expect(listenerOne).toHaveBeenCalledWith({ value: 3 }, { value: 0 });
 	expect(listenerTwo).toHaveBeenCalledTimes(1);
 	expect(listenerTwo).toHaveBeenCalledWith({ value: 3 }, { value: 0 });
 
-	// Act - Unsubscribe and batch again
 	unsubscribeOne();
 	listenerTwo.mockClear();
 
 	store.setState({ value: 4 });
 	await flushMicrotasks();
 
-	// Assert - only listener2 called
-	expect(listenerOne).toHaveBeenCalledTimes(1); // Still 1 from before
+	expect(listenerOne).toHaveBeenCalledTimes(1);
 	expect(listenerTwo).toHaveBeenCalledTimes(1);
 	expect(listenerTwo).toHaveBeenCalledWith({ value: 4 }, { value: 3 });
 
@@ -603,28 +534,23 @@ test("Immediate Notifications - work with subscribe.withSelector for batched upd
 	const countListener = vi.fn();
 	const nameListener = vi.fn();
 
-	// Subscribe with selectors
 	store.subscribe.withSelector((state) => state.count, countListener);
 	store.subscribe.withSelector((state) => state.name, nameListener);
 
-	// Act - Batch updates to different properties
 	store.setState({ count: 1 });
 	store.setState({ count: 2 });
 	store.setState({ age: 30 });
 
 	await flushMicrotasks();
 
-	// Assert - only countListener called (name didn't change)
 	expect(countListener).toHaveBeenCalledTimes(1);
 	expect(countListener).toHaveBeenCalledWith(2, 0);
 	expect(nameListener).not.toHaveBeenCalled();
 
-	// Act - Update name
 	countListener.mockClear();
 	store.setState({ name: "updated" });
 	await flushMicrotasks();
 
-	// Assert - only nameListener called
 	expect(nameListener).toHaveBeenCalledTimes(1);
 	expect(nameListener).toHaveBeenCalledWith("updated", "test");
 	expect(countListener).not.toHaveBeenCalled();
@@ -634,7 +560,6 @@ test("Immediate Notifications - work with resetState and clear pending notificat
 	const initialState = { count: 0, name: "initial" };
 	const { listener, store } = setupStore(() => initialState);
 
-	// Act - Update state
 	store.setState({ count: 5, name: "updated" });
 
 	await flushMicrotasks();
@@ -642,30 +567,21 @@ test("Immediate Notifications - work with resetState and clear pending notificat
 	expect(store.getState()).toEqual({ count: 5, name: "updated" });
 	expect(listener).toHaveBeenCalledTimes(1);
 
-	// Act - Queue batched updates (state updated, notifications pending)
 	store.setState({ count: 10 });
 	store.setState({ name: "batched" });
 
-	// Assert - state updated immediately but notifications pending
 	expect(store.getState()).toEqual({ count: 10, name: "batched" });
 	expect(listener).toHaveBeenCalledTimes(1); // Still only 1 call
 
-	// Act - Reset state before notifications flush (should clear pending notifications)
 	store.resetState();
 
-	// Assert - state reset immediately
 	expect(store.getState()).toEqual(initialState);
 
 	await flushMicrotasks();
 
-	// Assert - listener called 2 times total:
-	// 1. First setState batch
-	// 2. resetState batch
-	// The pending notification is cancelled by the isScheduleCancelled flag
 	expect(listener).toHaveBeenCalledTimes(2);
 	expect(store.getState()).toEqual(initialState);
 
-	// Act - Queue new batched updates after reset
 	listener.mockClear();
 	store.setState({ count: 10 });
 	store.setState({ name: "batched" });
@@ -673,16 +589,13 @@ test("Immediate Notifications - work with resetState and clear pending notificat
 	// Wait for batch to flush
 	await flushMicrotasks();
 
-	// Assert - new batched updates applied normally
 	expect(store.getState()).toEqual({ count: 10, name: "batched" });
 	expect(listener).toHaveBeenCalledTimes(1);
 
-	// Act - Reset again
 	store.resetState();
 
 	await flushMicrotasks();
 
-	// Assert - state reset to initial again
 	expect(store.getState()).toEqual(initialState);
 });
 
@@ -708,7 +621,6 @@ test("Immediate Notifications - work with resetState after batch completes", asy
 test("Immediate Notifications - batch multiple synchronous updates efficiently", async () => {
 	const { listener, store } = setupStore(() => ({ count: 0 }));
 
-	// Act - Multiple synchronous setState calls
 	const startTime = performance.now();
 
 	for (let count = 1; count <= 100; count++) {
@@ -718,37 +630,30 @@ test("Immediate Notifications - batch multiple synchronous updates efficiently",
 	const endTime = performance.now();
 	const duration = endTime - startTime;
 
-	// Assert - state updated immediately but listeners not called yet
 	expect(listener).not.toHaveBeenCalled();
 	expect(store.getState()).toEqual({ count: 100 });
 
 	await flushMicrotasks();
 
-	// Assert - listener called once after batch
 	expect(listener).toHaveBeenCalledTimes(1);
 	expect(listener).toHaveBeenCalledWith({ count: 100 }, { count: 0 });
 
-	// Assert - performance is reasonable (should be very fast)
 	expect(duration).toBeLessThan(100);
 });
 
 test("Immediate Notifications - handle interleaved batched and immediate calls correctly", async () => {
 	const { listener, store } = setupStore(() => ({ count: 0 }));
 
-	// Act - Mix batched and immediate calls
-	store.setState({ count: 1 }); // Batched - schedules microtask, snapshot = 0
-	store.setState({ count: 2 }); // Batched - reuses same microtask
-	store.setState({ count: 10 }, { shouldNotifySync: true }); // Immediate - notifies with current previousState (2)
+	store.setState({ count: 1 });
+	store.setState({ count: 2 });
+	store.setState({ count: 10 }, { shouldNotifySync: true });
 
-	// Assert - immediate call notified synchronously
 	expect(listener).toHaveBeenCalledTimes(1);
 	expect(listener).toHaveBeenCalledWith({ count: 10 }, { count: 2 });
 	expect(store.getState()).toEqual({ count: 10 });
 
-	// Wait for the already-queued microtask
 	await flushMicrotasks();
 
-	// Assert - the queued microtask was cancelled by shouldNotifySync
 	expect(listener).toHaveBeenCalledTimes(1); // Still only 1 call
 	expect(store.getState()).toEqual({ count: 10 });
 });
@@ -756,17 +661,14 @@ test("Immediate Notifications - handle interleaved batched and immediate calls c
 test("Immediate Notifications - batch function updates correctly", async () => {
 	const { listener, store } = setupStore(() => ({ count: 0 }));
 
-	// Act - Function updates are batched
 	store.setState((state) => ({ count: state.count + 5 }));
 	store.setState((state) => ({ count: state.count * 2 }));
 
-	// Assert - state updated but listeners not called yet
 	expect(listener).not.toHaveBeenCalled();
 	expect(store.getState()).toEqual({ count: 10 });
 
 	await flushMicrotasks();
 
-	// Assert - listener called once with final state
 	expect(listener).toHaveBeenCalledTimes(1);
 	expect(listener).toHaveBeenCalledWith({ count: 10 }, { count: 0 });
 });
@@ -775,10 +677,8 @@ test("Immediate Notifications - maintain existing behavior for getInitialState",
 	const initialState = { count: 0, name: "test" };
 	const { store } = setupStore(() => initialState);
 
-	// Act - Modify state
 	store.setState({ count: 10, name: "updated" });
 
-	// Assert - getInitialState returns original initial state
 	expect(store.getInitialState()).toEqual(initialState);
 	expect(store.getState()).toEqual({ count: 10, name: "updated" });
 });
@@ -786,15 +686,12 @@ test("Immediate Notifications - maintain existing behavior for getInitialState",
 test("Immediate Notifications - respect equality check behavior", async () => {
 	const { listener, store } = setupStore(() => ({ count: 5 }));
 
-	// Act - setState with same value (new object)
 	store.setState({ count: 5 });
 
 	await flushMicrotasks();
 
-	// Assert - listener called because new object created (different reference)
 	expect(listener).toHaveBeenCalledTimes(1);
 
-	// Act - setState with function returning same state
 	listener.mockClear();
 	store.setState((state) => state);
 
@@ -1181,7 +1078,6 @@ test("Plugin Edge case - internal resetState should use wrapped setState", () =>
 	expect(wrappedSetState).toHaveBeenCalledTimes(1);
 
 	// resetState should trigger the wrapper too!
-	// IF THIS FAILS, IT'S THE ALIASING BUG.
 	store.resetState();
 	expect(wrappedSetState).toHaveBeenCalledTimes(2);
 });

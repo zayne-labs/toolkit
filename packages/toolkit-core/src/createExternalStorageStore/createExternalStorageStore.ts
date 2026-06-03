@@ -1,3 +1,4 @@
+import { shallowCompare } from "../compare";
 import { createStore } from "../createStore";
 import { on } from "../on";
 import type { StorageOptions, StorageSetStateOptions, StorageStoreApi } from "./types";
@@ -8,7 +9,7 @@ const createExternalStorageStore = <TState>(
 ): StorageStoreApi<TState> => {
 	const {
 		defaultValue = null as never,
-		equalityFn = Object.is,
+		equalityFn = shallowCompare,
 		key,
 		logger = console.error,
 		parser = JSON.parse,
@@ -50,6 +51,8 @@ const createExternalStorageStore = <TState>(
 		prevState: TState,
 		storageAction: StorageSetStateOptions<TState>["storageAction"] = "set-item"
 	) => {
+		if (storageAction === "none") return;
+
 		try {
 			const newValue = serializer(partialize(state));
 
@@ -124,7 +127,7 @@ const createExternalStorageStore = <TState>(
 			value: resolvedEvent.newValue,
 		});
 
-		internalStore.setState(nextState, { shouldNotifySync: true, shouldReplace: true });
+		setState(nextState, { shouldNotifySync: true, shouldReplace: true, storageAction: "none" });
 	};
 
 	let cleanupExternalListeners: (() => void) | null = null;

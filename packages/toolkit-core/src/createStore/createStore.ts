@@ -114,10 +114,7 @@ export const createStoreWithContext = <TBaseState>() => {
 		};
 
 		const resetState = () => {
-			resolvedApi.setState(resolvedApi.getInitialState(), {
-				shouldNotifySync: true,
-				shouldReplace: true,
-			});
+			resolvedApi.setState(initialState, { shouldNotifySync: true, shouldReplace: true });
 		};
 
 		const storeApi: InternalStoreApi = {
