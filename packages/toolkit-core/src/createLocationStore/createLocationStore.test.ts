@@ -94,7 +94,6 @@ test("PopState - reacts to external history changes", () => {
 	using storeSetup = setupLocationStore();
 	const { listener, store } = storeSetup;
 
-
 	globalThis.history.replaceState({ val: 1 }, "", "/back");
 	globalThis.dispatchEvent(new PopStateEvent("popstate", { state: { val: 1 } }));
 
@@ -165,7 +164,6 @@ test("Same-Tab Sync - reflect changes between two stores in same window", async 
 	store1.push("/shared-path");
 	await flushMicrotasks();
 
-
 	store1.triggerPopstateEvent({ manual: true });
 
 	expect(listener2).toHaveBeenCalled();
@@ -182,7 +180,6 @@ test("Error Handling - History Write Error", async () => {
 
 	store.push("/error-path");
 	await flushMicrotasks();
-
 
 	expect(store.getState().pathname).toBe("/error-path");
 
@@ -231,7 +228,6 @@ test("Sync Notification - global shouldNotifySync notifies immediately", () => {
 
 	store.push("/sync-path");
 
-
 	expect(listener).toHaveBeenCalledTimes(1);
 	expect(store.getState().pathname).toBe("/sync-path");
 });
@@ -242,12 +238,10 @@ test("Sync Notification - per-call shouldNotifySync override", async () => {
 
 	store.push("/immediate", { shouldNotifySync: true });
 
-
 	expect(listener).toHaveBeenCalledTimes(1);
 	expect(store.getState().pathname).toBe("/immediate");
 
 	await flushMicrotasks();
-
 
 	expect(listener).toHaveBeenCalledTimes(1);
 });
@@ -256,21 +250,17 @@ test("PopState - same storeId is ignored", async () => {
 	using storeSetup = setupLocationStore();
 	const { listener, store } = storeSetup;
 
-
 	store.push("/first-path");
 	await flushMicrotasks();
 	listener.mockClear();
 
-
 	const stateWithStoreId = store.getState();
-
 
 	globalThis.dispatchEvent(
 		new PopStateEvent("popstate", {
 			state: { ...stateWithStoreId, storeId: (stateWithStoreId as Record<string, unknown>).storeId },
 		})
 	);
-
 
 	expect(listener).not.toHaveBeenCalled();
 });
@@ -284,19 +274,15 @@ test("Unsubscribe - cleans up popstate listener when all subscribers leave", () 
 	const unsub1 = store.subscribe(listener1);
 	const unsub2 = store.subscribe(listener2);
 
-
 	globalThis.history.replaceState(undefined, "", "/active");
 	globalThis.dispatchEvent(new PopStateEvent("popstate"));
 	expect(store.getState().pathname).toBe("/active");
 
-
 	unsub1();
-
 
 	globalThis.history.replaceState(undefined, "", "/still-active");
 	globalThis.dispatchEvent(new PopStateEvent("popstate"));
 	expect(store.getState().pathname).toBe("/still-active");
-
 
 	unsub2();
 
@@ -304,7 +290,6 @@ test("Unsubscribe - cleans up popstate listener when all subscribers leave", () 
 	globalThis.dispatchEvent(new PopStateEvent("popstate"));
 
 	expect(store.getState().pathname).toBe("/still-active");
-
 
 	globalThis.history.replaceState(undefined, "", "/");
 });
@@ -318,10 +303,8 @@ test("getInitialState - returns initial snapshot after mutations", async () => {
 	store.push("/mutated-path?x=1#changed");
 	await flushMicrotasks();
 
-
 	expect(store.getInitialState()).toEqual(initialState);
 	expect(store.getInitialState().pathname).toBe("/");
-
 
 	expect(store.getState().pathname).toBe("/mutated-path");
 });
