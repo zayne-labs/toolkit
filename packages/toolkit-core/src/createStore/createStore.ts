@@ -62,14 +62,10 @@ export const createStoreWithContext = <TBaseState>() => {
 					notifyListeners(currentState, prevState);
 				},
 				onNotifyViaBatch: (previousStateSnapshot) => {
-					const prevState =
-						// eslint-disable-next-line ts-eslint/prefer-nullish-coalescing -- Ignore, cuz I'm only checking for undefined
-						previousStateSnapshot === undefined ? getInitialState() : previousStateSnapshot;
+					if (equalityFn(currentState, previousStateSnapshot)) return;
 
-					if (equalityFn(currentState, prevState)) return;
-
-					onNotifyViaBatch?.(prevState);
-					notifyListeners(currentState, prevState);
+					onNotifyViaBatch?.(previousStateSnapshot);
+					notifyListeners(currentState, previousStateSnapshot);
 				},
 			});
 		};

@@ -71,7 +71,7 @@ export const useControllableState = <TProp>(options: UseControllableStateOptions
 
 	const stableOnPropChange = useCallbackRef(onChange);
 
-	const [unControlledState, setUnControlledState] = useState(defaultProp as TProp);
+	const [unControlledState, setUnControlledState] = useState(defaultProp);
 
 	const state = (isControlled ? prop : unControlledState) as TProp;
 
@@ -81,10 +81,11 @@ export const useControllableState = <TProp>(options: UseControllableStateOptions
 
 			if (isControlled) {
 				stableOnPropChange?.(nextValue);
-			} else {
-				setUnControlledState(nextValue);
-				stableOnPropChange?.(nextValue);
+				return;
 			}
+
+			setUnControlledState(nextValue);
+			stableOnPropChange?.(nextValue);
 		},
 		[state, isControlled, stableOnPropChange]
 	);
