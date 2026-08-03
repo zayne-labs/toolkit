@@ -10,21 +10,25 @@ const elementCanBeScrolled = (node: Element, overflow: "overflowX" | "overflowY"
 
 	return (
 		styles[overflow] !== "hidden"
-		&& !(styles.overflowY === styles.overflowX && !alwaysContainsScroll(node) && styles[overflow] === "visible")
+		&& !(
+			styles.overflowY === styles.overflowX
+			&& !alwaysContainsScroll(node)
+			&& styles[overflow] === "visible"
+		)
 	);
 };
 
-const getVerticalScrollVariables = ({ clientHeight, scrollHeight, scrollTop }: HTMLElement): ScrollVariables => [
-	scrollTop,
-	scrollHeight,
+const getVerticalScrollVariables = ({
 	clientHeight,
-];
+	scrollHeight,
+	scrollTop,
+}: HTMLElement): ScrollVariables => [scrollTop, scrollHeight, clientHeight];
 
-const getHorizontalScrollVariables = ({ clientWidth, scrollLeft, scrollWidth }: HTMLElement): ScrollVariables => [
+const getHorizontalScrollVariables = ({
+	clientWidth,
 	scrollLeft,
 	scrollWidth,
-	clientWidth,
-];
+}: HTMLElement): ScrollVariables => [scrollLeft, scrollWidth, clientWidth];
 
 export const getScrollVariables = (axis: ScrollLockAxis, node: HTMLElement) =>
 	axis === "v" ? getVerticalScrollVariables(node) : getHorizontalScrollVariables(node);
@@ -87,9 +91,10 @@ export const shouldCancelScroll = (
 		}
 
 		const parent = target.parentNode;
-		target = (parent?.nodeType === Node.DOCUMENT_FRAGMENT_NODE ? (parent as ShadowRoot).host : parent) as
-			| HTMLElement
-			| null;
+		target = (
+			parent?.nodeType === Node.DOCUMENT_FRAGMENT_NODE ?
+				(parent as ShadowRoot).host
+			:	parent) as HTMLElement | null;
 
 		const shouldKeepWalking =
 			(!targetInLock && target !== document.body)
@@ -107,6 +112,7 @@ export const shouldCancelScroll = (
 
 	return (
 		!isDeltaPositive
-		&& ((noOverscroll && Math.abs(availableScrollTop) < 1) || (!noOverscroll && -delta > availableScrollTop))
+		&& ((noOverscroll && Math.abs(availableScrollTop) < 1)
+			|| (!noOverscroll && -delta > availableScrollTop))
 	);
 };

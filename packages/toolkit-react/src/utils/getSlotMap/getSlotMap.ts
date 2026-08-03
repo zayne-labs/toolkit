@@ -124,8 +124,7 @@ export const getSlotMap = <TSlotComponentProps extends GetSlotComponentProps>(
 export type GetSlotComponentProps<
 	TName extends string = string,
 	TChildren extends CallbackFn<never, React.ReactNode> | React.ReactNode =
-		| CallbackFn<never, React.ReactNode>
-		| React.ReactNode,
+		CallbackFn<never, React.ReactNode> | React.ReactNode,
 > = {
 	children: TChildren;
 	/**

@@ -10,7 +10,12 @@ import {
 } from "./dom";
 import { createInertLock } from "./inert";
 import { locationCouldBeScrolled, shouldCancelScroll } from "./scrollBoundary";
-import type { ScrollLockAxis, ScrollLockController, ScrollLockOptions, ScrollLockResolvedOptions } from "./types";
+import type {
+	ScrollLockAxis,
+	ScrollLockController,
+	ScrollLockOptions,
+	ScrollLockResolvedOptions,
+} from "./types";
 
 type ActiveLock = {
 	allowPinchZoom: boolean;
@@ -56,7 +61,10 @@ const getEventAxis = (deltaX: number, deltaY: number): ScrollLockAxis =>
 	Math.abs(deltaX) > Math.abs(deltaY) ? "h" : "v";
 
 const shouldCancelEvent = (lock: ActiveLock, event: TouchEvent | WheelEvent, lockTarget: HTMLElement) => {
-	if (("touches" in event && event.touches.length === 2) || (event.type === "wheel" && (event as WheelEvent).ctrlKey)) {
+	if (
+		("touches" in event && event.touches.length === 2)
+		|| (event.type === "wheel" && (event as WheelEvent).ctrlKey)
+	) {
 		return !lock.allowPinchZoom;
 	}
 
@@ -88,7 +96,13 @@ const shouldCancelEvent = (lock: ActiveLock, event: TouchEvent | WheelEvent, loc
 
 	const cancelingAxis = activeAxis ?? moveDirection;
 
-	return shouldCancelScroll(cancelingAxis, lockTarget, event, cancelingAxis === "h" ? deltaX : deltaY, true);
+	return shouldCancelScroll(
+		cancelingAxis,
+		lockTarget,
+		event,
+		cancelingAxis === "h" ? deltaX : deltaY,
+		true
+	);
 };
 
 const handleDocumentWheelOrTouchMove = (event: Event) => {
