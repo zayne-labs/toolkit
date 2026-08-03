@@ -2,7 +2,8 @@ export type ScrollLockAxis = "h" | "v";
 
 export type ScrollLockGapMode = "margin" | "padding";
 
-export type ScrollLockElementResolver = HTMLElement | (() => HTMLElement | null | undefined) | null | undefined;
+export type ScrollLockElementResolver =
+	HTMLElement | (() => HTMLElement | null | undefined) | null | undefined;
 
 export type ScrollLockShard = ScrollLockElementResolver | { current: HTMLElement | null | undefined };
 

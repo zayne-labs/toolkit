@@ -65,9 +65,7 @@ test("useScrollLock - activates, updates, and disposes with React lifecycle", ()
 
 test("useScrollLock - remains balanced under StrictMode effect replay", () => {
 	act(() =>
-		root.render(
-			createElement(StrictMode, null, createElement(ScrollLockHarness, { enabled: true }))
-		)
+		root.render(createElement(StrictMode, null, createElement(ScrollLockHarness, { enabled: true })))
 	);
 
 	expect(getActiveScrollLockCount()).toBe(1);

@@ -20,10 +20,14 @@ export const resolveElement = (
 	return element ?? null;
 };
 
-export const resolveShards = (shards: ScrollLockShard[] | (() => ScrollLockShard[] | null | undefined) | undefined) => {
+export const resolveShards = (
+	shards: ScrollLockShard[] | (() => ScrollLockShard[] | null | undefined) | undefined
+) => {
 	const resolvedShards = typeof shards === "function" ? shards() : shards;
 
-	return (resolvedShards ?? []).map((shard) => resolveElement(shard)).filter((element) => element !== null);
+	return (resolvedShards ?? [])
+		.map((shard) => resolveElement(shard))
+		.filter((element) => element !== null);
 };
 
 export const containsOrEquals = (parent: HTMLElement, child: EventTarget | null) => {

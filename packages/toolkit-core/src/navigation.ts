@@ -3,10 +3,7 @@ import { defineEnum, isArray, isIterable, isString } from "@zayne-labs/toolkit-t
 type KeyValuePair = [string, string];
 
 export type URLSearchParamsInit =
-	| string
-	| KeyValuePair[]
-	| Record<string, string | string[]>
-	| URLSearchParams;
+	string | KeyValuePair[] | Record<string, string | string[]> | URLSearchParams;
 
 export const createSearchParams = (paramsInit: URLSearchParamsInit): URLSearchParams => {
 	if (isString(paramsInit) || isIterable(paramsInit)) {

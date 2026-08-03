@@ -136,8 +136,7 @@ export interface FileValidationSettings {
 	 * By default, the value is in bytes, but you can also use an object with kb, mb, gb etc as properties
 	 */
 	maxFileSize?:
-		| number
-		| UnionDiscriminator<[{ kb: number }, { mb: number }, { gb: number }, { tb: number }]>;
+		number | UnionDiscriminator<[{ kb: number }, { mb: number }, { gb: number }, { tb: number }]>;
 
 	/**
 	 * Whether to reject files that already exist in existingFiles

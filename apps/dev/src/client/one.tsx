@@ -111,9 +111,7 @@ function AppOne() {
 }
 
 type SlotComponentProps =
-	| GetSlotComponentProps<"content">
-	| GetSlotComponentProps<"footer">
-	| GetSlotComponentProps<"header">;
+	GetSlotComponentProps<"content"> | GetSlotComponentProps<"footer"> | GetSlotComponentProps<"header">;
 
 function ParentOne(props: { children: React.ReactNode }) {
 	const { children } = props;
