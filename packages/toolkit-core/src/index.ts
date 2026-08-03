@@ -12,7 +12,7 @@ export * from "./createStore";
 export * from "./css";
 export * from "./debounce";
 export * from "./fileValidation";
-export * from "./lockScroll";
+export * from "./createLockScroll";
 export * from "./navigation";
 export * from "./omitKeys";
 export * from "./on";

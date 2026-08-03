@@ -13,6 +13,7 @@ export * from "./useDisclosure";
 export * from "./useIsHydrated";
 export * from "./useLocationState";
 export * from "./useScrollObserver";
+export * from "./useScrollLock";
 export * from "./useSearch";
 export * from "./useSearchParams";
 export * from "./useCompare";

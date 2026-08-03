@@ -44,7 +44,9 @@
 		"lint:size": "size-limit",
 		"lint:type-check": "tsc --pretty  -p tsconfig.json",
 		"release": "pnpm publish --no-git-checks",
-		"release:test": "pnpx pkg-pr-new publish"
+		"release:test": "pnpx pkg-pr-new publish",
+		"test": "vitest run",
+		"test:dev": "vitest dev"
 	},
 	"peerDependencies": {
 		"react": "catalog:react:peer",
@@ -64,21 +66,25 @@
 		"@zayne-labs/toolkit-type-helpers": "workspace:*"
 	},
 	"devDependencies": {
-		"@arethetypeswrong/cli": "^0.18.3",
-		"@size-limit/esbuild-why": "^12.1.0",
-		"@size-limit/preset-small-lib": "^12.1.0",
+		"@arethetypeswrong/cli": "^0.18.5",
+		"@size-limit/esbuild-why": "^13.0.2",
+		"@size-limit/preset-small-lib": "^13.0.2",
 		"@total-typescript/ts-reset": "^0.6.1",
-		"@types/node": "^25.9.3",
+		"@types/node": "^26.1.2",
 		"@types/react": "^19.2.17",
+		"@types/react-dom": "19.2.3",
 		"@zayne-labs/tsconfig": "0.13.14",
-		"concurrently": "^10.0.3",
+		"concurrently": "^10.0.4",
 		"cross-env": "^10.1.0",
-		"publint": "^0.3.21",
+		"happy-dom": "^20.11.1",
+		"publint": "^0.3.22",
 		"react": "catalog:react:peer",
-		"size-limit": "^12.1.0",
+		"react-dom": "catalog:react:peer",
+		"size-limit": "^13.0.2",
 		"tailwind-merge": "3.6.0",
-		"tsdown": "0.22.2",
+		"tsdown": "0.22.14",
 		"typescript": "6.0.3",
+		"vitest": "^4.1.10",
 		"zustand": "catalog:react:peer"
 	},
 	"publishConfig": {
@@ -89,7 +95,7 @@
 	"size-limit": [
 		{
 			"path": "./src/hooks/index.ts",
-			"limit": "6.5 kb"
+			"limit": "9 kb"
 		},
 		{
 			"path": "./src/utils/index.ts",

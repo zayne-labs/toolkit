@@ -8,7 +8,7 @@ export type URLSearchParamsInit =
 	| Record<string, string | string[]>
 	| URLSearchParams;
 
-export const createSearchParams = (paramsInit: URLSearchParamsInit = ""): URLSearchParams => {
+export const createSearchParams = (paramsInit: URLSearchParamsInit): URLSearchParams => {
 	if (isString(paramsInit) || isIterable(paramsInit)) {
 		return new URLSearchParams(paramsInit);
 	}
@@ -28,6 +28,10 @@ export const createSearchParams = (paramsInit: URLSearchParamsInit = ""): URLSea
 	}
 
 	return new URLSearchParams(keyValuePair);
+};
+
+export const createSearchParamsString = (...params: Parameters<typeof createSearchParams>) => {
+	return createSearchParams(...params).toString();
 };
 
 export type PartialURLInfo = {
@@ -69,7 +73,7 @@ export const formatUrl = (newURL: string | PartialURLInfo): FormUrlResult => {
 		return { urlObject, urlString };
 	}
 
-	const search = createSearchParams(newURL.search);
+	const search = createSearchParams(newURL.search ?? "");
 
 	const urlObject = {
 		...newURL,
