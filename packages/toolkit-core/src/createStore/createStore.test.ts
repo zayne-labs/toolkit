@@ -478,6 +478,54 @@ test("Immediate Notifications - notify immediately when shouldNotifySync is true
 	expect(store.getState()).toEqual({ count: 2 });
 });
 
+test("Notify Callback - provide sync notification context without subscribers", () => {
+	const store = createStore(() => ({ count: 0 }));
+	const onNotify = vi.fn();
+
+	store.setState({ count: 1 }, { onNotify, shouldNotifySync: true });
+
+	expect(onNotify).toHaveBeenCalledOnce();
+	expect(onNotify).toHaveBeenCalledWith({
+		mode: "sync",
+		previousState: { count: 0 },
+		state: { count: 1 },
+	});
+});
+
+test("Notify Callback - provide batched notification context without subscribers", async () => {
+	const store = createStore(() => ({ count: 0 }));
+	const onNotify = vi.fn();
+
+	store.setState({ count: 1 }, { onNotify });
+
+	expect(onNotify).not.toHaveBeenCalled();
+
+	await flushMicrotasks();
+
+	expect(onNotify).toHaveBeenCalledOnce();
+	expect(onNotify).toHaveBeenCalledWith({
+		mode: "batch",
+		previousState: { count: 0 },
+		state: { count: 1 },
+	});
+});
+
+test("Initialization - do not notify subscribers added after initialization", async () => {
+	const store = createStore<{ count: number }>((set) => {
+		set({ count: 1 });
+
+		return { count: 0 };
+	});
+	const listener = vi.fn();
+
+	store.subscribe(listener);
+
+	await flushMicrotasks();
+
+	expect(listener).not.toHaveBeenCalled();
+	expect(store.getState()).toEqual({ count: 0 });
+});
+
 test("Immediate Notifications - return updated state from getState immediately even during batch cycle", async () => {
 	const { store } = setupStore(() => ({ count: 0, name: "test" }));
 

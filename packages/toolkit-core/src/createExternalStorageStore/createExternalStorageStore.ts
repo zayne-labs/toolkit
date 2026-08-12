@@ -88,21 +88,13 @@ const createExternalStorageStore = <TState>(
 	const setState: StorageStoreApi<TState>["setState"] = (stateUpdate, setStateOptions) => {
 		internalStore.setState(stateUpdate, {
 			...(setStateOptions as object),
-			onNotifySync: (prevState) => {
+			onNotify: (context) => {
 				handleItemStorageAndEventDispatch(
-					internalStore.getState(),
-					prevState,
+					context.state,
+					context.previousState,
 					setStateOptions?.storageAction
 				);
-				setStateOptions?.onNotifySync?.(prevState);
-			},
-			onNotifyViaBatch: (previousStateSnapshot) => {
-				handleItemStorageAndEventDispatch(
-					internalStore.getState(),
-					previousStateSnapshot,
-					setStateOptions?.storageAction
-				);
-				setStateOptions?.onNotifyViaBatch?.(previousStateSnapshot);
+				setStateOptions?.onNotify?.(context);
 			},
 		});
 	};

@@ -188,7 +188,7 @@ Setting the `isCancelled` flag when there is no active batch can cause the _next
 function setState(newState: unknown) {
 	if (shouldNotifySync) {
 		batchManager.actions.cancel(); // Mistake: Flag is set even if idle
-		onNotifySync();
+		onNotify({ mode: "sync", previousState });
 	}
 }
 ```

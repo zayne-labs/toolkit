@@ -1,5 +1,10 @@
 import type { Prettify, UnmaskType } from "@zayne-labs/toolkit-type-helpers";
-import type { ScheduleBatchOptions } from "@/createBatchManager";
+
+export type StoreNotifyContext<TState> = {
+	mode: "batch" | "sync";
+	previousState: TState;
+	state: TState;
+};
 
 export type StoreStateSetter<TState, TResult = TState> = UnmaskType<(prevState: TState) => TResult>;
 
@@ -9,7 +14,10 @@ type FullStateUpdate<TState> = TState | StoreStateSetter<TState, TState>;
 type PartialStateUpdate<TState> = Partial<TState> | StoreStateSetter<TState, Partial<TState>>;
 
 export type SetStateOptions<TState> = UnmaskType<
-	Prettify<Omit<Partial<ScheduleBatchOptions<TState>>, "context"> & { shouldNotifySync?: boolean }>
+	Prettify<{
+		onNotify?: (context: StoreNotifyContext<TState>) => void;
+		shouldNotifySync?: boolean;
+	}>
 >;
 
 export type SetState<TState, TSetStateOptions = SetStateOptions<TState>> = UnmaskType<{

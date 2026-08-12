@@ -38,8 +38,7 @@ export const createStoreWithContext = <TBaseState>() => {
 
 		const setState: InternalStoreApi["setState"] = (stateUpdate, setStateOptions = {}) => {
 			const {
-				onNotifySync,
-				onNotifyViaBatch,
+				onNotify,
 				shouldNotifySync = globalShouldNotifySync,
 				shouldReplace = isBoolean(setStateOptions) ? setStateOptions : false,
 			} = setStateOptions;
@@ -55,16 +54,14 @@ export const createStoreWithContext = <TBaseState>() => {
 					{ ...previousState, ...nextState }
 				:	(nextState as TState);
 
+			if (listeners.size === 0 && !onNotify) return;
+
 			batchManager.actions.schedule({
 				context: { previousState, shouldNotifySync },
-				onNotifySync: (prevState) => {
-					onNotifySync?.(prevState);
-					notifyListeners(currentState, prevState);
-				},
-				onNotifyViaBatch: (previousStateSnapshot) => {
-					if (equalityFn(currentState, previousStateSnapshot)) return;
+				onNotify: ({ mode, previousState: previousStateSnapshot }) => {
+					if (mode === "batch" && equalityFn(currentState, previousStateSnapshot)) return;
 
-					onNotifyViaBatch?.(previousStateSnapshot);
+					onNotify?.({ mode, previousState: previousStateSnapshot, state: currentState });
 					notifyListeners(currentState, previousStateSnapshot);
 				},
 			});

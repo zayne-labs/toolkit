@@ -522,7 +522,7 @@ test("Skip Conditions - same newValue and oldValue is ignored", () => {
 	expect(listener).not.toHaveBeenCalled();
 });
 
-test("Callback Forwarding - onNotifySync and onNotifyViaBatch are called", async () => {
+test("Callback Forwarding - onNotify receives batch and sync contexts", async () => {
 	const key = "test-callback-key";
 	using storeSetup = setupStorageStore({
 		defaultValue: { count: 0 },
@@ -531,18 +531,26 @@ test("Callback Forwarding - onNotifySync and onNotifyViaBatch are called", async
 
 	const { store } = storeSetup;
 
-	const onNotifyViaBatch = vi.fn();
-	store.setState({ count: 1 }, { onNotifyViaBatch });
+	const onNotify = vi.fn();
+	store.setState({ count: 1 }, { onNotify });
 
 	await flushMicrotasks();
 
-	expect(onNotifyViaBatch).toHaveBeenCalledTimes(1);
-	expect(onNotifyViaBatch).toHaveBeenCalledWith({ count: 0 });
+	expect(onNotify).toHaveBeenCalledTimes(1);
+	expect(onNotify).toHaveBeenLastCalledWith({
+		mode: "batch",
+		previousState: { count: 0 },
+		state: { count: 1 },
+	});
 
-	const onNotifySync = vi.fn();
-	store.setState({ count: 2 }, { onNotifySync, shouldNotifySync: true });
+	store.setState({ count: 2 }, { onNotify, shouldNotifySync: true });
 
-	expect(onNotifySync).toHaveBeenCalledTimes(1);
+	expect(onNotify).toHaveBeenCalledTimes(2);
+	expect(onNotify).toHaveBeenLastCalledWith({
+		mode: "sync",
+		previousState: { count: 1 },
+		state: { count: 2 },
+	});
 });
 
 test("Equality - uses shallowCompare by default to prevent identical updates", async () => {

@@ -57,10 +57,7 @@ const createLocationStore = (options: LocationStoreOptions = {}): LocationStoreA
 		} satisfies LocationStoreInfo & { storeId: string };
 
 		internalStore.setState(nextLocationState, {
-			onNotifySync: () => {
-				triggerPopstateEvent(nextLocationState);
-			},
-			onNotifyViaBatch: () => {
+			onNotify: () => {
 				triggerPopstateEvent(nextLocationState);
 			},
 			shouldNotifySync,

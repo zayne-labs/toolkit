@@ -1,3 +1,5 @@
+import type { StoreNotifyContext } from "@/createStore";
+
 export type BatchManagerState<TState> = {
 	isCancelled: boolean;
 	previousStateSnapshot: TState;
@@ -23,8 +25,7 @@ export type ScheduleBatchOptions<TState> = {
 		previousState: TState;
 		shouldNotifySync: boolean;
 	};
-	onNotifySync: (previousState: TState) => void;
-	onNotifyViaBatch: (previousStateSnapshot: TState) => void;
+	onNotify: (context: Omit<StoreNotifyContext<TState>, "state">) => void;
 };
 
 /**
@@ -84,14 +85,14 @@ export const createBatchManager = <TState>(options: {
 	};
 
 	const schedule: BatchManagerActions<TState>["schedule"] = (scheduleOptions) => {
-		const { context, onNotifySync, onNotifyViaBatch } = scheduleOptions;
+		const { context, onNotify } = scheduleOptions;
 
 		const { previousState, shouldNotifySync } = context;
 
 		if (shouldNotifySync) {
 			state.status === "active" && cancel();
 
-			onNotifySync(previousState);
+			onNotify({ mode: "sync", previousState });
 
 			return;
 		}
@@ -115,7 +116,7 @@ export const createBatchManager = <TState>(options: {
 					initialState()
 				:	state.previousStateSnapshot;
 
-			onNotifyViaBatch(previousStateSnapshot);
+			onNotify({ mode: "batch", previousState: previousStateSnapshot });
 		});
 	};
 
