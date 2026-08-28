@@ -5,30 +5,31 @@ import { useCallbackRef } from "./useCallbackRef";
 
 type AnimationOptions = Prettify<
 	AnimationIntervalOptions & {
-		intervalDuration: number | null;
+		enabled?: boolean;
+		intervalDuration: number;
 		onAnimation: () => void;
 	}
 >;
 
 const useAnimationInterval = (options: AnimationOptions) => {
-	const { intervalDuration, onAnimation, once } = options;
+	const { enabled = true, intervalDuration, onAnimation, once } = options;
 
 	const stableCallback = useCallbackRef(onAnimation);
 
-	const { start, stop } = useMemo(
+	const controls = useMemo(
 		() => setAnimationInterval(stableCallback, intervalDuration, { once }),
 		[intervalDuration, stableCallback, once]
 	);
 
 	useEffect(() => {
-		if (intervalDuration === null) return;
+		if (!enabled) return;
 
-		start();
+		controls.start();
 
-		return stop;
-	}, [intervalDuration, start, stop]);
+		return () => controls.stop();
+	}, [enabled, intervalDuration, controls]);
 
-	return { start, stop };
+	return controls;
 };
 
 export { useAnimationInterval };
