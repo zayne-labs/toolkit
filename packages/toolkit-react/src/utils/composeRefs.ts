@@ -31,6 +31,7 @@ export const composeRefs = <TRef extends HTMLElement>(
 	const mergedRefCallBack: RefCallback<TRef> = (node) => {
 		const cleanupFnArray = refs.map((ref) => setRef(ref, node));
 
+		// eslint-disable-next-line unicorn/no-for-each -- Ignore
 		const cleanupFn = () => cleanupFnArray.forEach((cleanup) => cleanup?.());
 
 		return cleanupFn;

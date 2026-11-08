@@ -45,6 +45,7 @@ export const createComparisonFn = (baseOptions?: CompareFnOptions): CompareFn =>
 				return false;
 			}
 
+			// eslint-disable-next-line unicorn/prefer-combined-guards -- Allow
 			if (Object.getPrototypeOf(valueA) !== Object.getPrototypeOf(valueB)) {
 				return false;
 			}
@@ -106,4 +107,4 @@ export const shallowCompare = createComparisonFn();
  * deepCompare({ a: { b: 1 } }, { a: { b: 1 } }) // true
  * deepCompare([new Set([1])], [new Set([1])]) // true
  */
-export const deepCompare = createComparisonFn({ maxDepth: Number.POSITIVE_INFINITY });
+export const deepCompare = createComparisonFn({ maxDepth: Infinity });

@@ -33,8 +33,9 @@ const getHorizontalScrollVariables = ({
 export const getScrollVariables = (axis: ScrollLockAxis, node: HTMLElement) =>
 	axis === "v" ? getVerticalScrollVariables(node) : getHorizontalScrollVariables(node);
 
-export const elementCouldBeScrolled = (axis: ScrollLockAxis, node: HTMLElement) =>
-	axis === "v" ? elementCanBeScrolled(node, "overflowY") : elementCanBeScrolled(node, "overflowX");
+export const elementCouldBeScrolled = (axis: ScrollLockAxis, node: HTMLElement) => {
+	return elementCanBeScrolled(node, axis === "v" ? "overflowY" : "overflowX");
+};
 
 const resolveShadowHost = (node: Node): Node =>
 	typeof ShadowRoot !== "undefined" && node instanceof ShadowRoot ? node.host : node;

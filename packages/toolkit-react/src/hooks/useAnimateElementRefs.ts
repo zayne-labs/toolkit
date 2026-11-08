@@ -33,6 +33,8 @@ const useAnimateElementRefs = <TTargetElement extends string>(
 			return;
 		}
 
+/* eslint-disable unicorn/no-computed-property-existence-check -- Needed for ts */
+
 		for (const { animationClass, targetElement } of elementsInfoArray) {
 			if (!elementsRef.current[targetElement]) {
 				console.error("ElementError", `"${targetElement}" element does not exist`);
@@ -54,6 +56,7 @@ const useAnimateElementRefs = <TTargetElement extends string>(
 				console.error("ElementError", `"${targetElement}" element does not exist`);
 				return;
 			}
+	/* eslint-enable unicorn/no-computed-property-existence-check -- Needed for ts */
 
 			on(
 				elementsRef.current[targetElement],
@@ -68,6 +71,7 @@ const useAnimateElementRefs = <TTargetElement extends string>(
 			);
 		}
 	});
+
 
 	// Add animation classes to elements and remove them after the animation ends
 	const handleElementsAnimation = useCallback(() => {

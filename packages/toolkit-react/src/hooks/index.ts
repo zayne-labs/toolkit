@@ -12,6 +12,7 @@ export * from "./useDebounce";
 export * from "./useDisclosure";
 export * from "./useIsHydrated";
 export * from "./useLocationState";
+export * from "./useOnChange";
 export * from "./useScrollObserver";
 export * from "./useScrollLock";
 export * from "./useSearch";

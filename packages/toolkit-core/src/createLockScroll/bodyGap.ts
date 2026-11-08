@@ -60,6 +60,7 @@ const applyActiveBodyGapLock = () => {
 
 	restoreBodySnapshot();
 
+	// eslint-disable-next-line unicorn/prefer-iterator-to-array -- Cannot use this because it is not supported in all environments yet
 	const options = [...activeLocks.values()].at(-1);
 
 	if (!options) return;
@@ -78,6 +79,7 @@ const applyActiveBodyGapLock = () => {
 
 	if (shouldCompensateScrollbarGap) {
 		const propertyName = gapMode === "padding" ? "paddingRight" : "marginRight";
+		// eslint-disable-next-line unicorn/prefer-number-coercion -- Computed values include units (e.g. "4px"), which Number() turns into NaN
 		const currentGapValue = Number.parseFloat(computedStyle[propertyName]) || 0;
 
 		body.style[propertyName] = `${currentGapValue + scrollbarGap}px`;

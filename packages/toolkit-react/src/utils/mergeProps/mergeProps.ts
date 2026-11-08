@@ -1,3 +1,4 @@
+import type { EmptyObject } from "@zayne-labs/toolkit-type-helpers";
 import { mergeTwoProps } from "./mergeTwoProps";
 
 type UnionToIntersection<TUnion> =
@@ -19,7 +20,7 @@ type UnionToIntersection<TUnion> =
  * @returns the merged props.
  */
 
-const mergeProps = <TProps extends Record<never, never>>(
+const mergeProps = <TProps extends EmptyObject>(
 	...propsObjectArray: Array<TProps | undefined>
 ): UnionToIntersection<TProps> => {
 	if (propsObjectArray.length === 0) {

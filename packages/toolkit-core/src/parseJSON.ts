@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/filename-case -- leave as is */
 import { isString } from "@zayne-labs/toolkit-type-helpers";
 
 type ParseJSON = {

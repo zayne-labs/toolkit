@@ -1,4 +1,4 @@
-import type { AnyString, Prettify } from "./common";
+import type { AnyString, EmptyObject, Prettify } from "./common";
 import type { Writeable } from "./writeable";
 
 type ErrorMessages<TType extends number | string | symbol = never> = Partial<
@@ -28,7 +28,7 @@ type AllowOnlyFirst<TFirstType, TSecondType, TErrorMessages extends ErrorMessage
  * @template TArrayOfTypes Array of types to merge
  * @template TAccumulator Accumulator for the resulting merged type
  */
-type MergeTypes<TArrayOfTypes extends unknown[], TAccumulator = NonNullable<unknown>> =
+type MergeTypes<TArrayOfTypes extends unknown[], TAccumulator = EmptyObject> =
 	TArrayOfTypes extends [infer TFirstType, ...infer TRestOfTypes] ?
 		MergeTypes<
 			TRestOfTypes,

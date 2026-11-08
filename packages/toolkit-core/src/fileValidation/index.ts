@@ -1,11 +1,13 @@
 export * from "./handleFileValidation";
 export type {
+	BuiltInFileValidationErrorCode,
 	FileMeta,
 	FileOrFileMeta,
 	FileValidationErrorContextBatch,
 	FileValidationErrorContextEach,
 	FileValidationHooks,
 	FileValidationHooksAsync,
+	FileValidationMessageOverride,
 	FileValidationOptions,
 	FileValidationResult,
 	FileValidationSettings,

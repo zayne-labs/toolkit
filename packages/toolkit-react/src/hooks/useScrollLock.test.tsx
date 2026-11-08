@@ -29,7 +29,7 @@ let root: Root;
 beforeEach(() => {
 	(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
-	document.body.innerHTML = "";
+	document.body.replaceChildren();
 	document.body.removeAttribute("class");
 	document.body.removeAttribute("style");
 

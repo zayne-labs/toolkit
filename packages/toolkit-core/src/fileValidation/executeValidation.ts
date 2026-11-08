@@ -1,126 +1,181 @@
-import { isNumber } from "@zayne-labs/toolkit-type-helpers";
+import { isNumber, isString } from "@zayne-labs/toolkit-type-helpers";
 import type {
+	BuiltInFileValidationErrorCode,
+	FileOrFileMeta,
 	FileValidationErrorContextBatch,
 	FileValidationErrorContextEach,
 	FileValidationOptions,
 	FileValidationResult,
+	FileValidationSettings,
 	FileValidationSuccessContextBatch,
 	FileValidationSuccessContextEach,
 } from "./types";
 import { formatBytes, isDuplicateFile, isMaxFileCountReached, isValidFileType, toBytes } from "./utils";
 
+type ValidatorResult = ReturnType<NonNullable<FileValidationSettings["validator"]>>;
+
+type ValidationGenerator = Generator<unknown, void, unknown>;
+
+type ErrorCause = Extract<FileValidationErrorContextEach, { cause: unknown }>["cause"];
+
 /**
- * @description Core validation logic shared between sync and async validation
+ * @description Core validation logic shared between sync and async validation.
+ *
+ * Every hook/validator call is `yield`ed instead of `await`ed, so the caller decides
+ * whether to resolve each step synchronously ({@link runSync}) or asynchronously ({@link runAsync}).
  *
  * @internal
  */
-const executeValidation = async (options: FileValidationOptions<"async"> & FileValidationResult) => {
+function* validationSteps(
+	options: FileValidationOptions<"async"> & FileValidationResult
+): ValidationGenerator {
 	const { errors, existingFiles = [], hooks, newFiles = [], settings, validFiles } = options;
 
-	const { allowedFileTypes, maxFileCount, maxFileSize, rejectDuplicateFiles, validator } = settings ?? {};
+	const {
+		allowedFileTypes,
+		maxFileCount,
+		maxFileSize,
+		messages,
+		minFileSize,
+		rejectDuplicateFiles,
+		validator,
+	} = settings ?? {};
 
 	const maxFileSizeInBytes = toBytes(maxFileSize);
+	const minFileSizeInBytes = toBytes(minFileSize);
+
+	const createError = (
+		file: FileOrFileMeta,
+		details: { cause: ErrorCause; code: string; defaultMessage: string; explicitMessage?: string | null }
+	): FileValidationErrorContextEach => {
+		const message = resolveMessage(file, details);
+
+		return { cause: details.cause, code: details.code, file, message } as FileValidationErrorContextEach;
+	};
+
+	/**
+	 * @description Resolves an error message with priority: explicit message (e.g. returned by the validator) > `settings.messages` override > default message
+	 */
+	const resolveMessage = (
+		file: FileOrFileMeta,
+		details: { code: string; defaultMessage: string; explicitMessage?: string | null }
+	) => {
+		if (details.explicitMessage) return details.explicitMessage;
+
+		const messageOverride = messages?.[details.code as BuiltInFileValidationErrorCode];
+
+		if (!messageOverride) return details.defaultMessage;
+
+		if (isString(messageOverride)) return messageOverride;
+
+		return messageOverride({ defaultMessage: details.defaultMessage, file });
+	};
 
 	//	== Loop through the uploaded fileList and validate each file
-
-	/* eslint-disable no-await-in-loop -- Required for async validation */
 	for (const file of newFiles) {
 		if (!file) continue;
 
 		if (maxFileCount && isMaxFileCountReached(maxFileCount, existingFiles, validFiles)) {
-			const context = {
+			const errorContext = createError(file, {
 				cause: "maxFileCount",
 				code: "too-many-files",
-				file,
-				message: `You can only upload a up to ${maxFileCount} files. File "${file.name}" has been rejected`,
-			} satisfies FileValidationErrorContextEach;
+				defaultMessage: `You can only upload up to ${maxFileCount} files. File "${file.name}" has been rejected`,
+			});
 
-			errors.push(context);
+			errors.push(errorContext);
 
-			await hooks?.onErrorEach?.(context);
+			yield hooks?.onErrorEach?.(errorContext);
 
 			break;
 		}
 
 		if (allowedFileTypes && !isValidFileType(file, allowedFileTypes)) {
-			const acceptedFilesString = allowedFileTypes.join(" | ");
-
-			const context = {
+			const errorContext = createError(file, {
 				cause: "allowedFileTypes",
 				code: "invalid-file-type",
-				file,
-				message: `File "${file.name}" is not an accepted file type. File must be of type: ${acceptedFilesString}`,
-			} satisfies FileValidationErrorContextEach;
+				defaultMessage: `File "${file.name}" is not an accepted file type. File must be of type: ${allowedFileTypes.join(" | ")}`,
+			});
 
-			errors.push(context);
+			errors.push(errorContext);
 
-			await hooks?.onErrorEach?.(context);
+			yield hooks?.onErrorEach?.(errorContext);
 
 			continue;
 		}
 
 		if (maxFileSizeInBytes && isNumber(file.size) && file.size > maxFileSizeInBytes) {
-			const context = {
+			const errorContext = createError(file, {
 				cause: "maxFileSize",
 				code: "file-too-large",
-				file,
-				message: `File "${file.name}" exceeds the maximum size of ${formatBytes(maxFileSizeInBytes)}`,
-			} satisfies FileValidationErrorContextEach;
+				defaultMessage: `File "${file.name}" exceeds the maximum size of ${formatBytes(maxFileSizeInBytes)}`,
+			});
 
-			errors.push(context);
+			errors.push(errorContext);
 
-			await hooks?.onErrorEach?.(context);
+			yield hooks?.onErrorEach?.(errorContext);
 
 			continue;
 		}
 
-		if (rejectDuplicateFiles && isDuplicateFile(file, existingFiles)) {
-			const context = {
+		if (minFileSizeInBytes && isNumber(file.size) && file.size < minFileSizeInBytes) {
+			const errorContext = createError(file, {
+				cause: "minFileSize",
+				code: "file-too-small",
+				defaultMessage: `File "${file.name}" is below the minimum size of ${formatBytes(minFileSizeInBytes)}`,
+			});
+
+			errors.push(errorContext);
+
+			yield hooks?.onErrorEach?.(errorContext);
+
+			continue;
+		}
+
+		if (rejectDuplicateFiles && isDuplicateFile(file, [...existingFiles, ...validFiles])) {
+			const errorContext = createError(file, {
 				cause: "rejectDuplicateFiles",
 				code: "duplicate-file",
-				file,
-				message: `File "${file.name}" has already been uploaded`,
-			} satisfies FileValidationErrorContextEach;
+				defaultMessage: `File "${file.name}" has already been uploaded`,
+			});
 
-			errors.push(context);
+			errors.push(errorContext);
 
-			await hooks?.onErrorEach?.(context);
+			yield hooks?.onErrorEach?.(errorContext);
 
 			continue;
 		}
 
-		const validatorResult = await validator?.({ file });
+		const validatorResult = (yield validator?.({ file })) as ValidatorResult;
 
 		if (validatorResult) {
-			const context = {
+			const errorContext = createError(file, {
 				cause: "validator",
 				code: validatorResult.code ?? "custom-validation-failed",
-				file,
-				message: validatorResult.message ?? `File "${file.name}" failed custom validation`,
-			} satisfies FileValidationErrorContextEach;
+				defaultMessage: `File "${file.name}" failed custom validation`,
+				explicitMessage: validatorResult.message,
+			});
 
-			errors.push(context);
+			errors.push(errorContext);
 
-			await hooks?.onErrorEach?.(context);
+			yield hooks?.onErrorEach?.(errorContext);
 
 			continue;
 		}
 
-		const context = {
+		const successContext = {
 			message: `Processed file-(${file.name}) successfully!`,
 			validFile: file,
 		} satisfies FileValidationSuccessContextEach;
 
 		validFiles.push(file);
 
-		await hooks?.onSuccessEach?.(context);
+		yield hooks?.onSuccessEach?.(successContext);
 	}
-	/* eslint-enable no-await-in-loop -- Required for async validation */
 
 	if (errors.length > 0) {
 		const context = { errors } satisfies FileValidationErrorContextBatch;
 
-		await hooks?.onErrorBatch?.(context);
+		yield hooks?.onErrorBatch?.(context);
 	}
 
 	if (validFiles.length > 0) {
@@ -129,8 +184,35 @@ const executeValidation = async (options: FileValidationOptions<"async"> & FileV
 			validFiles,
 		} satisfies FileValidationSuccessContextBatch;
 
-		await hooks?.onSuccessBatch?.(context);
+		yield hooks?.onSuccessBatch?.(context);
+	}
+}
+
+/**
+ * @description Drives the validation generator synchronously, feeding each yielded value straight back in
+ *
+ * @internal
+ */
+const runSync = (generator: ValidationGenerator) => {
+	let step = generator.next();
+
+	while (!step.done) {
+		step = generator.next(step.value);
 	}
 };
 
-export { executeValidation };
+/**
+ * @description Drives the validation generator asynchronously, awaiting each yielded value before resuming
+ *
+ * @internal
+ */
+const runAsync = async (generator: ValidationGenerator) => {
+	let step = generator.next();
+
+	while (!step.done) {
+		// eslint-disable-next-line no-await-in-loop -- Steps must run sequentially
+		step = generator.next(await step.value);
+	}
+};
+
+export { runAsync, runSync, validationSteps };

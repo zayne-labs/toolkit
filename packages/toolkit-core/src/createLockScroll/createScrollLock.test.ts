@@ -67,8 +67,8 @@ const createTestScrollLock = (options?: ScrollLockOptions) => {
 };
 
 beforeEach(() => {
-	document.body.innerHTML = "";
-	document.head.innerHTML = "";
+	document.body.replaceChildren();
+	document.head.replaceChildren();
 	document.body.removeAttribute("class");
 	document.body.removeAttribute("style");
 	document.documentElement.removeAttribute("style");

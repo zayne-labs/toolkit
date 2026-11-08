@@ -11,6 +11,7 @@ export const createPromiseWithResolversPolyfill = <TPromise>(
 	// eslint-disable-next-line perfectionist/sort-union-types -- I want TPromise to be first in the union
 	let resolve!: (value: TPromise | PromiseLike<TPromise>) => void;
 
+	// eslint-disable-next-line unicorn/prefer-promise-with-resolvers -- Polyfill
 	const promise = new Promise<TPromise>((res, rej) => {
 		resolve = res;
 		reject = rej;
@@ -23,6 +24,10 @@ export const createPromiseWithResolversPolyfill = <TPromise>(
 
 export const createPromiseWithResolvers = <TPromise>(options: BasePromiseOptions = {}) => {
 	const { signal } = options;
+
+	if (!("withResolvers" in Promise)) {
+		return createPromiseWithResolversPolyfill<TPromise>({ signal });
+	}
 
 	const withResolvers = Promise.withResolvers<TPromise>();
 

@@ -214,7 +214,7 @@ test("Custom Format - handle custom parser and serializer", async () => {
 		defaultValue: { count: 0 },
 		key,
 		parser: (value) => {
-			return { count: Number.parseInt(value.split(":")[1] ?? "0", 10) };
+			return { count: Math.trunc(Number(value.split(":", 2)[1] ?? "0")) };
 		},
 		serializer: (state) => `count:${state?.count}`,
 	});

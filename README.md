@@ -21,28 +21,32 @@ A powerful collection of utility functions, types, and composables designed to a
 
 ## Installation
 
+Install only the packages you need:
+
 ```bash
 # Using pnpm (recommended)
-pnpm add @zayne-labs/toolkit
+pnpm add @zayne-labs/toolkit-core @zayne-labs/toolkit-react @zayne-labs/toolkit-type-helpers
 
 # Using npm
-npm install @zayne-labs/toolkit
+npm install @zayne-labs/toolkit-core @zayne-labs/toolkit-react @zayne-labs/toolkit-type-helpers
 
 # Using yarn
-yarn add @zayne-labs/toolkit
+yarn add @zayne-labs/toolkit-core @zayne-labs/toolkit-react @zayne-labs/toolkit-type-helpers
 ```
 
 ## Quick Start
 
 ```typescript
 // Core utilities
-import { copyToClipboard } from "@zayne-labs/toolkit/core";
+import { copyToClipboard } from "@zayne-labs/toolkit-core";
 // React hooks
-import { useToggle } from "@zayne-labs/toolkit/react";
+import { useToggle } from "@zayne-labs/toolkit-react";
 // React utilities
-import { composeRefs } from "@zayne-labs/toolkit/react/utils";
+import { composeRefs } from "@zayne-labs/toolkit-react/utils";
+// Zustand-style store integrations
+import { createReactStore } from "@zayne-labs/toolkit-react/zustand";
 // Type helpers
-import type { Prettify } from "@zayne-labs/toolkit/type-helpers";
+import type { Prettify } from "@zayne-labs/toolkit-type-helpers";
 ```
 
 ## Development

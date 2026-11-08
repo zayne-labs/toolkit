@@ -56,7 +56,7 @@ export const formatUrl = (newURL: string | PartialURLInfo): FormUrlResult => {
 	if (isString(newURL)) {
 		const url = new URL(newURL, globalThis.location.origin);
 
-		const urlString = url.toString();
+		const urlString = url.href;
 
 		const search = url.searchParams;
 
@@ -85,7 +85,7 @@ export const formatUrl = (newURL: string | PartialURLInfo): FormUrlResult => {
 	urlConstruct.search = urlObject.searchString;
 	urlConstruct.hash = urlObject.hash;
 
-	const urlString = urlConstruct.toString();
+	const urlString = urlConstruct.href;
 
 	return { urlObject, urlString };
 };

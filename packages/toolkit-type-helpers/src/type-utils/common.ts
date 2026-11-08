@@ -47,6 +47,7 @@ export type UnknownObjectWithAnyKey = UnmaskType<Record<keyof any, unknown>>;
 
 export type AnyObject = UnmaskType<Record<keyof any, any>>;
 
+// eslint-disable-next-line ts-eslint/no-generated-empty-object-type -- Allow
 export type EmptyObject = NonNullable<unknown>;
 
 export type Awaitable<TValue> = Promise<TValue> | TValue;

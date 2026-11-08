@@ -1,34 +1,37 @@
 import { isNumber, type UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
-import { createPromiseWithResolvers } from "./promise";
 
 type Delay = UnionDiscriminator<[{ milliseconds: number }, { seconds: number }]>;
 
-export const waitFor = (delay: number | Delay) => {
-	const { promise, resolve } = createPromiseWithResolvers();
+const resolveDelayInMs = (delay: number | Delay): number => {
+	if (isNumber(delay)) {
+		return delay;
+	}
 
-	const delayInMs =
-		isNumber(delay) ? delay
-			// eslint-disable-next-line unicorn/no-nested-ternary -- ignore for now
-		: isNumber(delay.seconds) ? delay.seconds * 1000
-		: delay.milliseconds;
+	if (isNumber(delay.seconds)) {
+		return delay.seconds * 1000;
+	}
 
-	if (delayInMs === undefined || delayInMs === 0) return;
+	return delay.milliseconds ?? 0;
+};
 
-	setTimeout(resolve, delayInMs);
+export const waitFor = (delay: number | Delay): Promise<void> => {
+	const delayInMs = resolveDelayInMs(delay);
 
-	return promise;
+	if (delayInMs <= 0) {
+		return Promise.resolve();
+	}
+
+	return new Promise((resolve) => {
+		setTimeout(resolve, delayInMs);
+	});
 };
 
 export const waitForSync = (delay: number | Delay) => {
+	const delayInMs = resolveDelayInMs(delay);
+
+	if (delayInMs <= 0) return;
+
 	const startTime = performance.now();
-
-	const delayInMs =
-		isNumber(delay) ? delay
-			// eslint-disable-next-line unicorn/no-nested-ternary -- ignore for now
-		: isNumber(delay.seconds) ? delay.seconds * 1000
-		: delay.milliseconds;
-
-	if (delayInMs === undefined || delayInMs === 0) return;
 
 	for (
 		let currentTime = startTime;

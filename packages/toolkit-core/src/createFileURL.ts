@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/filename-case -- ignore */
 import { isBlob } from "@zayne-labs/toolkit-type-helpers";
 import type { FileMeta } from "./fileValidation/types";
 import { createPromiseWithResolvers } from "./promise";

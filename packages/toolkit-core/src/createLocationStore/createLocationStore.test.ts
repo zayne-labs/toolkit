@@ -107,10 +107,8 @@ test("Batching - multiple updates result in single notification", async () => {
 	const { listener, store } = storeSetup;
 
 	store.push("/first");
-	/* eslint-disable unicorn/prefer-single-call -- Store is not an array */
 	store.push("/second");
 	store.push("/third");
-	/* eslint-enable unicorn/prefer-single-call -- Store is not an array */
 
 	expect(listener).not.toHaveBeenCalled();
 

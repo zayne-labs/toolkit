@@ -1,4 +1,4 @@
-import { executeValidation } from "./executeValidation";
+import { runAsync, runSync, validationSteps } from "./executeValidation";
 import type { FileValidationErrorContextEach, FileValidationOptions, FileValidationResult } from "./types";
 
 /**
@@ -7,11 +7,11 @@ import type { FileValidationErrorContextEach, FileValidationOptions, FileValidat
  * @returns Object containing validation errors and valid files
  */
 export const handleFileValidation = (options: FileValidationOptions): FileValidationResult => {
-	const validFiles: File[] = [];
+	const validFiles: FileValidationResult["validFiles"] = [];
 
 	const errors: FileValidationErrorContextEach[] = [];
 
-	void executeValidation({ ...options, errors, validFiles });
+	runSync(validationSteps({ ...options, errors, validFiles }));
 
 	return { errors, validFiles };
 };
@@ -27,11 +27,11 @@ export const handleFileValidation = (options: FileValidationOptions): FileValida
 export const handleFileValidationAsync = async (
 	options: FileValidationOptions<"async">
 ): Promise<FileValidationResult> => {
-	const validFiles: File[] = [];
+	const validFiles: FileValidationResult["validFiles"] = [];
 
 	const errors: FileValidationErrorContextEach[] = [];
 
-	await executeValidation({ ...options, errors, validFiles });
+	await runAsync(validationSteps({ ...options, errors, validFiles }));
 
 	return { errors, validFiles };
 };

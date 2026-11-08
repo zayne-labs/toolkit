@@ -12,7 +12,7 @@ const useOnChange = <TValue>(options: UseOnChangeOptions<TValue>) => {
 
 	const [previousValue, setPreviousValue] = useState(value);
 
-	if (equalityFn(previousValue, value)) {
+	if (!equalityFn(previousValue, value)) {
 		onValueChange(value, previousValue);
 		setPreviousValue(value);
 	}

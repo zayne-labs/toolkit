@@ -12,6 +12,14 @@ type DebouncedFn<TCallbackFn extends AnyFunction> = UnmaskType<{
 	(...parameters: [parameters: Parameters<TCallbackFn>, overrideOptions: { $delay: number }]): void;
 	cancel: () => void;
 	cancelMaxWait: () => void;
+	/**
+	 * Immediately invokes the pending call (if any) and clears all timers.
+	 */
+	flush: () => void;
+	/**
+	 * Returns `true` if there is a call waiting to be invoked.
+	 */
+	isPending: () => boolean;
 }>;
 
 /**
@@ -79,9 +87,7 @@ const debounce = <TCallbackFn extends AnyFunction>(
 
 		timeoutId = setTimeout(() => invokeCallback(), resolvedDelay);
 
-		if (options.maxWait === undefined) return;
-
-		if (maxWaitTimeoutId !== emptySymbol) return;
+		if (options.maxWait === undefined || maxWaitTimeoutId !== emptySymbol) return;
 
 		maxWaitTimeoutId = setTimeout(() => invokeCallback(), options.maxWait);
 	};
@@ -89,6 +95,10 @@ const debounce = <TCallbackFn extends AnyFunction>(
 	debouncedFn.cancel = clearAll;
 
 	debouncedFn.cancelMaxWait = clearMaxWaitTimeout;
+
+	debouncedFn.flush = invokeCallback;
+
+	debouncedFn.isPending = () => storedParameters !== emptySymbol;
 
 	return debouncedFn;
 };

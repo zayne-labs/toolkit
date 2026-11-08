@@ -59,6 +59,7 @@ export const isPlainObject = <TPlainObject extends UnknownObjectWithAnyKey = Unk
 	}
 
 	// If constructor does not have an Object-specific method
+	/* eslint-disable unicorn/prefer-combined-guards -- needed for ts */
 	if (!Object.hasOwn(prototype, "isPrototypeOf")) {
 		return false;
 	}
@@ -67,6 +68,7 @@ export const isPlainObject = <TPlainObject extends UnknownObjectWithAnyKey = Unk
 	if (Object.getPrototypeOf(value) !== Object.prototype) {
 		return false;
 	}
+	/* eslint-enable unicorn/prefer-combined-guards -- needed for ts */
 
 	// It's probably a plain object at this point
 	return true;
@@ -109,6 +111,7 @@ export const isBlob = (value: unknown) => value instanceof Blob;
 
 export const isPromise = (value: unknown) => value instanceof Promise;
 
+// eslint-disable-next-line unicorn/no-computed-property-existence-check -- needed for ts
 export const isIterable = <TIterable>(obj: object): obj is Iterable<TIterable> => Symbol.iterator in obj;
 
 export const isJsonString = (value: unknown): value is string => {

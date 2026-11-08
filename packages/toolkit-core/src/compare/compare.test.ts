@@ -114,7 +114,6 @@ test("edge cases - handle circular references", () => {
 	expect(deepCompare(objA, objB)).toBe(true);
 
 	const objC: Record<string, unknown> = { a: 1 };
-	// eslint-disable-next-line unicorn/no-immediate-mutation -- Allow
 	objC.self = { a: 1 };
 	expect(deepCompare(objA, objC)).toBe(false);
 });

@@ -50,9 +50,12 @@ const isTouchingSelection = (target: EventTarget | null) => {
 
 const getLockTarget = (lock: ActiveLock, event: Event) => {
 	const lockElement = lock.lockElement();
-	const shards = lock.shards();
 
-	if (lockElement && eventPathContains(lockElement, event)) return lockElement;
+	if (lockElement && eventPathContains(lockElement, event)) {
+		return lockElement;
+	}
+
+	const shards = lock.shards();
 
 	return shards.find((shard) => eventPathContains(shard, event)) ?? null;
 };
@@ -74,11 +77,10 @@ const shouldCancelEvent = (lock: ActiveLock, event: TouchEvent | WheelEvent, loc
 	const moveDirection = getEventAxis(deltaX, deltaY);
 	const eventTarget = getEventTarget(event);
 
-	if ("touches" in event && moveDirection === "h" && isRangeInput(eventTarget)) {
-		return false;
-	}
-
-	if (isTouchingSelection(eventTarget)) {
+	if (
+		("touches" in event && moveDirection === "h" && isRangeInput(eventTarget))
+		|| isTouchingSelection(eventTarget)
+	) {
 		return false;
 	}
 

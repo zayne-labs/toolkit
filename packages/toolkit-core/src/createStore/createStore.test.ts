@@ -448,8 +448,8 @@ test("Async Boundary - handle async/await with Promise.all correctly", async () 
 		store.setState({ result: 1 });
 
 		await Promise.all([
-			Promise.resolve().then(() => store.setState({ result: 2 })),
-			Promise.resolve().then(() => store.setState({ result: 3 })),
+			Promise.try(() => store.setState({ result: 2 })),
+			Promise.try(() => store.setState({ result: 3 })),
 		]);
 
 		store.setState({ result: 4 });

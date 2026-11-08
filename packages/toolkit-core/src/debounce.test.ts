@@ -173,3 +173,35 @@ test("Dynamic Delay Collision - should not trigger override if 2 arguments are p
 	vi.advanceTimersByTime(50);
 	expect(callback).toHaveBeenCalledWith("not-an-array", { $delay: 50 });
 });
+
+test("flush - should invoke the pending call immediately and clear timers", () => {
+	const callback = vi.fn();
+	const debouncedFn = debounce(callback, 100, { maxWait: 500 });
+
+	debouncedFn("latest");
+	expect(debouncedFn.isPending()).toBe(true);
+
+	debouncedFn.flush();
+	expect(callback).toHaveBeenCalledTimes(1);
+	expect(callback).toHaveBeenCalledWith("latest");
+	expect(debouncedFn.isPending()).toBe(false);
+
+	vi.advanceTimersByTime(600);
+	expect(callback).toHaveBeenCalledTimes(1);
+});
+
+test("isPending - should reflect pending state across invoke and cancel", () => {
+	const debouncedFn = debounce(vi.fn(), 100);
+
+	expect(debouncedFn.isPending()).toBe(false);
+
+	debouncedFn();
+	expect(debouncedFn.isPending()).toBe(true);
+
+	debouncedFn.cancel();
+	expect(debouncedFn.isPending()).toBe(false);
+
+	debouncedFn();
+	vi.advanceTimersByTime(100);
+	expect(debouncedFn.isPending()).toBe(false);
+});

@@ -1,4 +1,4 @@
-import type { UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
+import type { EmptyObject, UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
 
 export type ForwardedRefType<TElement extends HTMLElement | React.ElementType> =
 	TElement extends React.ElementType ? React.ForwardedRef<React.Ref<TElement>>
@@ -17,7 +17,7 @@ export type InferPropsStrict<TElement extends HTMLElement | React.ElementType> =
 
 export type StateSetter<TSetter = unknown> = React.Dispatch<React.SetStateAction<TSetter>>;
 
-export type CssWithCustomProperties<TExtra extends Record<string, string> = NonNullable<unknown>> =
+export type CssWithCustomProperties<TExtra extends Record<string, string> = EmptyObject> =
 	React.CSSProperties & Record<`--${string}`, string> & TExtra; // Allows Ts support for inline css variables
 
 export type DefaultRenderItemErrorMessages = {
