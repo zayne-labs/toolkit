@@ -42,7 +42,7 @@ export const matchesSlotComponent = (child: React.ReactNode, SlotComponent: Func
 		&& isWithSlotSymbol(SlotComponent)
 		&& resolvedChildType.slotSymbol === SlotComponent.slotSymbol;
 
-	return (hasMatchingSlotSymbol || (child.type.name === SlotComponent.name));
+	return hasMatchingSlotSymbol || child.type.name === SlotComponent.name;
 };
 
 /**

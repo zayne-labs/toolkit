@@ -14,7 +14,7 @@ export default zayne(
 		files: ["packages/**/*.ts"],
 		rules: {
 			"ts-eslint/consistent-type-definitions": "off",
-			"unicorn/prefer-object-iterable-methods": "off"
+			"unicorn/prefer-object-iterable-methods": "off",
 		},
 	}
 );

@@ -1,20 +1,19 @@
-
 minimumReleaseAgeExcludePrune: true
 minimumReleaseAgeExclude:
-  - "@zayne-labs/*"
+   - "@zayne-labs/*"
 
 strictDepBuilds: false
 
 packages:
-  - "packages/*"
-  - "apps/*"
+   - "packages/*"
+   - "apps/*"
 
 allowBuilds:
-  esbuild: set this to true or false
+   esbuild: set this to true or false
 
 catalogs:
-  react:peer:
-    react: ^19.3.1
-    react-dom: ^19.3.1
-    tailwind-merge: ^3.5.0
-    zustand: ^5.1.0
+   react:peer:
+      react: ^19.3.1
+      react-dom: ^19.3.1
+      tailwind-merge: ^3.5.0
+      zustand: ^5.1.0

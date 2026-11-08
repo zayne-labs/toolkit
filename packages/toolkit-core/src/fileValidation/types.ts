@@ -76,11 +76,13 @@ export type BuiltInFileValidationErrorCode =
 type PossibleErrorCodes = UnmaskType<AnyString | BuiltInFileValidationErrorCode>;
 
 export type FileValidationMessageOverride =
-	| string
-	| ((context: { defaultMessage: string; file: FileOrFileMeta }) => string);
+	string | ((context: { defaultMessage: string; file: FileOrFileMeta }) => string);
 
 export type FileValidationErrorContextEach = UnionDiscriminator<
-	[{ cause: "custom-error"; originalError: unknown }, { cause: Exclude<keyof FileValidationSettings, "messages"> }]
+	[
+		{ cause: "custom-error"; originalError: unknown },
+		{ cause: Exclude<keyof FileValidationSettings, "messages"> },
+	]
 > & {
 	/**
 	 * Error code identifying the type of validation failure

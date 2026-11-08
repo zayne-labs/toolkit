@@ -1,7 +1,10 @@
 import { describe, expect, test, vi } from "vitest";
 import { handleFileValidation, handleFileValidationAsync } from "./handleFileValidation";
 
-const createFile = (name: string, options: { lastModified?: number; size?: number; type?: string } = {}) => {
+const createFile = (
+	name: string,
+	options: { lastModified?: number; size?: number; type?: string } = {}
+) => {
 	const { lastModified = 1, size = 10, type = "text/plain" } = options;
 
 	return new File(["x".repeat(size)], name, { lastModified, type });
@@ -127,7 +130,6 @@ describe("rejectDuplicateFiles", () => {
 		expect(result.validFiles).toHaveLength(2);
 		expect(result.errors).toHaveLength(0);
 	});
-
 });
 
 describe("allowedFileTypes", () => {
@@ -147,7 +149,10 @@ describe("allowedFileTypes", () => {
 
 	test("matches MIME types and extensions case-insensitively", () => {
 		const result = handleFileValidation({
-			newFiles: [createFile("a.PNG", { type: "image/png" }), createFile("b.pdf", { type: "application/pdf" })],
+			newFiles: [
+				createFile("a.PNG", { type: "image/png" }),
+				createFile("b.pdf", { type: "application/pdf" }),
+			],
 			settings: { allowedFileTypes: [".png", "APPLICATION/PDF"] },
 		});
 
@@ -197,7 +202,10 @@ describe("messages", () => {
 			newFiles: [createFile("a.txt"), createFile("b.txt")],
 			settings: {
 				messages: { "custom-validation-failed": "Override" },
-				validator: ({ file }) => (file.name === "a.txt" ? { message: "From validator" } : { code: "custom-validation-failed" }),
+				validator: ({ file }) =>
+					file.name === "a.txt" ?
+						{ message: "From validator" }
+					:	{ code: "custom-validation-failed" },
 			},
 		});
 
