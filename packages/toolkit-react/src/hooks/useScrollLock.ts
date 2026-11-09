@@ -3,6 +3,7 @@
 import { createScrollLock, type ScrollLockOptions, type ScrollLockShard } from "@zayne-labs/toolkit-core";
 import { useEffect, useRef } from "react";
 import { useUnmountEffect } from "./effects";
+import { useCompareValue } from "./useCompare";
 import { useConstant } from "./useConstant";
 
 export type UseScrollLockOptions<TElement extends HTMLElement = HTMLElement> = Omit<
@@ -46,6 +47,9 @@ export const useScrollLock = <TElement extends HTMLElement = HTMLElement>(
 		});
 	});
 
+	// == Shards are often passed inline, so compare them to avoid updating the lock on every render
+	const stableShards = useCompareValue(shards);
+
 	useEffect(() => {
 		controller.update({
 			allowPinchZoom,
@@ -56,7 +60,7 @@ export const useScrollLock = <TElement extends HTMLElement = HTMLElement>(
 			noIsolation,
 			noRelative,
 			removeScrollBar,
-			shards,
+			shards: stableShards,
 		});
 
 		enabled ? controller.activate() : controller.deactivate();
@@ -70,7 +74,7 @@ export const useScrollLock = <TElement extends HTMLElement = HTMLElement>(
 		noIsolation,
 		noRelative,
 		removeScrollBar,
-		shards,
+		stableShards,
 	]);
 
 	useUnmountEffect(() => {

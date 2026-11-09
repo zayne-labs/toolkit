@@ -1,6 +1,6 @@
 import { deepCompare, shallowCompare, type CompareFnOptions } from "@zayne-labs/toolkit-core";
 import type { SelectorFn } from "@zayne-labs/toolkit-type-helpers";
-import { useInsertionEffect, useRef } from "react";
+import { useRef } from "react";
 
 type UseCompareSelectorOptions = {
 	compareFnOptions?: CompareFnOptions;
@@ -42,19 +42,24 @@ export const useCompareSelector = <
 	return compareSelector as never;
 };
 
+/**
+ * @description Returns the same reference until `value` actually changes (by shallow or deep compare).
+ * Useful for objects or arrays used in dependency arrays.
+ */
 export const useCompareValue = <TValue>(value: TValue, options: UseCompareSelectorOptions = {}) => {
 	const { compareFnOptions, type = "shallow" } = options;
 
-	const prevValueRef = useRef(value);
+	const stableValueRef = useRef(value);
 
 	const compareFn = type === "shallow" ? shallowCompare : deepCompare;
 
-	useInsertionEffect(() => {
-		if (compareFn(prevValueRef.current, value, compareFnOptions)) return;
+	// == Compare during render so changes show up immediately, not one render late
+	// eslint-disable-next-line react/refs -- Safe: the ref only ever holds a value equal to the latest one
+	if (!compareFn(stableValueRef.current, value, compareFnOptions)) {
+		// eslint-disable-next-line react/refs -- Safe, see above
+		stableValueRef.current = value;
+	}
 
-		prevValueRef.current = value;
-	});
-
-	// eslint-disable-next-line react/refs -- Allow this for convenience
-	return prevValueRef.current;
+	// eslint-disable-next-line react/refs -- Safe, see above
+	return stableValueRef.current;
 };

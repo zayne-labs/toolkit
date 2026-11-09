@@ -11,6 +11,12 @@ const ScrollLockHarness = (options: UseScrollLockOptions<HTMLDivElement>) => {
 	return createElement("div", { "data-lock-root": "", ref });
 };
 
+const InlineShardsHarness = (props: { shard: HTMLElement }) => {
+	const { ref } = useScrollLock<HTMLDivElement>({ inert: true, shards: [props.shard] });
+
+	return createElement("div", { ref });
+};
+
 const DisclosureHarness = () => {
 	const disclosure = useDisclosure({ hasScrollControl: true });
 
@@ -91,6 +97,29 @@ test("useScrollLock - supports external lock and shard refs", () => {
 
 	expect(lockRef.current).toBe(container.querySelector("[data-lock-root]"));
 	expect(shardRef.current).toBe(container.querySelector("[data-shard]"));
+	expect(getActiveScrollLockCount()).toBe(1);
+});
+
+test("useScrollLock - re-syncs shards only when they change, even when passed inline", () => {
+	const shardA = document.createElement("div");
+	const shardB = document.createElement("div");
+	document.body.append(shardA, shardB);
+
+	act(() => root.render(createElement(InlineShardsHarness, { shard: shardA })));
+
+	expect(shardA.className).toContain("scroll-lock-allow-interactivity");
+
+	// == Same shard, new array: nothing changes
+	act(() => root.render(createElement(InlineShardsHarness, { shard: shardA })));
+
+	expect(shardA.className).toContain("scroll-lock-allow-interactivity");
+	expect(getActiveScrollLockCount()).toBe(1);
+
+	// == New shard: the lock switches to it
+	act(() => root.render(createElement(InlineShardsHarness, { shard: shardB })));
+
+	expect(shardA.className).not.toContain("scroll-lock-allow-interactivity");
+	expect(shardB.className).toContain("scroll-lock-allow-interactivity");
 	expect(getActiveScrollLockCount()).toBe(1);
 });
 
