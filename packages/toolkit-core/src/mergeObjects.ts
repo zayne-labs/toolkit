@@ -71,8 +71,9 @@ export const mergeTwoObjects = <TObject extends object>(
 		const latterValue = (latterObject as Record<string, unknown>)[key];
 
 		// == By default, `undefined` doesn't overwrite an existing value
-		if (undefinedValues === "ignore" && latterValue === undefined && Object.hasOwn(accumulator, key))
-			{continue;}
+		if (undefinedValues === "ignore" && latterValue === undefined && Object.hasOwn(accumulator, key)) {
+			continue;
+		}
 
 		accumulator[key] = mergeValue(key, accumulator[key], latterValue);
 	}
