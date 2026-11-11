@@ -13,6 +13,7 @@ export * from "./css";
 export * from "./debounce";
 export * from "./fileValidation";
 export * from "./createLockScroll";
+export * from "./mergeObjects";
 export * from "./navigation";
 export * from "./omitKeys";
 export * from "./on";

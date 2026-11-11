@@ -97,7 +97,13 @@ export const createComparisonFn = (baseOptions?: CompareFnOptions): CompareFn =>
  * shallowCompare({ a: {} }, { a: {} }) // false (nested objects are different references)
  * shallowCompare([1, 2], [1, 2]) // true
  */
-export const shallowCompare = createComparisonFn();
+let shallowCompareImpl: CompareFn | undefined;
+
+export const shallowCompare: CompareFn = (valueA, valueB, options) => {
+	shallowCompareImpl ??= createComparisonFn();
+
+	return shallowCompareImpl(valueA, valueB, options);
+};
 
 /**
  * @description Performs a deep comparison of two values.
@@ -107,4 +113,10 @@ export const shallowCompare = createComparisonFn();
  * deepCompare({ a: { b: 1 } }, { a: { b: 1 } }) // true
  * deepCompare([new Set([1])], [new Set([1])]) // true
  */
-export const deepCompare = createComparisonFn({ maxDepth: Infinity });
+let deepCompareImpl: CompareFn | undefined;
+
+export const deepCompare: CompareFn = (valueA, valueB, options) => {
+	deepCompareImpl ??= createComparisonFn({ maxDepth: Infinity });
+
+	return deepCompareImpl(valueA, valueB, options);
+};

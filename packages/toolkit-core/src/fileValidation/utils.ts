@@ -1,4 +1,4 @@
-import { defineEnum, isFile, isNumber, isString } from "@zayne-labs/toolkit-type-helpers";
+import { isFile, isNumber, isString } from "@zayne-labs/toolkit-type-helpers";
 import type { FileOrFileMeta, FileValidationOptions, FileValidationSettings } from "./types";
 
 /**
@@ -82,12 +82,12 @@ export const isMaxFileCountReached = (
 	return existingFiles.length + validFiles.length >= maxFileCount;
 };
 
-const UNIT_MULTIPLIERS = defineEnum({
+const UNIT_MULTIPLIERS = {
 	gb: 3,
 	kb: 1,
 	mb: 2,
 	tb: 4,
-}) satisfies Record<keyof Extract<FileValidationSettings["maxFileSize"], object>, number>;
+} as const satisfies Record<keyof Extract<FileValidationSettings["maxFileSize"], object>, number>;
 
 /**
  * @description Converts various size formats to bytes

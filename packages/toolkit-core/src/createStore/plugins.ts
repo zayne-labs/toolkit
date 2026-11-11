@@ -54,8 +54,12 @@ export type InferPluginExtraOptions<
 >;
 
 // eslint-disable-next-line ts-eslint/no-explicit-any -- Casting to `any` here is necessary for the generic to infer the plugin type without type errors
-export const defineStorePluginWithContext = <TState = any>() => {
-	return <const TPlugin extends StorePlugin<TState>>(plugin: TPlugin) => plugin as Writeable<TPlugin>;
-};
+export const defineStorePlugin = <const TPlugin extends StorePlugin<any>>(plugin: TPlugin) =>
+	plugin as Writeable<TPlugin>;
 
-export const defineStorePlugin = defineStorePluginWithContext();
+/**
+ * @description Same as `defineStorePlugin`, but with the store state type set up front
+ */
+export const defineStorePluginWithContext = <TState>() => {
+	return <const TPlugin extends StorePlugin<TState>>(plugin: TPlugin) => defineStorePlugin(plugin);
+};

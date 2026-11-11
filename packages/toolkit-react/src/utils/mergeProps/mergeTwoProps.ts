@@ -1,3 +1,4 @@
+import { mergeTwoObjects, type MergeValueFn } from "@zayne-labs/toolkit-core";
 import {
 	isFunction,
 	isObject,
@@ -8,54 +9,30 @@ import { cnMerge } from "@/lib/utils/cn";
 import { composeTwoEventHandlers } from "../composeEventHandlers";
 import { isEventHandler } from "./utils";
 
+const mergePropValue: MergeValueFn = (propName, accumulatedPropValue, latterPropValue) => {
+	if (
+		(propName === "className" || propName === "class")
+		&& isString(latterPropValue)
+		&& isString(accumulatedPropValue)
+	) {
+		return cnMerge(accumulatedPropValue, latterPropValue);
+	}
+
+	if (propName === "style" && isObject(latterPropValue) && isObject(accumulatedPropValue)) {
+		return { ...accumulatedPropValue, ...latterPropValue };
+	}
+
+	if (isFunction(latterPropValue) && isFunction(accumulatedPropValue) && isEventHandler(propName)) {
+		return composeTwoEventHandlers(accumulatedPropValue, latterPropValue);
+	}
+
+	// == latterProps override by default (`undefined` values are already skipped by `mergeTwoObjects`)
+	return latterPropValue;
+};
+
 export const mergeTwoProps = <TProps extends UnknownObjectWithAnyKey>(
 	formerProps: TProps | undefined,
 	latterProps: TProps | undefined
 ): TProps => {
-	// == If no props are provided, return an empty object
-	if (!latterProps || !formerProps) {
-		return latterProps ?? formerProps ?? ({} as TProps);
-	}
-
-	const propsAccumulator: Record<string, unknown> = {
-		...formerProps,
-	};
-
-	for (const latterPropName of Object.keys(latterProps)) {
-		const latterPropValue = latterProps[latterPropName];
-		const accumulatedPropValue = propsAccumulator[latterPropName];
-
-		if (
-			(latterPropName === "className" || latterPropName === "class")
-			&& isString(latterPropValue)
-			&& isString(accumulatedPropValue)
-		) {
-			propsAccumulator[latterPropName] = cnMerge(accumulatedPropValue, latterPropValue);
-			continue;
-		}
-
-		if (latterPropName === "style" && isObject(latterPropValue) && isObject(accumulatedPropValue)) {
-			propsAccumulator[latterPropName] = {
-				...accumulatedPropValue,
-				...latterPropValue,
-			};
-			continue;
-		}
-
-		if (
-			isFunction(latterPropValue)
-			&& isFunction(accumulatedPropValue)
-			&& isEventHandler(latterPropName)
-		) {
-			propsAccumulator[latterPropName] = composeTwoEventHandlers(accumulatedPropValue, latterPropValue);
-
-			continue;
-		}
-
-		// == latterProps override by default
-		propsAccumulator[latterPropName] =
-			latterPropValue !== undefined ? latterPropValue : accumulatedPropValue;
-	}
-
-	return propsAccumulator as TProps;
+	return mergeTwoObjects(formerProps, latterProps, { mergeValue: mergePropValue });
 };
