@@ -45,7 +45,7 @@ const isTouchingSelection = (target: EventTarget | null) => {
 	const selection = globalThis.getSelection();
 	const anchorNode = selection?.anchorNode;
 
-	return anchorNode ? anchorNode === target || anchorNode.contains(target) : false;
+	return Boolean(anchorNode) && (anchorNode === target || anchorNode.contains(target));
 };
 
 const getLockTarget = (lock: ActiveLock, event: Event) => {

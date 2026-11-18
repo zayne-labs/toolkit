@@ -16,12 +16,6 @@ type DefaultDefineEnumOptions = {
 	writeableLevel: "shallow";
 };
 
-type Enum<TValue extends object, TInferredUnionVariant extends InferredUnionVariant> = UnmaskType<
-	TValue & {
-		$inferUnion: ExtractUnion<TValue, TInferredUnionVariant>;
-	}
->;
-
 export const defineEnum = <
 	const TValue extends object,
 	TOptions extends DefineEnumOptions = DefineEnumOptions,
@@ -37,6 +31,11 @@ export const defineEnum = <
 	value: TValue,
 	_options?: TOptions
 ) => {
+	type Enum<TInnerValue extends object, TInferredUnionVariant extends InferredUnionVariant> = UnmaskType<
+		TInnerValue & {
+			$inferUnion: ExtractUnion<TInnerValue, TInferredUnionVariant>;
+		}
+	>;
 	return value as TComputedInferredUnionVariant extends InferredUnionVariant ?
 		Enum<Writeable<TValue, TComputedWriteableLevel>, TComputedInferredUnionVariant>
 	:	Writeable<TValue, TComputedWriteableLevel>;

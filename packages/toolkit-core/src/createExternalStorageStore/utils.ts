@@ -7,9 +7,9 @@ export type DispatchOptions = StorageEventInit & {
 };
 
 export const getStorage = <TValue>(
-	storageArea: StorageOptions<TValue>["storageArea"]
+	storageArea: StorageOptions<TValue>["storageArea"] = `localStorage`
 ): Storage | undefined => {
-	const selectedStorage = globalThis[storageArea ?? `localStorage`];
+	const selectedStorage = globalThis[storageArea];
 
 	return selectedStorage;
 };

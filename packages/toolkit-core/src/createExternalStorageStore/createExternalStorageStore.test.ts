@@ -1,11 +1,7 @@
 import { expect, test, vi } from "vitest";
+import { flushMicrotasks } from "../test-utils";
 import { createExternalStorageStore } from "./createExternalStorageStore";
 import type { StorageOptions } from "./types";
-
-/**
- * @description Helper to wait for all pending microtasks to complete.
- */
-const flushMicrotasks = () => new Promise<void>((resolve) => queueMicrotask(() => resolve()));
 
 /**
  * @description Common setup for ExternalStorageStore tests that handles storage cleanup.

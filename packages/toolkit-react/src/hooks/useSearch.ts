@@ -37,9 +37,7 @@ const useSearch = <TData>(initialData: TData[], delay?: number) => {
 			return false;
 		});
 
-		// eslint-disable-next-line react/set-state-in-effect -- Ignore
 		setFilteredData(filteredResults);
-		// eslint-disable-next-line react/set-state-in-effect -- Ignore
 		setIsLoading(false);
 	}, delay);
 

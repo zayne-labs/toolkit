@@ -12,11 +12,7 @@ import type {
 } from "./types";
 import { formatBytes, isDuplicateFile, isMaxFileCountReached, isValidFileType, toBytes } from "./utils";
 
-type ValidatorResult = ReturnType<NonNullable<FileValidationSettings["validator"]>>;
-
 type ValidationGenerator = Generator<unknown, void, unknown>;
-
-type ErrorCause = Extract<FileValidationErrorContextEach, { cause: unknown }>["cause"];
 
 /**
  * @description Core validation logic shared between sync and async validation.
@@ -44,13 +40,20 @@ function* validationSteps(
 	const maxFileSizeInBytes = toBytes(maxFileSize);
 	const minFileSizeInBytes = toBytes(minFileSize);
 
+	type ErrorCause = Extract<FileValidationErrorContextEach, { cause: unknown }>["cause"];
+
 	const createError = (
 		file: FileOrFileMeta,
 		details: { cause: ErrorCause; code: string; defaultMessage: string; explicitMessage?: string | null }
 	): FileValidationErrorContextEach => {
 		const message = resolveMessage(file, details);
 
-		return { cause: details.cause, code: details.code, file, message } as FileValidationErrorContextEach;
+		return {
+			cause: details.cause,
+			code: details.code,
+			file,
+			message,
+		} as FileValidationErrorContextEach;
 	};
 
 	/**
@@ -60,19 +63,27 @@ function* validationSteps(
 		file: FileOrFileMeta,
 		details: { code: string; defaultMessage: string; explicitMessage?: string | null }
 	) => {
-		if (details.explicitMessage) return details.explicitMessage;
+		if (details.explicitMessage) {
+			return details.explicitMessage;
+		}
 
 		const messageOverride = messages?.[details.code as BuiltInFileValidationErrorCode];
 
-		if (!messageOverride) return details.defaultMessage;
+		if (!messageOverride) {
+			return details.defaultMessage;
+		}
 
-		if (isString(messageOverride)) return messageOverride;
+		if (isString(messageOverride)) {
+			return messageOverride;
+		}
 
 		return messageOverride({ defaultMessage: details.defaultMessage, file });
 	};
 
 	//	== Loop through the uploaded fileList and validate each file
 	for (const file of newFiles) {
+		type ValidatorResult = ReturnType<NonNullable<FileValidationSettings["validator"]>>;
+
 		if (!file) continue;
 
 		if (maxFileCount && isMaxFileCountReached(maxFileCount, existingFiles, validFiles)) {

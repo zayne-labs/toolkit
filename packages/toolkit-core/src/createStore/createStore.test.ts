@@ -1,46 +1,8 @@
 import { expect, test, vi } from "vitest";
 import { shallowCompare } from "../compare";
+import { flushMicrotasks, setupStore, spyOnDisposable, type TestState } from "../test-utils";
 import { createStore, createStoreWithContext } from "./createStore";
 import { defineStorePlugin } from "./plugins";
-
-/**
- * @description Helper to wait for all pending microtasks to complete.
- */
-const flushMicrotasks = () => new Promise<void>((resolve) => queueMicrotask(() => resolve()));
-
-type TestState = {
-	count: number;
-};
-
-/**
- * @description Creates a disposable spy on an object's method that automatically restores when disposed.
- */
-const spyOnDisposable = <TObject extends object, TKey extends keyof TObject>(
-	obj: TObject,
-	method: TKey
-) => {
-	const spy = vi.spyOn(obj, method as never);
-
-	return {
-		spy,
-		[Symbol.dispose]: () => {
-			spy.mockRestore();
-		},
-	};
-};
-
-/**
- * @description Common setup for store tests that creates a store and subscribes a mock listener.
- */
-const setupStore = <TState>(...params: Parameters<typeof createStore<TState>>) => {
-	const store = createStore(...params);
-
-	const listener = vi.fn();
-
-	store.subscribe(listener);
-
-	return { listener, store };
-};
 
 test("Basic Batching - batch multiple synchronous calls and result in single listener notification", async () => {
 	const { listener, store } = setupStore(() => ({ count: 0, name: "test" }));

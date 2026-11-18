@@ -109,8 +109,11 @@ export const replaceState = (
 	globalThis.history.replaceState(state, "", urlString);
 };
 
-export const hardNavigate = (url: string | Partial<PartialURLInfo> | URL, type?: "assign" | "replace") => {
+export const hardNavigate = (
+	url: string | Partial<PartialURLInfo> | URL,
+	type: "assign" | "replace" = "assign"
+) => {
 	const { urlString } = formatUrl(url);
 
-	globalThis.location[type ?? "assign"](urlString);
+	globalThis.location[type](urlString);
 };

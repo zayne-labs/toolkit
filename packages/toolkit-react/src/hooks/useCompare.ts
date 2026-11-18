@@ -28,11 +28,7 @@ export const useCompareSelector = <
 	const compareSelector = (state: TState): TResult => {
 		const nextState = selector(state);
 
-		if (!nextState) {
-			return prevStateRef.current;
-		}
-
-		if (compareFn(prevStateRef.current, nextState, compareFnOptions)) {
+		if (!nextState || compareFn(prevStateRef.current, nextState, compareFnOptions)) {
 			return prevStateRef.current;
 		}
 

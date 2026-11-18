@@ -1,10 +1,6 @@
 import { expect, test, vi } from "vitest";
+import { flushMicrotasks } from "../test-utils";
 import { createLocationStore } from "./createLocationStore";
-
-/**
- * @description Helper to wait for all pending microtasks to complete.
- */
-const flushMicrotasks = () => new Promise<void>((resolve) => queueMicrotask(() => resolve()));
 
 /**
  * @description Common setup for LocationStore tests that handles history resets.

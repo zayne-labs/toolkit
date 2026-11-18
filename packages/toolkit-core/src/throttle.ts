@@ -7,11 +7,6 @@ type ThrottledByTimeoutFn<TCallbackFn extends AnyFunction> = UnmaskType<{
 
 type ThrottledByTimeFn<TCallbackFn extends AnyFunction> = (...parameters: Parameters<TCallbackFn>) => void;
 
-type ThrottledByFrameFn<TCallbackFn extends AnyFunction> = UnmaskType<{
-	(...parameters: Parameters<TCallbackFn>): void;
-	cancelAnimation: () => void;
-}>;
-
 /**
  * @description Invokes `callbackFn` at most once per `delay`, at the end of each window,
  * with the arguments from the latest call in that window.
@@ -78,6 +73,11 @@ export const throttleByTime = <TCallbackFn extends AnyFunction>(
 export const throttleByFrame = <TCallbackFn extends AnyFunction>(callbackFn: TCallbackFn) => {
 	let animationFrameId: ReturnType<typeof requestAnimationFrame> | null = null;
 	let latestParams: Parameters<TCallbackFn> | null = null;
+
+	type ThrottledByFrameFn<TInnerCallbackFn extends AnyFunction> = UnmaskType<{
+		(...parameters: Parameters<TInnerCallbackFn>): void;
+		cancelAnimation: () => void;
+	}>;
 
 	const throttledCallback: ThrottledByFrameFn<TCallbackFn> = (...params) => {
 		latestParams = params;

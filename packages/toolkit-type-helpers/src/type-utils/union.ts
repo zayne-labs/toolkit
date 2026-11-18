@@ -93,3 +93,7 @@ type UnionToTupleImpl<
 export type UnionToTuple<TUnion, TArray extends TUnion[] = []> =
 	UnionToTupleImpl<TUnion>["length"] extends TArray["length"] ? [...TArray]
 	:	UnionToTuple<TUnion, [TUnion, ...TArray]>;
+
+export type ExtractStrict<TValue, TToExtract extends TValue> = Extract<TValue, TToExtract>;
+
+export type ExcludeStrict<TValue, TToExclude extends TValue> = Exclude<TValue, TToExclude>;

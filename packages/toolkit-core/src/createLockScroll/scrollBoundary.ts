@@ -76,7 +76,7 @@ export const shouldCancelScroll = (
 	const directionFactor = getDirectionFactor(axis, globalThis.getComputedStyle(lockElement).direction);
 	const delta = directionFactor * sourceDelta;
 	let target = getNearestHTMLElement(getEventTarget(event));
-	const targetInLock = target ? containsOrEquals(lockElement, target) : false;
+	const targetInLock = Boolean(target) && containsOrEquals(lockElement, target);
 	const isDeltaPositive = delta > 0;
 
 	let availableScroll = 0;

@@ -72,7 +72,6 @@ export const mergeTwoObjects = <TObject extends object>(
 
 		// == By default, `undefined` doesn't overwrite an existing value
 		if (undefinedValues === "ignore" && latterValue === undefined && Object.hasOwn(accumulator, key))
-			// eslint-disable-next-line curly -- Remove later
 			continue;
 
 		accumulator[key] = mergeValue(key, accumulator[key], latterValue);
