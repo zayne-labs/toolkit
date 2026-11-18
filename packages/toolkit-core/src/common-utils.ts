@@ -13,3 +13,9 @@ export const toArray = <TValue>(value: TValue | TValue[]): TValue[] => (isArray(
  * @returns "true" if the condition is truthy, otherwise undefined.
  */
 export const dataAttr = (condition: unknown) => (condition ? "true" : undefined) as unknown as boolean;
+
+/**
+ * @description Immediately executes a function and returns its result.
+ * Useful for using statements as expressions (e.g. inside JSX or variable declarations).
+ */
+export const invokeFn = <TResult>(fn: () => TResult) => fn();
